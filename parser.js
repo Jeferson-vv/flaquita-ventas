@@ -103,12 +103,23 @@
     return { name, price: it.price > 0 ? it.price : cp };
   }
 
-  // catalog: [{ nombre, precio }]. Devuelve { items: [{name, q, price}], rejects: [texto] }
+  function parseMetodo(n0) {
+    if (/\b(yape\w*|llape\w*|jape|ya\s+pe)\b/.test(n0)) return 'yape';
+    if (/\b(plin\w*|plim)\b/.test(n0)) return 'plin';
+    if (/\b(tarjeta\w*|pos|visa|mastercard|debito|credito)\b/.test(n0)) return 'tarjeta';
+    if (/\b(transferencia\w*|deposito\w*|bcp|interbank|bbva|scotiabank)\b/.test(n0)) return 'transferencia';
+    if (/\b(efectivo|cash|contado)\b/.test(n0)) return 'efectivo';
+    return null;
+  }
+
+  // catalog: [{ nombre, precio }]. Devuelve { items: [{name, q, price}], rejects: [texto], metodo: string|null }
   function parseVenta(txt, catalog) {
     const cat = catalog || [];
     const n0 = norm(txt);
+    const metodo = parseMetodo(n0);
     const courtesy = /\b(cortesia|invit\w*)\b/.test(n0);
-    const tk = preprocess(n0).replace(/,/g, ' ').split(/\s+/).filter(Boolean);
+    const nClean = n0.replace(/\b(pagad[oa]s?|pagos?|pagar|efectivo|cash|contado|yape\w*|llape\w*|jape|ya\s+pe|plin\w*|plim|tarjeta\w*|pos|visa|mastercard|debito|credito|transferencia\w*|deposito\w*|bcp|interbank|bbva|scotiabank)\b/g, ' ');
+    const tk = preprocess(nClean).replace(/,/g, ' ').split(/\s+/).filter(Boolean);
     const out = [];
     let cur = null, pend = null, psz = null, pmods = [];
 
@@ -175,10 +186,10 @@
       if (r.error) rejects.push(r.error);
       else items.push({ name: r.name, q: it.q, price: r.price });
     }
-    return { items, rejects };
+    return { items, rejects, metodo };
   }
 
-  const api = { parseVenta, norm };
+  const api = { parseVenta, parseMetodo, norm };
   root.FlaquitaParser = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

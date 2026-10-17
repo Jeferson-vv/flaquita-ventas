@@ -110,7 +110,7 @@ const CONFIG = {
     <button id="mic">Activar micrófono</button>
     <div id="heard"></div>
     <div class="quick">
-      <input id="dic" placeholder='Escribe o dicta: "dos chicharrones de 20 y una coca de 1 litro"'>
+      <input id="dic" placeholder='Escribe o dicta: "dos chicharrones de 20 y una coca de 1 litro pago con yape"'>
       <button class="sm" id="go">Anotar</button>
     </div>
     <div class="quick" id="rapidos"></div>
@@ -291,15 +291,20 @@ $('btnCierre').onclick = () => {
   }
 };
 
-async function guardar(items, rejects) {
+let ultimaVentaId = null, ultimaVentaTs = 0;
+
+async function guardar(items, rejects, metodoVoz) {
   const detalles = items.map(it => {
     const p = CAT.find(x => x.nombre === it.name);
     return p ? { producto_id: p.id, cantidad: it.q, precio_unitario: it.price } : null;
   }).filter(Boolean);
   if (!detalles.length) { $('heard').textContent = 'No se anotó nada' + (rejects.length ? ': ' + rejects.join(', ') : ''); snd('err'); return; }
+  const metodoUsado = metodoVoz || $('metodo').value;
   try {
-    const { data: id, error } = await sb.rpc('registrar_venta', { p_items: detalles, p_metodo_pago: $('metodo').value, p_canal: 'local' });
+    const { data: id, error } = await sb.rpc('registrar_venta', { p_items: detalles, p_metodo_pago: metodoUsado, p_canal: 'local' });
     if (error) throw error;
+    ultimaVentaId = id;
+    ultimaVentaTs = Date.now();
     await cargarCarta();
     const avisosStock = [];
     const vistos = new Set();
@@ -313,7 +318,7 @@ async function guardar(items, rejects) {
       }
     }
     const resumen = items.map(i => `${i.q}× ${i.name} (${money(i.q * i.price)})`).join(', ');
-    $('heard').textContent = `Venta #${id}: ${resumen}`
+    $('heard').textContent = `Venta #${id} (${METODOS[metodoUsado] || metodoUsado}): ${resumen}`
       + (avisosStock.length ? ' · Aviso: ' + avisosStock.join(', ') : '')
       + (rejects.length ? ` · No anoté: ${rejects.join(', ')}` : '');
     snd(rejects.length ? 'err' : 'ok');
@@ -324,10 +329,29 @@ async function guardar(items, rejects) {
   }
 }
 
-function anotar(txt) {
+async function anotar(txt) {
   const r = FlaquitaParser.parseVenta(txt, CAT);
-  if (!r.items.length) { $('heard').textContent = 'No entendí: "' + txt + '"' + (r.rejects.length ? ' · ' + r.rejects.join(', ') : ''); snd('err'); return; }
-  return guardar(r.items, r.rejects);
+  if (!r.items.length) {
+    if (r.metodo && !r.rejects.length) {
+      if (ultimaVentaId && Date.now() - ultimaVentaTs < 25000) {
+        const { error } = await sb.from('ventas').update({ metodo_pago: r.metodo }).eq('id', ultimaVentaId);
+        if (!error) {
+          $('heard').textContent = `Venta #${ultimaVentaId} cambiada a pago con ${METODOS[r.metodo] || r.metodo}.`;
+          snd('ok');
+          await cargarHoy();
+          return;
+        }
+      }
+      $('metodo').value = r.metodo;
+      $('heard').textContent = `Método de pago seleccionado: ${METODOS[r.metodo] || r.metodo}.`;
+      snd('ok');
+      return;
+    }
+    $('heard').textContent = 'No entendí: "' + txt + '"' + (r.rejects.length ? ' · ' + r.rejects.join(', ') : '');
+    snd('err');
+    return;
+  }
+  return guardar(r.items, r.rejects, r.metodo);
 }
 
 $('go').onclick = () => { const v = $('dic').value.trim(); if (v) { anotar(v); $('dic').value = ''; } };
