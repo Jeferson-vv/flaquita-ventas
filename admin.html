@@ -27,9 +27,11 @@ nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .card h3{margin:0 0 8px;font-size:15px;color:var(--blk)}
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-.kpi div{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px}
+.kpi div{background:var(--card);border:1.5px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;user-select:none}
+.kpi div:hover{border-color:var(--ac);transform:translateY(-1px)}
+.kpi div.activo{background:#fdf2f8;border-color:var(--ac);border-left:5px solid var(--ac);box-shadow:0 2px 6px rgba(190,24,93,.15)}
 .kpi b{display:block;font-size:20px;color:var(--ac)}
-.kpi small{color:var(--mu);font-size:12px;font-weight:600}
+.kpi small{color:var(--mu);font-size:12px;font-weight:600;display:block}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media (max-width:560px){.grid2{grid-template-columns:1fr}}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--bd)}
@@ -140,12 +142,15 @@ const CONFIG = {
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardListaStock">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-        <h3 style="margin:0">Inventario de productos con control de stock</h3>
+        <h3 style="margin:0" id="tituloListaStock">Inventario de productos con control de stock</h3>
         <select id="filtroStock" style="width:auto;margin:0;padding:6px 10px;font-size:13px">
           <option value="todos">Todos con control de stock</option>
-          <option value="alertas">Solo alertas (bajo o sin stock)</option>
+          <option value="ok">Solo Stock OK</option>
+          <option value="bajo">Solo Stock bajo</option>
+          <option value="agotado">Solo Sin stock (≤ 0)</option>
+          <option value="alertas">Alertas (bajo o sin stock)</option>
         </select>
       </div>
       <div id="listaStock"></div>
@@ -309,19 +314,41 @@ function pintarStock() {
   const agotados = ctrl.filter(p => p.stock <= 0).length;
   const bajos = ctrl.filter(p => p.stock > 0 && p.stock <= p.stock_minimo).length;
   const ok = ctrl.length - agotados - bajos;
+  const modo = $('filtroStock').value;
 
   $('stockKpi').innerHTML = `
-    <div><small>Con control de stock</small><b>${ctrl.length}</b></div>
-    <div><small>Stock OK</small><b style="color:var(--ok)">${ok}</b></div>
-    <div><small>Stock bajo</small><b style="color:var(--warn)">${bajos}</b></div>
-    <div><small>Sin stock (≤ 0)</small><b style="color:var(--err)">${agotados}</b></div>
+    <div data-filtro="todos" class="${modo === 'todos' ? 'activo' : ''}"><small>Con control de stock</small><b>${ctrl.length}</b></div>
+    <div data-filtro="ok" class="${modo === 'ok' ? 'activo' : ''}"><small>Stock OK</small><b style="color:var(--ok)">${ok}</b></div>
+    <div data-filtro="bajo" class="${modo === 'bajo' ? 'activo' : ''}"><small>Stock bajo</small><b style="color:var(--warn)">${bajos}</b></div>
+    <div data-filtro="agotado" class="${modo === 'agotado' ? 'activo' : ''}"><small>Sin stock (≤ 0)</small><b style="color:var(--err)">${agotados}</b></div>
   `;
 
-  const modo = $('filtroStock').value;
-  const mostrar = ctrl.filter(p => modo === 'alertas' ? p.stock <= p.stock_minimo : true);
+  const titulos = {
+    todos: 'Inventario de productos con control de stock',
+    ok: 'Productos con Stock OK',
+    bajo: 'Productos con Stock bajo',
+    agotado: 'Productos Sin stock (≤ 0)',
+    alertas: 'Productos en alerta (Stock bajo o Sin stock)'
+  };
+  $('tituloListaStock').textContent = titulos[modo] || titulos.todos;
+
+  const mostrar = ctrl.filter(p => {
+    if (modo === 'ok') return p.stock > p.stock_minimo && p.stock > 0;
+    if (modo === 'bajo') return p.stock > 0 && p.stock <= p.stock_minimo;
+    if (modo === 'agotado') return p.stock <= 0;
+    if (modo === 'alertas') return p.stock <= p.stock_minimo;
+    return true;
+  });
 
   if (!mostrar.length) {
-    $('listaStock').innerHTML = `<p class="vacio">${modo === 'alertas' ? 'No hay productos con stock bajo o agotado.' : 'No hay productos con control de stock activo. Actívalo en "Carta y Precios".'}</p>`;
+    const msgVacio = {
+      todos: 'No hay productos con control de stock activo. Actívalo en "Carta y Precios".',
+      ok: 'No hay productos con Stock OK en este momento.',
+      bajo: 'No hay productos con stock bajo.',
+      agotado: 'No hay productos sin stock.',
+      alertas: 'No hay productos con stock bajo o agotado.'
+    };
+    $('listaStock').innerHTML = `<p class="vacio">${msgVacio[modo] || msgVacio.todos}</p>`;
     return;
   }
 
@@ -341,6 +368,14 @@ function pintarStock() {
 }
 
 $('filtroStock').onchange = pintarStock;
+$('stockKpi').onclick = e => {
+  const card = e.target.closest('[data-filtro]');
+  if (!card) return;
+  const f = card.dataset.filtro;
+  $('filtroStock').value = ($('filtroStock').value === f && f !== 'todos') ? 'todos' : f;
+  pintarStock();
+  $('cardListaStock').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+};
 
 $('listaStock').onclick = async e => {
   const idIn = e.target.dataset && e.target.dataset.fastIn;
