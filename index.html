@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis Ventas</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#c2410c"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#fff8ee;--fg:#2b1d0e;--card:#fff;--ac:#c2410c;--mu:#8a7560;--bd:#ecdcc6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b130b;--fg:#f6e9d6;--card:#2a1d12;--ac:#fb923c;--mu:#b39b82;--bd:#43301f}}
+:root[data-theme="dark"]{--bg:#1b130b;--fg:#f6e9d6;--card:#2a1d12;--ac:#fb923c;--mu:#b39b82;--bd:#43301f}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Arial,sans-serif;padding:14px 16px;max-width:560px;margin:auto}
+h1{font-size:20px;margin:4px 0 10px}
+input,select{padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:16px;width:100%;box-sizing:border-box;margin:6px 0}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--ac);color:#fff;font-size:16px;font-weight:600;margin-top:6px}
+.msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--mu);font-size:13px;margin-bottom:8px}
+.total{background:var(--ac);color:#fff;border-radius:14px;padding:14px;text-align:center;font-size:34px;font-weight:700}
+.total small{display:block;font-size:13px;font-weight:400;opacity:.9}
+.pago{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:15px}
+.pago select{margin:0;width:auto;flex:1}
+#mic{width:100%;margin:12px 0;padding:16px;font-size:18px;border-radius:14px;background:var(--card);color:var(--fg);border:2px solid var(--bd)}
+#mic.wait{border-color:#eab308;background:#eab30822}
+#mic.on{border-color:#16a34a;background:#16a34a22}
+#heard{min-height:20px;color:var(--mu);font-size:14px;text-align:center;margin-bottom:8px}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.quick input{flex:3;width:auto;margin:0}
+.quick button,.sm{flex:1;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px}
+#rapidos button{flex:1 1 45%}
+nav{display:flex;gap:6px;margin-bottom:12px}nav button{flex:1;padding:10px 4px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px}nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.card.anul{opacity:.45}
+.vh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:14px}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.kpi div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}.kpi b{display:block;font-size:20px;color:var(--ac)}.kpi small{color:var(--mu)}
+.card h3{margin:0 0 6px;font-size:15px}
+.br{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0}.br span{width:96px;color:var(--mu);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.br i{display:block;height:14px;background:var(--ac);border-radius:4px;min-width:2px}.br div{flex:1}.br b{min-width:60px;text-align:right}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:6px}summary{display:flex;justify-content:space-between;cursor:pointer;font-weight:600}
+.ln{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:var(--mu)}
+.vacio{text-align:center;color:var(--mu)}
+</style></head><body>
+
+<script>
+/* ===== CONFIGURACIÓN: pega aquí los datos de tu proyecto de Supabase =====
+   Project Settings > API: "Project URL" y la clave "anon public".
+   La clave anon es pública por diseño: la seguridad la dan las reglas (RLS) de la base. */
+const CONFIG = {
+  url: 'https://tvjmvjerjddfefiocfwp.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2am12amVyamRkZmVmaW9jZndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyNTczMDIsImV4cCI6MjEwNzgzMzMwMn0.Kpx0JL42FEzb2VMqwRSAdxJT6nkQhkXoCfI0B3ruB6I'
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
+<script src="parser.js"></script>
+
+<h1> Mis ventas</h1>
+
+<section id="login" hidden>
+  <div class="card">
+    <h3>Ingresar</h3>
+    <input id="email" type="email" placeholder="Correo" autocomplete="username">
+    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
+    <button class="btn" id="entrar">Entrar</button>
+    <p class="msg" id="loginMsg"></p>
+  </div>
+</section>
+
+<section id="app" hidden>
+  <div class="top"><span id="quien"></span><button class="sm" id="salir" style="flex:0 0 auto;padding:6px 12px">Salir</button></div>
+  <nav>
+    <button id="t-hoy" class="a">🏠 Hoy</button>
+    <button id="t-hist">📅 Historial</button>
+    <button id="t-dash">📊 Dashboard</button>
+  </nav>
+
+  <div id="v-hoy">
+    <div class="total"><small>Total vendido hoy</small><span id="tot">S/ 0.00</span></div>
+    <label class="pago">Pago de la próxima venta:
+      <select id="metodo">
+        <option value="efectivo">Efectivo</option>
+        <option value="yape">Yape</option>
+        <option value="plin">Plin</option>
+        <option value="tarjeta">Tarjeta</option>
+        <option value="transferencia">Transferencia</option>
+      </select>
+    </label>
+    <button id="mic">🎤 Activar micrófono</button>
+    <div id="heard"></div>
+    <div class="quick">
+      <input id="dic" placeholder='Escribe o dicta: "dos chicharrones de 20 y una coca de 1 litro"'>
+      <button class="sm" id="go">Anotar</button>
+    </div>
+    <div class="quick" id="rapidos"></div>
+    <div id="list"></div>
+    <div class="quick" style="margin-top:12px"><button class="sm" id="undo">↩ Anular última venta</button></div>
+  </div>
+  <div id="v-hist" hidden></div>
+  <div id="v-dash" hidden></div>
+</section>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => 'S/ ' + Number(n).toFixed(2);
+const LIMA = { timeZone: 'America/Lima' };
+const hoyStr = () => new Date().toLocaleDateString('en-CA', LIMA);
+const diasAtras = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.toLocaleDateString('en-CA', LIMA); };
+const horaStr = iso => new Date(iso).toLocaleTimeString('es-PE', { ...LIMA, hour: '2-digit', minute: '2-digit' });
+const fdate = f => new Date(f + 'T12:00:00').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'short' });
+const CATEG = { chicharron: '🍖 Chicharrón', sarza: '🥣 Sarza', combinado: '🍽️ Combinados', bebida: '🥤 Bebidas', cerveza: '🍺 Cervezas', otro: 'Otros' };
+
+let sb = null, CAT = [], HOY = [], HIST = [];
+
+/* ---------- Sonidos ---------- */
+let AC = null;
+function ac() { try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) {} return AC; }
+function tone(f, t0, d, type, g) { const a = ac(); if (!a) return; const o = a.createOscillator(), v = a.createGain(); o.type = type || 'sine'; o.frequency.value = f; o.connect(v); v.connect(a.destination); const s = a.currentTime + t0; v.gain.setValueAtTime(0.0001, s); v.gain.exponentialRampToValueAtTime(g || 0.5, s + 0.01); v.gain.exponentialRampToValueAtTime(0.0001, s + d); o.start(s); o.stop(s + d + 0.02); }
+function snd(k) { try {
+  if (k === 'ok') { tone(880, 0, .1, 'square', .3); tone(1320, .11, .18, 'square', .3); navigator.vibrate && navigator.vibrate(60); }
+  else if (k === 'err') { tone(200, 0, .3, 'sawtooth', .35); tone(150, .32, .3, 'sawtooth', .35); navigator.vibrate && navigator.vibrate([120, 60, 120]); }
+  else if (k === 'on') { tone(660, 0, .1, 'sine', .5); tone(880, .11, .1, 'sine', .5); tone(1100, .22, .14, 'sine', .5); }
+  else if (k === 'off') { tone(880, 0, .1, 'sine', .5); tone(660, .11, .1, 'sine', .5); tone(440, .22, .14, 'sine', .5); }
+} catch (e) {} }
+
+/* ---------- Login ---------- */
+function setMsg(t) { $('loginMsg').textContent = t; }
+function mostrarLogin() { $('app').hidden = true; $('login').hidden = false; }
+
+async function entrar() {
+  setMsg('Ingresando…');
+  const { error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pass').value });
+  if (error) setMsg('No se pudo ingresar: ' + error.message);
+  else await iniciarApp();
+}
+
+async function iniciarApp() {
+  const { data: { user } } = await sb.auth.getUser();
+  $('quien').textContent = '👤 ' + (user ? user.email : '');
+  $('login').hidden = true; $('app').hidden = false;
+  const { data, error } = await sb.from('productos').select('id,nombre,categoria,precio').eq('activo', true).order('orden');
+  if (error) { $('heard').textContent = '⚠️ Error cargando la carta: ' + error.message; return; }
+  CAT = data;
+  pintarRapidos();
+  await cargarHoy();
+  iniciarVoz();
+}
+
+async function init() {
+  $('entrar').onclick = entrar;
+  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+  if (CONFIG.url.includes('TU-PROYECTO') || typeof supabase === 'undefined') {
+    $('login').hidden = false;
+    setMsg('Falta configurar Supabase: revisa CONFIG en index.html (o no hay conexión a internet).');
+    return;
+  }
+  sb = supabase.createClient(CONFIG.url, CONFIG.key);
+  $('login').hidden = false;
+  const { data } = await sb.auth.getSession();
+  if (data.session) await iniciarApp();
+}
+
+$('salir').onclick = async () => { if (sb) await sb.auth.signOut(); location.reload(); };
+
+/* ---------- Ventas ---------- */
+async function cargarHoy() {
+  const { data, error } = await sb.from('ventas')
+    .select('id,hora,metodo_pago,total,estado,venta_detalles(cantidad,precio_unitario,productos(nombre))')
+    .eq('fecha', hoyStr()).order('hora', { ascending: false });
+  if (error) { $('heard').textContent = '⚠️ Error leyendo ventas: ' + error.message; return; }
+  HOY = data; pintarHoy();
+}
+
+function pintarHoy() {
+  const tot = HOY.filter(v => v.estado === 'valida').reduce((s, v) => s + Number(v.total), 0);
+  $('tot').textContent = money(tot);
+  $('list').innerHTML = HOY.length ? HOY.map(v => `
+    <div class="card ${v.estado === 'anulada' ? 'anul' : ''}">
+      <div class="vh"><b>${horaStr(v.hora)}</b><span>${esc(v.metodo_pago)}${v.estado === 'anulada' ? ' · ANULADA' : ''}</span><b>${money(v.total)}</b></div>
+      ${v.venta_detalles.map(d => `<div class="ln"><span>${d.cantidad} × ${esc(d.productos.nombre)}</span><span>${money(d.cantidad * d.precio_unitario)}</span></div>`).join('')}
+    </div>`).join('') : '<p class="vacio">Aún no hay ventas hoy.</p>';
+}
+
+async function guardar(items, rejects) {
+  const detalles = items.map(it => {
+    const p = CAT.find(x => x.nombre === it.name);
+    return p ? { producto_id: p.id, cantidad: it.q, precio_unitario: it.price } : null;
+  }).filter(Boolean);
+  if (!detalles.length) { $('heard').textContent = '❌ No anoté nada' + (rejects.length ? ': ' + rejects.join(', ') : ''); snd('err'); return; }
+  try {
+    const { data: id, error } = await sb.rpc('registrar_venta', { p_items: detalles, p_metodo_pago: $('metodo').value, p_canal: 'local' });
+    if (error) throw error;
+    const resumen = items.map(i => `${i.q}× ${i.name} (${money(i.q * i.price)})`).join(', ');
+    $('heard').textContent = `✅ Venta #${id}: ${resumen}` + (rejects.length ? ` · ⚠️ NO anoté: ${rejects.join(', ')}` : '');
+    snd(rejects.length ? 'err' : 'ok');
+    await cargarHoy();
+  } catch (e) {
+    $('heard').textContent = '⚠️ No se guardó: ' + e.message;
+    snd('err');
+  }
+}
+
+function anotar(txt) {
+  const r = FlaquitaParser.parseVenta(txt, CAT);
+  if (!r.items.length) { $('heard').textContent = '❌ No entendí: "' + txt + '"' + (r.rejects.length ? ' · ' + r.rejects.join(', ') : ''); snd('err'); return; }
+  return guardar(r.items, r.rejects);
+}
+
+$('go').onclick = () => { const v = $('dic').value.trim(); if (v) { anotar(v); $('dic').value = ''; } };
+$('dic').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').onclick(); });
+
+function pintarRapidos() {
+  $('rapidos').innerHTML = CAT.filter(p => p.categoria === 'chicharron')
+    .map(p => `<button class="sm" data-n="${esc(p.nombre)}">+ ${esc(p.nombre)} ${money(p.precio)}</button>`).join('');
+}
+$('rapidos').onclick = e => {
+  const n = e.target.dataset && e.target.dataset.n;
+  if (!n) return;
+  const p = CAT.find(x => x.nombre === n);
+  if (p) guardar([{ name: p.nombre, q: 1, price: Number(p.precio) }], []);
+};
+
+$('undo').onclick = async () => {
+  const v = HOY.find(x => x.estado === 'valida');
+  if (!v) { $('heard').textContent = 'No hay ventas válidas hoy.'; return; }
+  if (!confirm(`¿Anular la venta de las ${horaStr(v.hora)} por ${money(v.total)}?`)) return;
+  const { error } = await sb.from('ventas').update({ estado: 'anulada' }).eq('id', v.id);
+  if (error) { $('heard').textContent = '⚠️ No se pudo anular: ' + error.message; return; }
+  $('heard').textContent = '↩ Venta anulada (queda registrada como anulada).';
+  await cargarHoy();
+};
+
+/* ---------- Historial y dashboard ---------- */
+async function cargarHist() {
+  const { data, error } = await sb.from('ventas')
+    .select('id,fecha,hora,total,estado,metodo_pago,venta_detalles(cantidad,precio_unitario,productos(nombre,categoria))')
+    .gte('fecha', diasAtras(365)).order('hora', { ascending: false });
+  if (error) throw error;
+  HIST = data.filter(v => v.estado === 'valida');
+}
+
+function grupo(vs) {
+  const m = {};
+  vs.forEach(v => v.venta_detalles.forEach(d => {
+    const n = d.productos.nombre, o = m[n] || (m[n] = { q: 0, s: 0 });
+    o.q += d.cantidad; o.s += d.cantidad * d.precio_unitario;
+  }));
+  return m;
+}
+
+async function rHist() {
+  $('v-hist').innerHTML = '<p class="vacio">Cargando…</p>';
+  try { await cargarHist(); } catch (e) { $('v-hist').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
+  const porDia = {};
+  HIST.forEach(v => (porDia[v.fecha] = porDia[v.fecha] || []).push(v));
+  const dias = Object.keys(porDia).sort().reverse();
+  $('v-hist').innerHTML = (dias.length ? dias.map(f => {
+    const vs = porDia[f], tot = vs.reduce((s, v) => s + Number(v.total), 0), g = grupo(vs);
+    return `<details><summary><span>${fdate(f)} · ${vs.length} ventas</span><span>${money(tot)}</span></summary>
+      ${Object.entries(g).map(([n, o]) => `<div class="ln"><span>${o.q} × ${esc(n)}</span><span>${money(o.s)}</span></div>`).join('')}</details>`;
+  }).join('') : '<p class="vacio">Aún no hay ventas.</p>') +
+  '<button class="sm" id="exp" style="width:100%;margin-top:10px">⬇ Exportar CSV</button>';
+}
+
+function exportar() {
+  const filas = ['fecha,hora,metodo_pago,producto,cantidad,precio_unitario,subtotal'];
+  HIST.forEach(v => v.venta_detalles.forEach(d => filas.push([v.fecha, horaStr(v.hora), v.metodo_pago, '"' + d.productos.nombre + '"', d.cantidad, d.precio_unitario, d.cantidad * d.precio_unitario].join(','))));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([filas.join('\n')], { type: 'text/csv' }));
+  a.download = 'ventas.csv'; a.click();
+}
+
+async function rDash() {
+  $('v-dash').innerHTML = '<p class="vacio">Cargando…</p>';
+  try { await cargarHist(); } catch (e) { $('v-dash').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
+  if (!HIST.length) { $('v-dash').innerHTML = '<p class="vacio">El dashboard aparece cuando tengas ventas.</p>'; return; }
+
+  const porDia = {};
+  HIST.forEach(v => porDia[v.fecha] = (porDia[v.fecha] || 0) + Number(v.total));
+  const ks = Object.keys(porDia).sort();
+  const T = Object.values(porDia).reduce((a, b) => a + b, 0);
+  const mejor = ks.reduce((a, k) => porDia[k] > porDia[a] ? k : a, ks[0]);
+  const l7 = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); const f = d.toLocaleDateString('en-CA', LIMA); return [f, porDia[f] || 0]; });
+
+  const cat = {}, prods = {};
+  HIST.forEach(v => v.venta_detalles.forEach(d => {
+    const c = d.productos.categoria, n = d.productos.nombre;
+    cat[c] = (cat[c] || 0) + d.cantidad * d.precio_unitario;
+    prods[n] = (prods[n] || 0) + d.cantidad;
+  }));
+  const top = Object.entries(prods).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const bars = (rows, mx) => rows.map(([l, v, t]) => `<div class="br"><span>${esc(l)}</span><div><i style="width:${mx ? Math.round(v / mx * 100) : 0}%"></i></div><b>${t}</b></div>`).join('');
+  const mx7 = Math.max(1, ...l7.map(x => x[1])), mxC = Math.max(1, ...Object.values(cat)), mxP = top.length ? top[0][1] : 1;
+
+  $('v-dash').innerHTML = `
+    <div class="kpi">
+      <div><small>Total acumulado</small><b>${money(T)}</b></div>
+      <div><small>Promedio por día</small><b>${money(T / ks.length)}</b></div>
+      <div><small>Días con ventas</small><b>${ks.length}</b></div>
+      <div><small>Mejor día</small><b>${money(porDia[mejor])}</b><small>${fdate(mejor)}</small></div>
+    </div>
+    <div class="card"><h3>Últimos 7 días</h3>${bars(l7.map(([f, v]) => [fdate(f).split(',')[0] + ' ' + f.slice(8), v, money(v)]), mx7)}</div>
+    <div class="card"><h3>Ventas por tipo</h3>${bars(Object.entries(cat).map(([c, v]) => [CATEG[c] || c, v, Math.round(v / T * 100) + '%']), mxC)}</div>
+    <div class="card"><h3>Lo más vendido (unidades)</h3>${bars(top.map(([n, q]) => [n, q, q + ' u']), mxP)}</div>`;
+}
+
+function show(v) {
+  ['hoy', 'hist', 'dash'].forEach(k => { $('v-' + k).hidden = k !== v; $('t-' + k).classList.toggle('a', k === v); });
+  if (v === 'hoy') cargarHoy();
+  if (v === 'hist') rHist();
+  if (v === 'dash') rDash();
+}
+$('t-hoy').onclick = () => show('hoy');
+$('t-hist').onclick = () => show('hist');
+$('t-dash').onclick = () => show('dash');
+document.addEventListener('click', e => { if (e.target.id === 'exp') exportar(); });
+
+/* ---------- Voz ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec, active = false, rm = false, lock, vozIniciada = false;
+async function wake() { try { lock = await navigator.wakeLock.request('screen'); } catch (e) {} }
+function ui() { const m = $('mic'); m.className = active ? (rm ? 'on' : 'wait') : ''; m.textContent = !active ? '🎤 Activar micrófono' : rm ? '🟢 Registrando: di "salida"' : '🟡 En espera: di "ingresar"'; }
+function setMode(v) { if (rm === v) return; rm = v; ui(); snd(v ? 'on' : 'off'); $('heard').textContent = v ? 'Registrando: di tus ventas. Di "salida" para parar.' : 'En espera: di "ingresar" para anotar.'; }
+function handle(t) {
+  const n = FlaquitaParser.norm(t);
+  const ing = /\b(ingresar|ingreso)\b/.test(n), sal = /\b(salida|salir)\b/.test(n);
+  const rest = n.replace(/\b(ingresar|ingreso|salida|salir)\b/g, ' ').replace(/\s+/g, ' ').trim();
+  if (ing) setMode(true);
+  if (rm && rest) anotar(rest);
+  if (sal) setMode(false);
+}
+function startRec() {
+  rec = new SR(); rec.lang = 'es-PE'; rec.continuous = true; rec.interimResults = false;
+  rec.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) { const t = e.results[i][0].transcript; $('heard').textContent = 'Escuché: "' + t + '"'; handle(t); } };
+  rec.onend = () => { if (active) setTimeout(() => { try { startRec(); } catch (e) {} }, 300); };
+  rec.onerror = e => {
+    if (e.error === 'no-speech' || e.error === 'aborted') return;
+    $('heard').textContent = '⚠️ Micrófono bloqueado (' + e.error + '). Usa la caja de texto y el 🎤 del teclado.';
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { active = false; rm = false; ui(); $('dic').focus(); }
+  };
+  rec.start();
+}
+$('mic').onclick = () => {
+  if (!SR) { $('heard').textContent = 'Tu navegador no soporta voz. Usa Chrome en Android.'; return; }
+  active = !active; rm = false; ui();
+  if (active) { wake(); startRec(); $('heard').textContent = 'En espera: di "ingresar" para anotar.'; }
+  else { try { rec.stop(); } catch (e) {} if (lock) lock.release(); }
+};
+document.addEventListener('visibilitychange', () => { if (active && document.visibilityState === 'visible') wake(); });
+function iniciarVoz() {
+  if (vozIniciada) return; vozIniciada = true;
+  if (!SR) return;
+  active = true; ui(); wake();
+  try { startRec(); } catch (e) { active = false; ui(); }
+  setTimeout(() => { ac(); if (AC && AC.state !== 'running' && !rm) $('heard').textContent = '🔇 Toca la pantalla una vez para activar los sonidos.'; }, 1500);
+  $('heard').textContent = 'En espera: di "ingresar" para anotar.';
+}
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+init();
+</script>
+</body></html>
