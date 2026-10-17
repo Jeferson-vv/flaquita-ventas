@@ -7,10 +7,11 @@
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d4ed8"><link rel="icon" href="logo.webp"><link rel="apple-touch-icon" href="logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#e6ecf5;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#1d4ed8;--mu:#374151;--bd:#cbd5e1;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:14px 16px;max-width:760px;margin:auto}
-h1{margin:4px 0 12px;padding:0;background:#000;border-radius:12px;overflow:hidden;border:2px solid var(--blk);box-shadow:0 2px 8px rgba(0,0,0,.18);line-height:0}
-h1 img{width:100%;height:auto;max-height:195px;object-fit:contain;display:block;margin:auto;background:#000}
+:root{--bg:#f2ecee;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#1d4ed8;--mu:#3f3f46;--bd:#d8cfd4;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:12px 16px;max-width:760px;margin:auto}
+h1{margin:2px 0 12px;padding:0 12px;height:82px;background:#000;border-radius:12px;overflow:hidden;border:2px solid var(--blk);border-bottom:3px solid #ec4899;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;gap:8px}
+h1 .logo-circle{width:60px;height:60px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #fbcfe8;flex-shrink:0;z-index:2}
+h1 .banner-img{flex:1;min-width:0;height:82px;object-fit:cover;object-position:center 48%;display:block;background:#000}
 input,select{padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;font-weight:500;width:100%;box-sizing:border-box;margin:4px 0}
 input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac);outline:none}
@@ -57,7 +58,8 @@ const CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 
 <h1>
-  <img src="banner.jpg" alt="La Flaquita">
+  <img class="logo-circle" src="logo.webp" alt="Logo La Flaquita">
+  <img class="banner-img" src="banner.jpg" alt="La Flaquita">
 </h1>
 
 <section id="login" hidden>
