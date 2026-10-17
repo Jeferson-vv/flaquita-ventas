@@ -3,28 +3,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Panel interno de inventario y carta de Chicharronería La Flaquita.">
-<title>La Flaquita · Inventario y Carta</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#c2410c"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>La Flaquita - Inventario y Carta</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d4ed8"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{--bg:#fff8ee;--fg:#2b1d0e;--card:#fff;--ac:#c2410c;--mu:#8a7560;--bd:#ecdcc6;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b130b;--fg:#f6e9d6;--card:#2a1d12;--ac:#fb923c;--mu:#b39b82;--bd:#43301f;--ok:#4ade80;--warn:#fbbf24;--err:#f87171}}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Arial,sans-serif;padding:14px 16px;max-width:760px;margin:auto}
+:root{--bg:#ffffff;--fg:#111827;--card:#ffffff;--ac:#1d4ed8;--mu:#4b5563;--bd:#d1d5db;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:14px 16px;max-width:760px;margin:auto}
 h1{font-size:20px;margin:4px 0 10px;display:flex;justify-content:space-between;align-items:center}
-h1 a{font-size:13px;color:var(--ac);text-decoration:none;border:1px solid var(--bd);background:var(--card);padding:6px 10px;border-radius:8px;font-weight:600}
-input,select{padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;width:100%;box-sizing:border-box;margin:4px 0}
-input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac)}
-.btn{width:100%;padding:12px 14px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
-.sm{padding:8px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:13px;cursor:pointer;font-weight:600}
+h1 a{font-size:13px;color:var(--ac);text-decoration:none;border:1px solid var(--bd);background:#f8fafc;padding:6px 10px;border-radius:8px;font-weight:600}
+input,select{padding:10px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;width:100%;box-sizing:border-box;margin:4px 0}
+input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
+input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac);outline:none}
+.btn{width:100%;padding:12px 14px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
+.sm{padding:8px 12px;border-radius:8px;border:1px solid var(--bd);background:#f8fafc;color:var(--fg);font-size:13px;cursor:pointer;font-weight:600}
+.sm:hover{background:#eff6ff;border-color:var(--ac)}
 .sm.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
 .msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
 .top{display:flex;justify-content:space-between;align-items:center;color:var(--mu);font-size:13px;margin-bottom:10px;gap:8px;flex-wrap:wrap}
 nav{display:flex;gap:6px;margin-bottom:12px}
-nav button{flex:1;padding:10px 6px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:600;cursor:pointer}
+nav button{flex:1;padding:10px 6px;border-radius:8px;border:1px solid var(--bd);background:#f8fafc;color:var(--fg);font-size:14px;font-weight:600;cursor:pointer}
 nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px}
 .card h3{margin:0 0 8px;font-size:15px}
 .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-.kpi div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}
+.kpi div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px}
 .kpi b{display:block;font-size:20px;color:var(--ac)}
 .kpi small{color:var(--mu);font-size:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -32,10 +33,10 @@ nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--bd)}
 .row:last-child{border-bottom:0}
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700}
-.b-ok{background:#15803d22;color:var(--ok)}
-.b-warn{background:#b4530922;color:var(--warn)}
-.b-err{background:#b91c1c22;color:var(--err)}
-.b-info{background:#c2410c22;color:var(--ac)}
+.b-ok{background:#dcfce7;color:var(--ok)}
+.b-warn{background:#fef3c7;color:var(--warn)}
+.b-err{background:#fee2e2;color:var(--err)}
+.b-info{background:#dbeafe;color:var(--ac)}
 .p-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
 .p-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--mu)}
 .p-controls label{display:flex;align-items:center;gap:5px;cursor:pointer}
@@ -43,7 +44,7 @@ nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .filters > *{flex:1;min-width:140px;margin:0}
 .vacio{text-align:center;color:var(--mu);padding:16px 0}
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:99}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.18);z-index:99}
 </style></head><body>
 
 <script>
@@ -55,8 +56,8 @@ const CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 
 <h1>
-  <span>🍖 La Flaquita · Inventario</span>
-  <a href="index.html">← Ir a Ventas</a>
+  <span>La Flaquita · Administración</span>
+  <a href="index.html">Ir a Ventas</a>
 </h1>
 
 <section id="login" hidden>
@@ -74,7 +75,7 @@ const CONFIG = {
 
 <section id="denegado" hidden>
   <div class="card">
-    <h3>⛔ Acceso solo para el administrador</h3>
+    <h3>Acceso restringido al administrador</h3>
     <p id="denegadoMsg" style="font-size:14px;line-height:1.5;color:var(--mu)"></p>
     <button class="sm" id="salirDenegado">Cerrar sesión e ingresar con otra cuenta</button>
   </div>
@@ -84,15 +85,15 @@ const CONFIG = {
   <div class="top">
     <span id="quien"></span>
     <div style="display:flex;gap:6px">
-      <button class="sm" id="refrescar">🔄 Actualizar</button>
+      <button class="sm" id="refrescar">Actualizar</button>
       <button class="sm" id="salir">Salir</button>
     </div>
   </div>
 
   <nav>
-    <button id="t-stock" class="a">📦 Stock y Entradas</button>
-    <button id="t-carta">🍽️ Carta y Precios</button>
-    <button id="t-movs">🕓 Movimientos</button>
+    <button id="t-stock" class="a">Stock y Entradas</button>
+    <button id="t-carta">Carta y Precios</button>
+    <button id="t-movs">Movimientos</button>
   </nav>
 
   <!-- TAB 1: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO -->
@@ -101,7 +102,7 @@ const CONFIG = {
 
     <div class="grid2">
       <div class="card">
-        <h3>➕ Registrar entrada (compra)</h3>
+        <h3>Registrar entrada (compra)</h3>
         <label style="font-size:13px;color:var(--mu)">Producto
           <select id="entProd"></select>
         </label>
@@ -117,7 +118,7 @@ const CONFIG = {
       </div>
 
       <div class="card">
-        <h3>📋 Conteo físico (ajuste)</h3>
+        <h3>Conteo físico (ajuste)</h3>
         <label style="font-size:13px;color:var(--mu)">Producto
           <select id="ajProd"></select>
         </label>
@@ -138,7 +139,7 @@ const CONFIG = {
         <h3 style="margin:0">Inventario de productos con control de stock</h3>
         <select id="filtroStock" style="width:auto;margin:0;padding:6px 10px;font-size:13px">
           <option value="todos">Todos con control de stock</option>
-          <option value="alertas">⚠️ Solo alertas (bajo o sin stock)</option>
+          <option value="alertas">Solo alertas (bajo o sin stock)</option>
         </select>
       </div>
       <div id="listaStock"></div>
@@ -148,17 +149,17 @@ const CONFIG = {
   <!-- TAB 2: PRECIOS, PRODUCTOS ACTIVOS Y CONFIGURACIÓN DE STOCK -->
   <div id="v-carta" hidden>
     <div class="card" style="font-size:13px;color:var(--mu)">
-      💡 <b>Cuidado:</b> Los nombres de los productos no se cambian para que el micrófono y <code>parser.js</code> los sigan reconociendo. Aquí puedes cambiar precios, activar/desactivar productos y elegir cuáles descuentan stock.
+      <b>Nota:</b> Los nombres de los productos no se cambian para que el micrófono y <code>parser.js</code> los sigan reconociendo. Aquí puedes cambiar precios, activar/desactivar productos y elegir cuáles descuentan stock.
     </div>
     <div class="filters">
-      <input id="busqCarta" placeholder="🔍 Buscar producto…">
+      <input id="busqCarta" placeholder="Buscar producto…">
       <select id="catCarta">
         <option value="">Todas las categorías</option>
-        <option value="chicharron">🍖 Chicharrón</option>
-        <option value="combinado">🍽️ Combinados</option>
-        <option value="sarza">🥣 Sarza</option>
-        <option value="bebida">🥤 Bebidas</option>
-        <option value="cerveza">🍺 Cervezas</option>
+        <option value="chicharron">Chicharrón</option>
+        <option value="combinado">Combinados</option>
+        <option value="sarza">Sarza</option>
+        <option value="bebida">Bebidas</option>
+        <option value="cerveza">Cervezas</option>
         <option value="otro">Otros</option>
       </select>
     </div>
@@ -171,10 +172,10 @@ const CONFIG = {
       <select id="movProd"><option value="">Todos los productos</option></select>
       <select id="movTipo">
         <option value="">Todos los tipos</option>
-        <option value="entrada">➕ Entradas</option>
-        <option value="venta">🛒 Ventas</option>
-        <option value="anulacion">↩ Anulaciones</option>
-        <option value="ajuste">📋 Conteos / Ajustes</option>
+        <option value="entrada">Entradas</option>
+        <option value="venta">Ventas</option>
+        <option value="anulacion">Anulaciones</option>
+        <option value="ajuste">Conteos / Ajustes</option>
       </select>
     </div>
     <div class="card" id="listaMovs"></div>
@@ -189,12 +190,12 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const money = n => 'S/ ' + Number(n || 0).toFixed(2);
 const LIMA = { timeZone: 'America/Lima' };
 const fechaHoraStr = iso => new Date(iso).toLocaleString('es-PE', { ...LIMA, day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-const CATEG = { chicharron: '🍖 Chicharrón', sarza: '🥣 Sarza', combinado: '🍽️ Combinados', bebida: '🥤 Bebidas', cerveza: '🍺 Cervezas', otro: 'Otros' };
+const CATEG = { chicharron: 'Chicharrón', sarza: 'Sarza', combinado: 'Combinados', bebida: 'Bebidas', cerveza: 'Cervezas', otro: 'Otros' };
 const TIPO_BADGE = {
-  entrada:   ['➕ Entrada', 'b-ok'],
-  venta:     ['🛒 Venta', 'b-info'],
-  anulacion: ['↩ Anulación', 'b-warn'],
-  ajuste:    ['📋 Conteo', 'b-warn']
+  entrada:   ['Entrada', 'b-ok'],
+  venta:     ['Venta', 'b-info'],
+  anulacion: ['Anulación', 'b-warn'],
+  ajuste:    ['Conteo', 'b-warn']
 };
 
 let sb = null, PRODS = [], MOVS = [], tabActual = 'stock', toastTimer = null;
@@ -236,7 +237,7 @@ async function verificarYEntrar() {
     return;
   }
 
-  $('quien').textContent = '🔑 Admin: ' + user.email;
+  $('quien').textContent = 'Administrador: ' + user.email;
   $('login').hidden = true;
   $('denegado').hidden = true;
   $('app').hidden = false;
@@ -248,7 +249,7 @@ async function cargarTodo() {
     .select('id,nombre,categoria,precio,activo,visible_web,orden,controla_stock,stock,stock_minimo')
     .order('orden');
   if (error) {
-    notify('⚠️ Error leyendo productos: ' + error.message);
+    notify('Error leyendo productos: ' + error.message);
     return;
   }
   PRODS = data || [];
@@ -299,7 +300,7 @@ function pintarStock() {
   const mostrar = ctrl.filter(p => modo === 'alertas' ? p.stock <= p.stock_minimo : true);
 
   if (!mostrar.length) {
-    $('listaStock').innerHTML = `<p class="vacio">${modo === 'alertas' ? '🎉 No hay productos con stock bajo o agotado.' : 'No hay productos con control de stock activo. Actívalo en "Carta y Precios".'}</p>`;
+    $('listaStock').innerHTML = `<p class="vacio">${modo === 'alertas' ? 'No hay productos con stock bajo o agotado.' : 'No hay productos con control de stock activo. Actívalo en "Carta y Precios".'}</p>`;
     return;
   }
 
@@ -326,18 +327,18 @@ $('listaStock').onclick = async e => {
   if (idIn) {
     const p = PRODS.find(x => String(x.id) === String(idIn));
     if (!p) return;
-    const v = prompt(`➕ Entrada de "${p.nombre}" (Stock actual: ${p.stock}).\n¿Cuántas unidades ingresan?`, '12');
+    const v = prompt(`Entrada de "${p.nombre}" (Stock actual: ${p.stock}).\n¿Cuántas unidades ingresan?`, '12');
     if (v === null) return;
     const cant = parseInt(v, 10);
-    if (!cant || cant <= 0) { notify('⚠️ Ingresa una cantidad mayor a 0'); return; }
+    if (!cant || cant <= 0) { notify('Ingresa una cantidad mayor a 0'); return; }
     await ejecutarEntrada(p.id, cant, 'Entrada rápida');
   } else if (idAj) {
     const p = PRODS.find(x => String(x.id) === String(idAj));
     if (!p) return;
-    const v = prompt(`📋 Conteo físico de "${p.nombre}" (Stock en sistema: ${p.stock}).\n¿Cuántas unidades hay físicamente?`, String(Math.max(0, p.stock)));
+    const v = prompt(`Conteo físico de "${p.nombre}" (Stock en sistema: ${p.stock}).\n¿Cuántas unidades hay físicamente?`, String(Math.max(0, p.stock)));
     if (v === null) return;
     const fisico = parseInt(v, 10);
-    if (Number.isNaN(fisico)) { notify('⚠️ Ingresa un número válido'); return; }
+    if (Number.isNaN(fisico)) { notify('Ingresa un número válido'); return; }
     await ejecutarAjuste(p.id, fisico, 'Conteo físico rápido');
   }
 };
@@ -348,8 +349,8 @@ async function ejecutarEntrada(prodId, cant, nota) {
     p_cantidad: Number(cant),
     p_nota: nota || null
   });
-  if (error) { notify('⚠️ Error: ' + error.message); return false; }
-  notify(`✅ Stock actualizado: ahora quedan ${data} u.`);
+  if (error) { notify('Error: ' + error.message); return false; }
+  notify(`Stock actualizado: ahora quedan ${data} u.`);
   await cargarTodo();
   return true;
 }
@@ -360,8 +361,8 @@ async function ejecutarAjuste(prodId, fisico, nota) {
     p_stock_fisico: Number(fisico),
     p_nota: nota || 'Conteo físico'
   });
-  if (error) { notify('⚠️ Error: ' + error.message); return false; }
-  notify(`✅ Conteo guardado: stock fijado en ${data} u.`);
+  if (error) { notify('Error: ' + error.message); return false; }
+  notify(`Conteo guardado: stock fijado en ${data} u.`);
   await cargarTodo();
   return true;
 }
@@ -370,7 +371,7 @@ $('btnEntrada').onclick = async () => {
   const prodId = $('entProd').value;
   const cant = parseInt($('entCant').value, 10);
   const nota = $('entNota').value.trim();
-  if (!prodId || !cant || cant <= 0) { notify('⚠️ Ingresa una cantidad válida mayor a 0'); return; }
+  if (!prodId || !cant || cant <= 0) { notify('Ingresa una cantidad válida mayor a 0'); return; }
   if (await ejecutarEntrada(prodId, cant, nota)) {
     $('entCant').value = '';
     $('entNota').value = '';
@@ -381,7 +382,7 @@ $('btnAjuste').onclick = async () => {
   const prodId = $('ajProd').value;
   const fisico = parseInt($('ajCant').value, 10);
   const nota = $('ajNota').value.trim();
-  if (!prodId || Number.isNaN(fisico)) { notify('⚠️ Indica cuántas unidades contaste físicamente'); return; }
+  if (!prodId || Number.isNaN(fisico)) { notify('Indica cuántas unidades contaste físicamente'); return; }
   if (await ejecutarAjuste(prodId, fisico, nota)) {
     $('ajCant').value = '';
     $('ajNota').value = '';
@@ -442,7 +443,7 @@ $('listaCarta').onclick = async e => {
   const visible_web = card.querySelector('[data-f="visible_web"]').checked;
   const controla_stock = card.querySelector('[data-f="controla_stock"]').checked;
 
-  if (Number.isNaN(precio) || precio < 0) { notify('⚠️ El precio no puede ser negativo'); return; }
+  if (Number.isNaN(precio) || precio < 0) { notify('El precio no puede ser negativo'); return; }
 
   e.target.disabled = true;
   e.target.textContent = 'Guardando…';
@@ -452,8 +453,8 @@ $('listaCarta').onclick = async e => {
   e.target.disabled = false;
   e.target.textContent = 'Guardar';
 
-  if (error) { notify('⚠️ No se pudo guardar: ' + error.message); return; }
-  notify('✅ Producto actualizado');
+  if (error) { notify('No se pudo guardar: ' + error.message); return; }
+  notify('Producto actualizado');
   await cargarTodo();
 };
 
@@ -472,7 +473,7 @@ async function cargarMovimientos() {
 
   const { data, error } = await q;
   if (error) {
-    $('listaMovs').innerHTML = `<p class="vacio">⚠️ Error cargando movimientos: ${esc(error.message)}</p>`;
+    $('listaMovs').innerHTML = `<p class="vacio">Error cargando movimientos: ${esc(error.message)}</p>`;
     return;
   }
   MOVS = data || [];

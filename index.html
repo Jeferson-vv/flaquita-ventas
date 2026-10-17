@@ -3,38 +3,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Sistema interno de registro de ventas de Chicharronería La Flaquita.">
-<title>La Flaquita · Registro Interno de Ventas</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#c2410c"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>La Flaquita - Ventas</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d4ed8"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{--bg:#fff8ee;--fg:#2b1d0e;--card:#fff;--ac:#c2410c;--mu:#8a7560;--bd:#ecdcc6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b130b;--fg:#f6e9d6;--card:#2a1d12;--ac:#fb923c;--mu:#b39b82;--bd:#43301f}}
-:root[data-theme="dark"]{--bg:#1b130b;--fg:#f6e9d6;--card:#2a1d12;--ac:#fb923c;--mu:#b39b82;--bd:#43301f}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Arial,sans-serif;padding:14px 16px;max-width:560px;margin:auto}
-h1{font-size:20px;margin:4px 0 10px}
-input,select{padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:16px;width:100%;box-sizing:border-box;margin:6px 0}
-.btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--ac);color:#fff;font-size:16px;font-weight:600;margin-top:6px}
+:root{--bg:#ffffff;--fg:#111827;--card:#ffffff;--ac:#1d4ed8;--mu:#4b5563;--bd:#d1d5db;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:14px 16px;max-width:560px;margin:auto}
+h1{font-size:20px;margin:4px 0 10px;color:var(--fg)}
+input,select{padding:12px;border-radius:8px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:16px;width:100%;box-sizing:border-box;margin:6px 0}
+input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
+.btn{width:100%;padding:14px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:16px;font-weight:600;margin-top:6px;cursor:pointer}
 .msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
 .top{display:flex;justify-content:space-between;align-items:center;color:var(--mu);font-size:13px;margin-bottom:8px}
-.total{background:var(--ac);color:#fff;border-radius:14px;padding:14px;text-align:center;font-size:34px;font-weight:700}
+.total{background:var(--ac);color:#fff;border-radius:10px;padding:14px;text-align:center;font-size:34px;font-weight:700}
 .total small{display:block;font-size:13px;font-weight:400;opacity:.9}
 .pago{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:15px}
 .pago select{margin:0;width:auto;flex:1}
-#mic{width:100%;margin:12px 0;padding:16px;font-size:18px;border-radius:14px;background:var(--card);color:var(--fg);border:2px solid var(--bd)}
-#mic.wait{border-color:#eab308;background:#eab30822}
-#mic.on{border-color:#16a34a;background:#16a34a22}
+#mic{width:100%;margin:12px 0;padding:14px;font-size:16px;font-weight:600;border-radius:8px;background:#f8fafc;color:var(--fg);border:2px solid var(--bd);cursor:pointer}
+#mic.wait{border-color:#2563eb;background:#eff6ff;color:#1e40af}
+#mic.on{border-color:#15803d;background:#f0fdf4;color:#166534}
 #heard{min-height:20px;color:var(--mu);font-size:14px;text-align:center;margin-bottom:8px}
 .quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .quick input{flex:3;width:auto;margin:0}
-.quick button,.sm{flex:1;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px}
+.quick button,.sm{flex:1;padding:10px;border-radius:8px;border:1px solid var(--bd);background:#f8fafc;color:var(--fg);font-size:14px;font-weight:500;cursor:pointer}
+.quick button:hover,.sm:hover{background:#eff6ff;border-color:var(--ac)}
 #rapidos button{flex:1 1 45%}
-nav{display:flex;gap:6px;margin-bottom:12px}nav button{flex:1;padding:10px 4px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px}nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+nav{display:flex;gap:6px;margin-bottom:12px}
+nav button{flex:1;padding:10px 4px;border-radius:8px;border:1px solid var(--bd);background:#f8fafc;color:var(--fg);font-size:14px;font-weight:600;cursor:pointer}
+nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:8px}
 .card.anul{opacity:.45}
 .vh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:14px}
-.kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.kpi div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}.kpi b{display:block;font-size:20px;color:var(--ac)}.kpi small{color:var(--mu)}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.kpi div{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px}.kpi b{display:block;font-size:20px;color:var(--ac)}.kpi small{color:var(--mu)}
 .card h3{margin:0 0 6px;font-size:15px}
 .br{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0}.br span{width:96px;color:var(--mu);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.br i{display:block;height:14px;background:var(--ac);border-radius:4px;min-width:2px}.br div{flex:1}.br b{min-width:60px;text-align:right}
-details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:6px}summary{display:flex;justify-content:space-between;cursor:pointer;font-weight:600}
+details{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:6px}summary{display:flex;justify-content:space-between;cursor:pointer;font-weight:600}
 .ln{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:var(--mu)}
 .vacio{text-align:center;color:var(--mu)}
 </style></head><body>
@@ -51,7 +53,7 @@ const CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 <script src="parser.js"></script>
 
-<h1>🍖 La Flaquita · Ventas</h1>
+<h1>La Flaquita · Ventas</h1>
 
 <section id="login" hidden>
   <form class="card" id="loginForm" onsubmit="return false">
@@ -70,14 +72,14 @@ const CONFIG = {
   <div class="top">
     <span id="quien"></span>
     <div style="display:flex;gap:6px;align-items:center">
-      <a id="linkAdmin" href="admin.html" class="sm" hidden style="flex:0 0 auto;padding:6px 10px;text-decoration:none">⚙️ Admin</a>
+      <a id="linkAdmin" href="admin.html" class="sm" hidden style="flex:0 0 auto;padding:6px 10px;text-decoration:none">Admin</a>
       <button class="sm" id="salir" style="flex:0 0 auto;padding:6px 12px">Salir</button>
     </div>
   </div>
   <nav>
-    <button id="t-hoy" class="a">🏠 Hoy</button>
-    <button id="t-hist">📅 Historial</button>
-    <button id="t-dash">📊 Dashboard</button>
+    <button id="t-hoy" class="a">Hoy</button>
+    <button id="t-hist">Historial</button>
+    <button id="t-dash">Dashboard</button>
   </nav>
 
   <div id="v-hoy">
@@ -91,7 +93,7 @@ const CONFIG = {
         <option value="transferencia">Transferencia</option>
       </select>
     </label>
-    <button id="mic">🎤 Activar micrófono</button>
+    <button id="mic">Activar micrófono</button>
     <div id="heard"></div>
     <div class="quick">
       <input id="dic" placeholder='Escribe o dicta: "dos chicharrones de 20 y una coca de 1 litro"'>
@@ -99,7 +101,7 @@ const CONFIG = {
     </div>
     <div class="quick" id="rapidos"></div>
     <div id="list"></div>
-    <div class="quick" style="margin-top:12px"><button class="sm" id="undo">↩ Anular última venta</button></div>
+    <div class="quick" style="margin-top:12px"><button class="sm" id="undo">Anular última venta</button></div>
   </div>
   <div id="v-hist" hidden></div>
   <div id="v-dash" hidden></div>
@@ -114,7 +116,7 @@ const hoyStr = () => new Date().toLocaleDateString('en-CA', LIMA);
 const diasAtras = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.toLocaleDateString('en-CA', LIMA); };
 const horaStr = iso => new Date(iso).toLocaleTimeString('es-PE', { ...LIMA, hour: '2-digit', minute: '2-digit' });
 const fdate = f => new Date(f + 'T12:00:00').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'short' });
-const CATEG = { chicharron: '🍖 Chicharrón', sarza: '🥣 Sarza', combinado: '🍽️ Combinados', bebida: '🥤 Bebidas', cerveza: '🍺 Cervezas', otro: 'Otros' };
+const CATEG = { chicharron: 'Chicharrón', sarza: 'Sarza', combinado: 'Combinados', bebida: 'Bebidas', cerveza: 'Cervezas', otro: 'Otros' };
 
 let sb = null, CAT = [], HOY = [], HIST = [];
 
@@ -148,14 +150,14 @@ async function cargarCarta() {
     const r2 = await sb.from('productos').select('id,nombre,categoria,precio').eq('activo', true).order('orden');
     data = r2.data; error = r2.error;
   }
-  if (error) { $('heard').textContent = '⚠️ Error cargando la carta: ' + error.message; return false; }
+  if (error) { $('heard').textContent = 'Error cargando la carta: ' + error.message; return false; }
   CAT = data || [];
   return true;
 }
 
 async function iniciarApp() {
   const { data: { user } } = await sb.auth.getUser();
-  $('quien').textContent = '👤 ' + (user ? user.email : '');
+  $('quien').textContent = user ? user.email : '';
   $('login').hidden = true; $('app').hidden = false;
   sb.rpc('es_admin').then(({ data }) => { if (data) $('linkAdmin').hidden = false; }).catch(() => {});
   if (!(await cargarCarta())) return;
@@ -185,7 +187,7 @@ async function cargarHoy() {
   const { data, error } = await sb.from('ventas')
     .select('id,hora,metodo_pago,total,estado,venta_detalles(cantidad,precio_unitario,productos(nombre))')
     .eq('fecha', hoyStr()).order('hora', { ascending: false });
-  if (error) { $('heard').textContent = '⚠️ Error leyendo ventas: ' + error.message; return; }
+  if (error) { $('heard').textContent = 'Error leyendo ventas: ' + error.message; return; }
   HOY = data; pintarHoy();
 }
 
@@ -204,7 +206,7 @@ async function guardar(items, rejects) {
     const p = CAT.find(x => x.nombre === it.name);
     return p ? { producto_id: p.id, cantidad: it.q, precio_unitario: it.price } : null;
   }).filter(Boolean);
-  if (!detalles.length) { $('heard').textContent = '❌ No anoté nada' + (rejects.length ? ': ' + rejects.join(', ') : ''); snd('err'); return; }
+  if (!detalles.length) { $('heard').textContent = 'No se anotó nada' + (rejects.length ? ': ' + rejects.join(', ') : ''); snd('err'); return; }
   try {
     const { data: id, error } = await sb.rpc('registrar_venta', { p_items: detalles, p_metodo_pago: $('metodo').value, p_canal: 'local' });
     if (error) throw error;
@@ -216,25 +218,25 @@ async function guardar(items, rejects) {
       vistos.add(it.name);
       const p = CAT.find(x => x.nombre === it.name);
       if (p && p.controla_stock) {
-        if (p.stock <= 0) avisosStock.push(`⚠️ Sin stock de ${p.nombre} (queda ${p.stock})`);
-        else if (p.stock <= (p.stock_minimo || 0)) avisosStock.push(`⚠️ Stock bajo de ${p.nombre} (quedan ${p.stock})`);
+        if (p.stock <= 0) avisosStock.push(`Sin stock de ${p.nombre} (queda ${p.stock})`);
+        else if (p.stock <= (p.stock_minimo || 0)) avisosStock.push(`Stock bajo de ${p.nombre} (quedan ${p.stock})`);
       }
     }
     const resumen = items.map(i => `${i.q}× ${i.name} (${money(i.q * i.price)})`).join(', ');
-    $('heard').textContent = `✅ Venta #${id}: ${resumen}`
-      + (avisosStock.length ? ' · ' + avisosStock.join(', ') : '')
-      + (rejects.length ? ` · ⚠️ NO anoté: ${rejects.join(', ')}` : '');
+    $('heard').textContent = `Venta #${id}: ${resumen}`
+      + (avisosStock.length ? ' · Aviso: ' + avisosStock.join(', ') : '')
+      + (rejects.length ? ` · No anoté: ${rejects.join(', ')}` : '');
     snd(rejects.length ? 'err' : 'ok');
     await cargarHoy();
   } catch (e) {
-    $('heard').textContent = '⚠️ No se guardó: ' + e.message;
+    $('heard').textContent = 'No se guardó: ' + e.message;
     snd('err');
   }
 }
 
 function anotar(txt) {
   const r = FlaquitaParser.parseVenta(txt, CAT);
-  if (!r.items.length) { $('heard').textContent = '❌ No entendí: "' + txt + '"' + (r.rejects.length ? ' · ' + r.rejects.join(', ') : ''); snd('err'); return; }
+  if (!r.items.length) { $('heard').textContent = 'No entendí: "' + txt + '"' + (r.rejects.length ? ' · ' + r.rejects.join(', ') : ''); snd('err'); return; }
   return guardar(r.items, r.rejects);
 }
 
@@ -257,8 +259,8 @@ $('undo').onclick = async () => {
   if (!v) { $('heard').textContent = 'No hay ventas válidas hoy.'; return; }
   if (!confirm(`¿Anular la venta de las ${horaStr(v.hora)} por ${money(v.total)}?`)) return;
   const { error } = await sb.from('ventas').update({ estado: 'anulada' }).eq('id', v.id);
-  if (error) { $('heard').textContent = '⚠️ No se pudo anular: ' + error.message; return; }
-  $('heard').textContent = '↩ Venta anulada (el stock descontado fue devuelto).';
+  if (error) { $('heard').textContent = 'No se pudo anular: ' + error.message; return; }
+  $('heard').textContent = 'Venta anulada (el stock descontado fue devuelto).';
   await cargarCarta();
   await cargarHoy();
 };
@@ -292,7 +294,7 @@ async function rHist() {
     return `<details><summary><span>${fdate(f)} · ${vs.length} ventas</span><span>${money(tot)}</span></summary>
       ${Object.entries(g).map(([n, o]) => `<div class="ln"><span>${o.q} × ${esc(n)}</span><span>${money(o.s)}</span></div>`).join('')}</details>`;
   }).join('') : '<p class="vacio">Aún no hay ventas.</p>') +
-  '<button class="sm" id="exp" style="width:100%;margin-top:10px">⬇ Exportar CSV</button>';
+  '<button class="sm" id="exp" style="width:100%;margin-top:10px">Exportar CSV</button>';
 }
 
 function exportar() {
@@ -352,7 +354,7 @@ document.addEventListener('click', e => { if (e.target.id === 'exp') exportar();
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec, active = false, rm = false, lock, vozIniciada = false;
 async function wake() { try { lock = await navigator.wakeLock.request('screen'); } catch (e) {} }
-function ui() { const m = $('mic'); m.className = active ? (rm ? 'on' : 'wait') : ''; m.textContent = !active ? '🎤 Activar micrófono' : rm ? '🟢 Registrando: di "salida"' : '🟡 En espera: di "ingresar"'; }
+function ui() { const m = $('mic'); m.className = active ? (rm ? 'on' : 'wait') : ''; m.textContent = !active ? 'Activar micrófono' : rm ? 'Registrando: di "salida"' : 'En espera: di "ingresar"'; }
 function setMode(v) { if (rm === v) return; rm = v; ui(); snd(v ? 'on' : 'off'); $('heard').textContent = v ? 'Registrando: di tus ventas. Di "salida" para parar.' : 'En espera: di "ingresar" para anotar.'; }
 function handle(t) {
   const n = FlaquitaParser.norm(t);
@@ -368,7 +370,7 @@ function startRec() {
   rec.onend = () => { if (active) setTimeout(() => { try { startRec(); } catch (e) {} }, 300); };
   rec.onerror = e => {
     if (e.error === 'no-speech' || e.error === 'aborted') return;
-    $('heard').textContent = '⚠️ Micrófono bloqueado (' + e.error + '). Usa la caja de texto y el 🎤 del teclado.';
+    $('heard').textContent = 'Micrófono bloqueado (' + e.error + '). Usa la caja de texto.';
     if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { active = false; rm = false; ui(); $('dic').focus(); }
   };
   rec.start();
@@ -385,7 +387,7 @@ function iniciarVoz() {
   if (!SR) return;
   active = true; ui(); wake();
   try { startRec(); } catch (e) { active = false; ui(); }
-  setTimeout(() => { ac(); if (AC && AC.state !== 'running' && !rm) $('heard').textContent = '🔇 Toca la pantalla una vez para activar los sonidos.'; }, 1500);
+  setTimeout(() => { ac(); if (AC && AC.state !== 'running' && !rm) $('heard').textContent = 'Toca la pantalla una vez para activar los sonidos.'; }, 1500);
   $('heard').textContent = 'En espera: di "ingresar" para anotar.';
 }
 
