@@ -39,9 +39,11 @@ nav{display:flex;gap:6px;margin-bottom:12px}
 nav button{flex:1;padding:10px 4px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:700;cursor:pointer}
 nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.card[data-card-vid]{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:pointer;transition:transform .15s,border-color .15s}
+#list,#list .card,#list .card *{-webkit-user-select:none !important;user-select:none !important;-webkit-touch-callout:none !important}
+#list .vh>b,#list .ln,#list .ln *{pointer-events:none}
+.card[data-card-vid]{position:relative;overflow:hidden;cursor:pointer;transition:transform .15s,border-color .15s}
 .card.pressing{border-color:#b91c1c;background:#fff1f2;transform:scale(0.99)}
-.card.pressing::after{content:"";position:absolute;left:0;bottom:0;height:4px;background:#b91c1c;animation:holdfill 1.5s linear forwards}
+.card.pressing::after{content:"";position:absolute;left:0;bottom:0;height:4px;background:#b91c1c;animation:holdfill 1.3s linear forwards}
 @keyframes holdfill{from{width:0}to{width:100%}}
 .card.anul{opacity:.5}
 .anul-bar{margin-top:8px;padding-top:8px;border-top:1.5px dashed #fca5a5;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:700;color:#b91c1c}
@@ -49,7 +51,7 @@ nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .anul-bar .btn-anular-item{flex:0 0 auto;background:#b91c1c;color:#fff;border-color:#b91c1c;padding:6px 12px}
 .anul-bar .btn-cancel-anular{flex:0 0 auto;padding:6px 10px}
 .vh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;font-size:14px;color:var(--fg)}
-.mp-sel{width:auto;margin:0;padding:4px 8px;font-size:13px;font-weight:700;border-radius:6px;border:1.5px solid var(--ac);background:#fdf2f8;color:var(--ac);cursor:pointer}
+.mp-sel{width:auto;margin:0;padding:4px 8px;font-size:13px;font-weight:700;border-radius:6px;border:1.5px solid var(--ac);background:#fdf2f8;color:var(--ac);cursor:pointer;pointer-events:auto}
 .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.kpi div{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px}.kpi b{display:block;font-size:20px;color:var(--ac)}.kpi small{color:var(--mu);font-weight:600}
 .card h3{margin:0 0 6px;font-size:15px;color:var(--blk)}
 .br{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0}.br span{width:96px;color:var(--fg);font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.br i{display:block;height:14px;background:var(--ac);border-radius:4px;min-width:2px}.br div{flex:1}.br b{min-width:60px;text-align:right;color:var(--blk)}
@@ -271,12 +273,13 @@ async function anularVentaPorId(vid) {
   await cargarHoy();
 }
 
-let pressTimer = null, pressCard = null, pressX = 0, pressY = 0;
+let pressTimer = null, pressCard = null, pressX = 0, pressY = 0, pressMoved = false;
 function limpiarPress() {
   if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
   if (pressCard) { pressCard.classList.remove('pressing'); pressCard = null; }
 }
 function mostrarBarraAnular(card) {
+  if (!card) return;
   card.classList.remove('pressing');
   $('list').querySelectorAll('.anul-bar').forEach(b => { b.hidden = true; });
   const bar = card.querySelector('.anul-bar');
@@ -296,17 +299,19 @@ function iniciarPress(e, x, y) {
   pressCard = card;
   pressX = x;
   pressY = y;
+  pressMoved = false;
   card.classList.add('pressing');
-  pressTimer = setTimeout(() => mostrarBarraAnular(card), 1500);
+  pressTimer = setTimeout(() => mostrarBarraAnular(card), 1300);
 }
 
+$('list').addEventListener('selectstart', e => e.preventDefault());
 $('list').addEventListener('mousedown', e => {
   if (e.button !== 0) return;
   iniciarPress(e, e.clientX, e.clientY);
 });
 $('list').addEventListener('mousemove', e => {
   if (!pressTimer) return;
-  if (Math.abs(e.clientX - pressX) > 20 || Math.abs(e.clientY - pressY) > 20) limpiarPress();
+  if (Math.abs(e.clientX - pressX) > 20 || Math.abs(e.clientY - pressY) > 20) { pressMoved = true; limpiarPress(); }
 });
 window.addEventListener('mouseup', limpiarPress);
 
@@ -316,14 +321,18 @@ $('list').addEventListener('touchstart', e => {
   iniciarPress(e, t.clientX, t.clientY);
 }, { passive: true });
 $('list').addEventListener('touchmove', e => {
-  if (!pressTimer) return;
+  if (!pressTimer && !pressCard) return;
   const t = e.touches && e.touches[0];
-  if (t && (Math.abs(t.clientX - pressX) > 20 || Math.abs(t.clientY - pressY) > 20)) limpiarPress();
+  if (t && (Math.abs(t.clientX - pressX) > 20 || Math.abs(t.clientY - pressY) > 20)) { pressMoved = true; limpiarPress(); }
 }, { passive: true });
 $('list').addEventListener('touchend', limpiarPress);
-$('list').addEventListener('touchcancel', limpiarPress);
 $('list').addEventListener('contextmenu', e => {
-  if (!e.target.closest('select, button') && e.target.closest('.card[data-card-vid]')) e.preventDefault();
+  if (e.target.closest('select, button')) return;
+  const card = e.target.closest('.card[data-card-vid]');
+  if (card) {
+    e.preventDefault();
+    if (!pressMoved && !pressTimer) mostrarBarraAnular(card);
+  }
 });
 
 $('list').addEventListener('click', e => {
@@ -631,7 +640,13 @@ function iniciarVoz() {
   $('heard').textContent = 'En espera: di "ingresar" para anotar.';
 }
 
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('serviceWorker' in navigator) {
+  let recargando = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!recargando) { recargando = true; location.reload(); }
+  });
+  navigator.serviceWorker.register('sw.js?v=22').then(r => r.update()).catch(() => {});
+}
 init();
 </script>
 </body></html>
