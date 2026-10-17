@@ -40,7 +40,8 @@ nav button{flex:1;padding:10px 4px;border-radius:8px;border:1.5px solid var(--bd
 nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .card.anul{opacity:.5}
-.vh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:14px;color:var(--fg)}
+.vh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;font-size:14px;color:var(--fg)}
+.mp-sel{width:auto;margin:0;padding:4px 8px;font-size:13px;font-weight:700;border-radius:6px;border:1.5px solid var(--ac);background:#fdf2f8;color:var(--ac);cursor:pointer}
 .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.kpi div{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px}.kpi b{display:block;font-size:20px;color:var(--ac)}.kpi small{color:var(--mu);font-weight:600}
 .card h3{margin:0 0 6px;font-size:15px;color:var(--blk)}
 .br{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0}.br span{width:96px;color:var(--fg);font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.br i{display:block;height:14px;background:var(--ac);border-radius:4px;min-width:2px}.br div{flex:1}.br b{min-width:60px;text-align:right;color:var(--blk)}
@@ -229,13 +230,40 @@ async function cargarHoy() {
 function pintarHoy() {
   const tot = HOY.filter(v => v.estado === 'valida').reduce((s, v) => s + Number(v.total), 0);
   $('tot').textContent = money(tot);
-  $('list').innerHTML = HOY.length ? HOY.map(v => `
+  $('list').innerHTML = HOY.length ? HOY.map(v => {
+    const controlMetodo = v.estado === 'valida'
+      ? `<select class="mp-sel" data-vid="${v.id}" title="Cambiar método de pago">${Object.entries(METODOS).map(([k, lbl]) => `<option value="${k}"${v.metodo_pago === k ? ' selected' : ''}>${esc(lbl)}</option>`).join('')}</select>`
+      : `<span>${esc(METODOS[v.metodo_pago] || v.metodo_pago)} · ANULADA</span>`;
+    return `
     <div class="card ${v.estado === 'anulada' ? 'anul' : ''}">
-      <div class="vh"><b>${horaStr(v.hora)}</b><span>${esc(METODOS[v.metodo_pago] || v.metodo_pago)}${v.estado === 'anulada' ? ' · ANULADA' : ''}</span><b>${money(v.total)}</b></div>
+      <div class="vh"><b>${horaStr(v.hora)}</b>${controlMetodo}<b>${money(v.total)}</b></div>
       ${v.venta_detalles.map(d => `<div class="ln"><span>${d.cantidad} × ${esc(d.productos.nombre)}</span><span>${money(d.cantidad * d.precio_unitario)}</span></div>`).join('')}
-    </div>`).join('') : '<p class="vacio">Aún no hay ventas hoy.</p>';
+    </div>`;
+  }).join('') : '<p class="vacio">Aún no hay ventas hoy.</p>';
   if (!$('cierreBox').hidden) pintarCierreHoy();
 }
+
+$('list').addEventListener('change', async e => {
+  const sel = e.target.closest('.mp-sel');
+  if (!sel) return;
+  const vid = Number(sel.dataset.vid);
+  const nuevo = sel.value;
+  const v = HOY.find(x => x.id === vid);
+  const anterior = v ? v.metodo_pago : null;
+  sel.disabled = true;
+  const { error } = await sb.from('ventas').update({ metodo_pago: nuevo }).eq('id', vid);
+  sel.disabled = false;
+  if (error) {
+    if (anterior) sel.value = anterior;
+    $('heard').textContent = 'No se pudo cambiar el método de pago: ' + error.message;
+    snd('err');
+    return;
+  }
+  if (v) v.metodo_pago = nuevo;
+  if (!$('cierreBox').hidden) pintarCierreHoy();
+  $('heard').textContent = `Pago cambiado a ${METODOS[nuevo] || nuevo}` + (v ? ` (${horaStr(v.hora)} · ${money(v.total)})` : '');
+  snd('ok');
+});
 
 function porMetodo(vs) {
   const m = { efectivo: 0, yape: 0, plin: 0, tarjeta: 0, transferencia: 0 };
