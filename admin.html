@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Administración · La Flaquita</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#c2410c"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{--bg:#fff8ee;--fg:#2b1d0e;--card:#fff;--ac:#c2410c;--mu:#8a7560;--bd:#ecdcc6;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b130b;--fg:#f6e9d6;--card:#2a1d12;--ac:#fb923c;--mu:#b39b82;--bd:#43301f;--ok:#4ade80;--warn:#fbbf24;--err:#f87171}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,Arial,sans-serif;padding:14px 16px;max-width:760px;margin:auto}
+h1{font-size:20px;margin:4px 0 10px;display:flex;justify-content:space-between;align-items:center}
+h1 a{font-size:13px;color:var(--ac);text-decoration:none;border:1px solid var(--bd);background:var(--card);padding:6px 10px;border-radius:8px;font-weight:600}
+input,select{padding:10px 12px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;width:100%;box-sizing:border-box;margin:4px 0}
+input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac)}
+.btn{width:100%;padding:12px 14px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
+.sm{padding:8px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:13px;cursor:pointer;font-weight:600}
+.sm.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+.msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--mu);font-size:13px;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+nav{display:flex;gap:6px;margin-bottom:12px}
+nav button{flex:1;padding:10px 6px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:600;cursor:pointer}
+nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:10px}
+.card h3{margin:0 0 8px;font-size:15px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
+.kpi div{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:10px}
+.kpi b{display:block;font-size:20px;color:var(--ac)}
+.kpi small{color:var(--mu);font-size:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--bd)}
+.row:last-child{border-bottom:0}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700}
+.b-ok{background:#15803d22;color:var(--ok)}
+.b-warn{background:#b4530922;color:var(--warn)}
+.b-err{background:#b91c1c22;color:var(--err)}
+.b-info{background:#c2410c22;color:var(--ac)}
+.p-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.p-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--mu)}
+.p-controls label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.p-controls input[type="number"]{width:86px;padding:6px 8px;font-size:14px;margin:0}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.filters > *{flex:1;min-width:140px;margin:0}
+.vacio{text-align:center;color:var(--mu);padding:16px 0}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.25);z-index:99}
+</style></head><body>
+
+<script>
+const CONFIG = {
+  url: 'https://tvjmvjerjddfefiocfwp.supabase.co',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2am12amVyamRkZmVmaW9jZndwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyNTczMDIsImV4cCI6MjEwNzgzMzMwMn0.Kpx0JL42FEzb2VMqwRSAdxJT6nkQhkXoCfI0B3ruB6I'
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
+
+<h1>
+  <span>⚙️ Admin · La Flaquita</span>
+  <a href="index.html">← Ir a Ventas</a>
+</h1>
+
+<section id="login" hidden>
+  <div class="card">
+    <h3>Ingreso de Administrador</h3>
+    <input id="email" type="email" placeholder="Correo del administrador" autocomplete="username">
+    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
+    <button class="btn" id="entrar">Entrar</button>
+    <p class="msg" id="loginMsg"></p>
+  </div>
+</section>
+
+<section id="denegado" hidden>
+  <div class="card">
+    <h3>⛔ Acceso solo para el administrador</h3>
+    <p id="denegadoMsg" style="font-size:14px;line-height:1.5;color:var(--mu)"></p>
+    <button class="sm" id="salirDenegado">Cerrar sesión e ingresar con otra cuenta</button>
+  </div>
+</section>
+
+<section id="app" hidden>
+  <div class="top">
+    <span id="quien"></span>
+    <div style="display:flex;gap:6px">
+      <button class="sm" id="refrescar">🔄 Actualizar</button>
+      <button class="sm" id="salir">Salir</button>
+    </div>
+  </div>
+
+  <nav>
+    <button id="t-stock" class="a">📦 Stock y Entradas</button>
+    <button id="t-carta">🍽️ Carta y Precios</button>
+    <button id="t-movs">🕓 Movimientos</button>
+  </nav>
+
+  <!-- TAB 1: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO -->
+  <div id="v-stock">
+    <div class="kpi" id="stockKpi"></div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>➕ Registrar entrada (compra)</h3>
+        <label style="font-size:13px;color:var(--mu)">Producto
+          <select id="entProd"></select>
+        </label>
+        <div style="display:flex;gap:8px">
+          <label style="flex:1;font-size:13px;color:var(--mu)">Cantidad que entra
+            <input id="entCant" type="number" min="1" step="1" placeholder="Ej: 24">
+          </label>
+          <label style="flex:2;font-size:13px;color:var(--mu)">Nota (opcional)
+            <input id="entNota" type="text" placeholder="Ej: 2 cajas proveedor">
+          </label>
+        </div>
+        <button class="btn" id="btnEntrada">Sumar al stock</button>
+      </div>
+
+      <div class="card">
+        <h3>📋 Conteo físico (ajuste)</h3>
+        <label style="font-size:13px;color:var(--mu)">Producto
+          <select id="ajProd"></select>
+        </label>
+        <div style="display:flex;gap:8px">
+          <label style="flex:1;font-size:13px;color:var(--mu)">Stock real contado
+            <input id="ajCant" type="number" step="1" placeholder="Ej: 15">
+          </label>
+          <label style="flex:2;font-size:13px;color:var(--mu)">Motivo / Nota
+            <input id="ajNota" type="text" placeholder="Conteo físico">
+          </label>
+        </div>
+        <button class="btn" id="btnAjuste">Guardar conteo físico</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <h3 style="margin:0">Inventario de productos con control de stock</h3>
+        <select id="filtroStock" style="width:auto;margin:0;padding:6px 10px;font-size:13px">
+          <option value="todos">Todos con control de stock</option>
+          <option value="alertas">⚠️ Solo alertas (bajo o sin stock)</option>
+        </select>
+      </div>
+      <div id="listaStock"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: PRECIOS, PRODUCTOS ACTIVOS Y CONFIGURACIÓN DE STOCK -->
+  <div id="v-carta" hidden>
+    <div class="card" style="font-size:13px;color:var(--mu)">
+      💡 <b>Cuidado:</b> Los nombres de los productos no se cambian para que el micrófono y <code>parser.js</code> los sigan reconociendo. Aquí puedes cambiar precios, activar/desactivar productos y elegir cuáles descuentan stock.
+    </div>
+    <div class="filters">
+      <input id="busqCarta" placeholder="🔍 Buscar producto…">
+      <select id="catCarta">
+        <option value="">Todas las categorías</option>
+        <option value="chicharron">🍖 Chicharrón</option>
+        <option value="combinado">🍽️ Combinados</option>
+        <option value="sarza">🥣 Sarza</option>
+        <option value="bebida">🥤 Bebidas</option>
+        <option value="cerveza">🍺 Cervezas</option>
+        <option value="otro">Otros</option>
+      </select>
+    </div>
+    <div id="listaCarta"></div>
+  </div>
+
+  <!-- TAB 3: ÚLTIMOS MOVIMIENTOS DE STOCK -->
+  <div id="v-movs" hidden>
+    <div class="filters">
+      <select id="movProd"><option value="">Todos los productos</option></select>
+      <select id="movTipo">
+        <option value="">Todos los tipos</option>
+        <option value="entrada">➕ Entradas</option>
+        <option value="venta">🛒 Ventas</option>
+        <option value="anulacion">↩ Anulaciones</option>
+        <option value="ajuste">📋 Conteos / Ajustes</option>
+      </select>
+    </div>
+    <div class="card" id="listaMovs"></div>
+  </div>
+</section>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = n => 'S/ ' + Number(n || 0).toFixed(2);
+const LIMA = { timeZone: 'America/Lima' };
+const fechaHoraStr = iso => new Date(iso).toLocaleString('es-PE', { ...LIMA, day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+const CATEG = { chicharron: '🍖 Chicharrón', sarza: '🥣 Sarza', combinado: '🍽️ Combinados', bebida: '🥤 Bebidas', cerveza: '🍺 Cervezas', otro: 'Otros' };
+const TIPO_BADGE = {
+  entrada:   ['➕ Entrada', 'b-ok'],
+  venta:     ['🛒 Venta', 'b-info'],
+  anulacion: ['↩ Anulación', 'b-warn'],
+  ajuste:    ['📋 Conteo', 'b-warn']
+};
+
+let sb = null, PRODS = [], MOVS = [], tabActual = 'stock', toastTimer = null;
+
+function notify(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+}
+
+function setMsg(t) { $('loginMsg').textContent = t; }
+
+async function entrar() {
+  setMsg('Verificando acceso…');
+  const { error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pass').value });
+  if (error) setMsg('No se pudo ingresar: ' + error.message);
+  else await verificarYEntrar();
+}
+
+async function verificarYEntrar() {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { $('login').hidden = false; $('app').hidden = true; $('denegado').hidden = true; return; }
+
+  const { data: isAdmin, error } = await sb.rpc('es_admin');
+  if (error) {
+    $('login').hidden = true;
+    $('denegado').hidden = false;
+    $('denegadoMsg').innerHTML = `No se pudo verificar permisos de administrador (<code>${esc(error.message)}</code>).<br><br>Asegúrate de haber ejecutado <b>supabase/inventario.sql</b> en el SQL Editor de Supabase.`;
+    return;
+  }
+
+  if (!isAdmin) {
+    $('login').hidden = true;
+    $('app').hidden = true;
+    $('denegado').hidden = false;
+    $('denegadoMsg').innerHTML = `Has ingresado como <b>${esc(user.email)}</b>, pero este correo no está en la tabla <code>administradores</code>.<br><br>Solo el administrador puede cambiar precios y ajustar stock.`;
+    return;
+  }
+
+  $('quien').textContent = '🔑 Admin: ' + user.email;
+  $('login').hidden = true;
+  $('denegado').hidden = true;
+  $('app').hidden = false;
+  await cargarTodo();
+}
+
+async function cargarTodo() {
+  const { data, error } = await sb.from('productos')
+    .select('id,nombre,categoria,precio,activo,visible_web,orden,controla_stock,stock,stock_minimo')
+    .order('orden');
+  if (error) {
+    notify('⚠️ Error leyendo productos: ' + error.message);
+    return;
+  }
+  PRODS = data || [];
+  pintarSelectoresStock();
+  pintarStock();
+  pintarCarta();
+  if (tabActual === 'movs') await cargarMovimientos();
+}
+
+function pintarSelectoresStock() {
+  const conStock = PRODS.filter(p => p.controla_stock);
+  const lista = conStock.length ? conStock : PRODS;
+  const prevEnt = $('entProd').value;
+  const prevAj = $('ajProd').value;
+  const prevMov = $('movProd').value;
+
+  const opts = lista.map(p => `<option value="${p.id}">${esc(p.nombre)} (Stock: ${p.stock})</option>`).join('');
+  $('entProd').innerHTML = opts;
+  $('ajProd').innerHTML = opts;
+  $('movProd').innerHTML = '<option value="">Todos los productos</option>' +
+    PRODS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+
+  if (prevEnt && lista.some(p => String(p.id) === prevEnt)) $('entProd').value = prevEnt;
+  if (prevAj && lista.some(p => String(p.id) === prevAj)) $('ajProd').value = prevAj;
+  if (prevMov) $('movProd').value = prevMov;
+}
+
+function estadoStockBadge(p) {
+  if (p.stock <= 0) return `<span class="badge b-err">Sin stock (${p.stock})</span>`;
+  if (p.stock <= p.stock_minimo) return `<span class="badge b-warn">Bajo (${p.stock} / mín ${p.stock_minimo})</span>`;
+  return `<span class="badge b-ok">${p.stock} u.</span>`;
+}
+
+function pintarStock() {
+  const ctrl = PRODS.filter(p => p.controla_stock);
+  const agotados = ctrl.filter(p => p.stock <= 0).length;
+  const bajos = ctrl.filter(p => p.stock > 0 && p.stock <= p.stock_minimo).length;
+  const ok = ctrl.length - agotados - bajos;
+
+  $('stockKpi').innerHTML = `
+    <div><small>Con control de stock</small><b>${ctrl.length}</b></div>
+    <div><small>Stock OK</small><b style="color:var(--ok)">${ok}</b></div>
+    <div><small>Stock bajo</small><b style="color:var(--warn)">${bajos}</b></div>
+    <div><small>Sin stock (≤ 0)</small><b style="color:var(--err)">${agotados}</b></div>
+  `;
+
+  const modo = $('filtroStock').value;
+  const mostrar = ctrl.filter(p => modo === 'alertas' ? p.stock <= p.stock_minimo : true);
+
+  if (!mostrar.length) {
+    $('listaStock').innerHTML = `<p class="vacio">${modo === 'alertas' ? '🎉 No hay productos con stock bajo o agotado.' : 'No hay productos con control de stock activo. Actívalo en "Carta y Precios".'}</p>`;
+    return;
+  }
+
+  $('listaStock').innerHTML = mostrar.map(p => `
+    <div class="row">
+      <div>
+        <b>${esc(p.nombre)}</b>
+        <div style="font-size:12px;color:var(--mu)">${esc(CATEG[p.categoria] || p.categoria)} · ${money(p.precio)} · Mínimo: ${p.stock_minimo}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        ${estadoStockBadge(p)}
+        <button class="sm" data-fast-in="${p.id}">+ Entrada</button>
+        <button class="sm" data-fast-aj="${p.id}">Conteo</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+$('filtroStock').onchange = pintarStock;
+
+$('listaStock').onclick = async e => {
+  const idIn = e.target.dataset && e.target.dataset.fastIn;
+  const idAj = e.target.dataset && e.target.dataset.fastAj;
+  if (idIn) {
+    const p = PRODS.find(x => String(x.id) === String(idIn));
+    if (!p) return;
+    const v = prompt(`➕ Entrada de "${p.nombre}" (Stock actual: ${p.stock}).\n¿Cuántas unidades ingresan?`, '12');
+    if (v === null) return;
+    const cant = parseInt(v, 10);
+    if (!cant || cant <= 0) { notify('⚠️ Ingresa una cantidad mayor a 0'); return; }
+    await ejecutarEntrada(p.id, cant, 'Entrada rápida');
+  } else if (idAj) {
+    const p = PRODS.find(x => String(x.id) === String(idAj));
+    if (!p) return;
+    const v = prompt(`📋 Conteo físico de "${p.nombre}" (Stock en sistema: ${p.stock}).\n¿Cuántas unidades hay físicamente?`, String(Math.max(0, p.stock)));
+    if (v === null) return;
+    const fisico = parseInt(v, 10);
+    if (Number.isNaN(fisico)) { notify('⚠️ Ingresa un número válido'); return; }
+    await ejecutarAjuste(p.id, fisico, 'Conteo físico rápido');
+  }
+};
+
+async function ejecutarEntrada(prodId, cant, nota) {
+  const { data, error } = await sb.rpc('aplicar_stock', {
+    p_producto_id: Number(prodId),
+    p_cantidad: Number(cant),
+    p_nota: nota || null
+  });
+  if (error) { notify('⚠️ Error: ' + error.message); return false; }
+  notify(`✅ Stock actualizado: ahora quedan ${data} u.`);
+  await cargarTodo();
+  return true;
+}
+
+async function ejecutarAjuste(prodId, fisico, nota) {
+  const { data, error } = await sb.rpc('ajustar_stock', {
+    p_producto_id: Number(prodId),
+    p_stock_fisico: Number(fisico),
+    p_nota: nota || 'Conteo físico'
+  });
+  if (error) { notify('⚠️ Error: ' + error.message); return false; }
+  notify(`✅ Conteo guardado: stock fijado en ${data} u.`);
+  await cargarTodo();
+  return true;
+}
+
+$('btnEntrada').onclick = async () => {
+  const prodId = $('entProd').value;
+  const cant = parseInt($('entCant').value, 10);
+  const nota = $('entNota').value.trim();
+  if (!prodId || !cant || cant <= 0) { notify('⚠️ Ingresa una cantidad válida mayor a 0'); return; }
+  if (await ejecutarEntrada(prodId, cant, nota)) {
+    $('entCant').value = '';
+    $('entNota').value = '';
+  }
+};
+
+$('btnAjuste').onclick = async () => {
+  const prodId = $('ajProd').value;
+  const fisico = parseInt($('ajCant').value, 10);
+  const nota = $('ajNota').value.trim();
+  if (!prodId || Number.isNaN(fisico)) { notify('⚠️ Indica cuántas unidades contaste físicamente'); return; }
+  if (await ejecutarAjuste(prodId, fisico, nota)) {
+    $('ajCant').value = '';
+    $('ajNota').value = '';
+  }
+};
+
+/* ---------- TAB 2: CARTA Y PRECIOS ---------- */
+function pintarCarta() {
+  const q = ($('busqCarta').value || '').toLowerCase().trim();
+  const cat = $('catCarta').value;
+  const filtrados = PRODS.filter(p => {
+    if (cat && p.categoria !== cat) return false;
+    if (q && !p.nombre.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (!filtrados.length) {
+    $('listaCarta').innerHTML = '<p class="vacio">No hay productos que coincidan con el filtro.</p>';
+    return;
+  }
+
+  $('listaCarta').innerHTML = filtrados.map(p => `
+    <div class="card" data-prod-card="${p.id}" style="${p.activo ? '' : 'opacity:.6'}">
+      <div class="p-grid">
+        <div>
+          <b>${esc(p.nombre)}</b>
+          <div style="font-size:12px;color:var(--mu)">${esc(CATEG[p.categoria] || p.categoria)} · Stock actual: <b>${p.stock}</b></div>
+        </div>
+        <button class="sm pri" data-save="${p.id}">Guardar</button>
+      </div>
+      <div class="p-controls">
+        <label>Precio S/
+          <input type="number" step="0.50" min="0" data-f="precio" value="${Number(p.precio).toFixed(2)}">
+        </label>
+        <label>Stock mín.
+          <input type="number" step="1" min="0" data-f="stock_minimo" value="${p.stock_minimo}">
+        </label>
+        <label><input type="checkbox" data-f="activo" ${p.activo ? 'checked' : ''}> Activo (en venta)</label>
+        <label><input type="checkbox" data-f="visible_web" ${p.visible_web ? 'checked' : ''}> Visible web</label>
+        <label><input type="checkbox" data-f="controla_stock" ${p.controla_stock ? 'checked' : ''}> Controla stock</label>
+      </div>
+    </div>
+  `).join('');
+}
+
+$('busqCarta').oninput = pintarCarta;
+$('catCarta').onchange = pintarCarta;
+
+$('listaCarta').onclick = async e => {
+  const id = e.target.dataset && e.target.dataset.save;
+  if (!id) return;
+  const card = document.querySelector(`[data-prod-card="${id}"]`);
+  if (!card) return;
+
+  const precio = parseFloat(card.querySelector('[data-f="precio"]').value);
+  const stock_minimo = parseInt(card.querySelector('[data-f="stock_minimo"]').value, 10) || 0;
+  const activo = card.querySelector('[data-f="activo"]').checked;
+  const visible_web = card.querySelector('[data-f="visible_web"]').checked;
+  const controla_stock = card.querySelector('[data-f="controla_stock"]').checked;
+
+  if (Number.isNaN(precio) || precio < 0) { notify('⚠️ El precio no puede ser negativo'); return; }
+
+  e.target.disabled = true;
+  e.target.textContent = 'Guardando…';
+  const { error } = await sb.from('productos')
+    .update({ precio, stock_minimo, activo, visible_web, controla_stock })
+    .eq('id', Number(id));
+  e.target.disabled = false;
+  e.target.textContent = 'Guardar';
+
+  if (error) { notify('⚠️ No se pudo guardar: ' + error.message); return; }
+  notify('✅ Producto actualizado');
+  await cargarTodo();
+};
+
+/* ---------- TAB 3: ÚLTIMOS MOVIMIENTOS ---------- */
+async function cargarMovimientos() {
+  $('listaMovs').innerHTML = '<p class="vacio">Cargando movimientos…</p>';
+  let q = sb.from('stock_movimientos')
+    .select('id,producto_id,tipo,cantidad,stock_antes,stock_despues,venta_id,nota,creado_en,productos(nombre)')
+    .order('creado_en', { ascending: false })
+    .limit(100);
+
+  const fProd = $('movProd').value;
+  const fTipo = $('movTipo').value;
+  if (fProd) q = q.eq('producto_id', Number(fProd));
+  if (fTipo) q = q.eq('tipo', fTipo);
+
+  const { data, error } = await q;
+  if (error) {
+    $('listaMovs').innerHTML = `<p class="vacio">⚠️ Error cargando movimientos: ${esc(error.message)}</p>`;
+    return;
+  }
+  MOVS = data || [];
+  if (!MOVS.length) {
+    $('listaMovs').innerHTML = '<p class="vacio">Aún no hay movimientos de stock registrados.</p>';
+    return;
+  }
+
+  $('listaMovs').innerHTML = MOVS.map(m => {
+    const [label, cls] = TIPO_BADGE[m.tipo] || [m.tipo, 'b-info'];
+    const signo = m.cantidad > 0 ? '+' + m.cantidad : String(m.cantidad);
+    return `
+      <div class="row">
+        <div>
+          <b>${esc(m.productos ? m.productos.nombre : '#' + m.producto_id)}</b>
+          <span class="badge ${cls}" style="margin-left:6px">${label}</span>
+          <div style="font-size:12px;color:var(--mu)">${fechaHoraStr(m.creado_en)}${m.nota ? ' · ' + esc(m.nota) : ''}</div>
+        </div>
+        <div style="text-align:right">
+          <b style="font-size:15px;color:${m.cantidad > 0 ? 'var(--ok)' : (m.cantidad < 0 ? 'var(--err)' : 'var(--fg)')}">${signo}</b>
+          <div style="font-size:12px;color:var(--mu)">${m.stock_antes} → <b>${m.stock_despues}</b></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+$('movProd').onchange = cargarMovimientos;
+$('movTipo').onchange = cargarMovimientos;
+
+function showTab(t) {
+  tabActual = t;
+  ['stock', 'carta', 'movs'].forEach(k => {
+    $('v-' + k).hidden = k !== t;
+    $('t-' + k).classList.toggle('a', k === t);
+  });
+  if (t === 'movs') cargarMovimientos();
+}
+
+$('t-stock').onclick = () => showTab('stock');
+$('t-carta').onclick = () => showTab('carta');
+$('t-movs').onclick = () => showTab('movs');
+$('refrescar').onclick = cargarTodo;
+
+const cerrarSesion = async () => { if (sb) await sb.auth.signOut(); location.reload(); };
+$('salir').onclick = cerrarSesion;
+$('salirDenegado').onclick = cerrarSesion;
+
+async function init() {
+  $('entrar').onclick = entrar;
+  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+  sb = supabase.createClient(CONFIG.url, CONFIG.key);
+  const { data } = await sb.auth.getSession();
+  if (data.session) await verificarYEntrar();
+  else $('login').hidden = false;
+}
+
+init();
+</script>
+</body></html>

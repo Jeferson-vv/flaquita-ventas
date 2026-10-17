@@ -62,7 +62,13 @@ const CONFIG = {
 </section>
 
 <section id="app" hidden>
-  <div class="top"><span id="quien"></span><button class="sm" id="salir" style="flex:0 0 auto;padding:6px 12px">Salir</button></div>
+  <div class="top">
+    <span id="quien"></span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <a id="linkAdmin" href="admin.html" class="sm" hidden style="flex:0 0 auto;padding:6px 10px;text-decoration:none">⚙️ Admin</a>
+      <button class="sm" id="salir" style="flex:0 0 auto;padding:6px 12px">Salir</button>
+    </div>
+  </div>
   <nav>
     <button id="t-hoy" class="a">🏠 Hoy</button>
     <button id="t-hist">📅 Historial</button>
@@ -129,13 +135,25 @@ async function entrar() {
   else await iniciarApp();
 }
 
+async function cargarCarta() {
+  let { data, error } = await sb.from('productos')
+    .select('id,nombre,categoria,precio,controla_stock,stock,stock_minimo')
+    .eq('activo', true).order('orden');
+  if (error) {
+    const r2 = await sb.from('productos').select('id,nombre,categoria,precio').eq('activo', true).order('orden');
+    data = r2.data; error = r2.error;
+  }
+  if (error) { $('heard').textContent = '⚠️ Error cargando la carta: ' + error.message; return false; }
+  CAT = data || [];
+  return true;
+}
+
 async function iniciarApp() {
   const { data: { user } } = await sb.auth.getUser();
   $('quien').textContent = '👤 ' + (user ? user.email : '');
   $('login').hidden = true; $('app').hidden = false;
-  const { data, error } = await sb.from('productos').select('id,nombre,categoria,precio').eq('activo', true).order('orden');
-  if (error) { $('heard').textContent = '⚠️ Error cargando la carta: ' + error.message; return; }
-  CAT = data;
+  sb.rpc('es_admin').then(({ data }) => { if (data) $('linkAdmin').hidden = false; }).catch(() => {});
+  if (!(await cargarCarta())) return;
   pintarRapidos();
   await cargarHoy();
   iniciarVoz();
@@ -185,8 +203,22 @@ async function guardar(items, rejects) {
   try {
     const { data: id, error } = await sb.rpc('registrar_venta', { p_items: detalles, p_metodo_pago: $('metodo').value, p_canal: 'local' });
     if (error) throw error;
+    await cargarCarta();
+    const avisosStock = [];
+    const vistos = new Set();
+    for (const it of items) {
+      if (vistos.has(it.name)) continue;
+      vistos.add(it.name);
+      const p = CAT.find(x => x.nombre === it.name);
+      if (p && p.controla_stock) {
+        if (p.stock <= 0) avisosStock.push(`⚠️ Sin stock de ${p.nombre} (queda ${p.stock})`);
+        else if (p.stock <= (p.stock_minimo || 0)) avisosStock.push(`⚠️ Stock bajo de ${p.nombre} (quedan ${p.stock})`);
+      }
+    }
     const resumen = items.map(i => `${i.q}× ${i.name} (${money(i.q * i.price)})`).join(', ');
-    $('heard').textContent = `✅ Venta #${id}: ${resumen}` + (rejects.length ? ` · ⚠️ NO anoté: ${rejects.join(', ')}` : '');
+    $('heard').textContent = `✅ Venta #${id}: ${resumen}`
+      + (avisosStock.length ? ' · ' + avisosStock.join(', ') : '')
+      + (rejects.length ? ` · ⚠️ NO anoté: ${rejects.join(', ')}` : '');
     snd(rejects.length ? 'err' : 'ok');
     await cargarHoy();
   } catch (e) {
@@ -221,7 +253,8 @@ $('undo').onclick = async () => {
   if (!confirm(`¿Anular la venta de las ${horaStr(v.hora)} por ${money(v.total)}?`)) return;
   const { error } = await sb.from('ventas').update({ estado: 'anulada' }).eq('id', v.id);
   if (error) { $('heard').textContent = '⚠️ No se pudo anular: ' + error.message; return; }
-  $('heard').textContent = '↩ Venta anulada (queda registrada como anulada).';
+  $('heard').textContent = '↩ Venta anulada (el stock descontado fue devuelto).';
+  await cargarCarta();
   await cargarHoy();
 };
 
