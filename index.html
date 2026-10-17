@@ -4,10 +4,10 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Sistema interno de registro de ventas de Chicharronería La Flaquita.">
 <title>La Flaquita - Ventas</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d4ed8"><link rel="icon" href="logo.webp"><link rel="apple-touch-icon" href="logo.webp">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#be185d"><link rel="icon" href="logo.webp"><link rel="apple-touch-icon" href="logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f2ecee;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#1d4ed8;--mu:#3f3f46;--bd:#d8cfd4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#ead6de;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#be185d;--mu:#3f3f46;--bd:#cdb3bf;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:12px 16px;max-width:560px;margin:auto}
 h1{margin:2px 0 12px;padding:0 10px;height:78px;background:#000;border-radius:12px;overflow:hidden;border:2px solid var(--blk);border-bottom:3px solid #ec4899;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;gap:6px}
 h1 .logo-circle{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #fbcfe8;flex-shrink:0;z-index:2}
@@ -20,12 +20,12 @@ input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 .top .acciones{display:flex;gap:8px;align-items:center;flex-shrink:0}
 .top .sm{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;text-decoration:none;line-height:1.2}
 .top .sm[hidden]{display:none !important}
-.total{background:var(--blk);color:#fff;border-radius:10px;padding:14px;text-align:center;font-size:34px;font-weight:700;border-bottom:4px solid var(--ac)}
+.total{background:var(--blk);color:#fff;border-radius:10px;padding:14px;text-align:center;font-size:34px;font-weight:700;border-bottom:4px solid #ec4899}
 .total small{display:block;font-size:13px;font-weight:400;opacity:.85}
 .pago{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:15px;font-weight:600}
 .pago select{margin:0;width:auto;flex:1}
 #mic{width:100%;margin:12px 0;padding:14px;font-size:16px;font-weight:700;border-radius:8px;background:var(--card);color:var(--fg);border:2px solid var(--blk);cursor:pointer}
-#mic.wait{border-color:var(--ac);background:#dbeafe;color:#1e3a8a}
+#mic.wait{border-color:var(--ac);background:#fce7f3;color:#9d174d}
 #mic.on{border-color:#15803d;background:#dcfce7;color:#14532d}
 #heard{min-height:20px;color:var(--fg);font-weight:500;font-size:14px;text-align:center;margin-bottom:8px}
 .quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
@@ -260,7 +260,7 @@ function pintarCierreHoy() {
     <div style="font-size:13px;color:var(--mu);margin-bottom:8px">
       Ventas válidas: <b>${validas.length}</b>${anuladas ? ` · Anuladas: <b>${anuladas}</b>` : ''}
     </div>
-    <div style="background:#f8fafc;border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:10px">
+    <div style="background:#fdf2f8;border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:10px">
       <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--blk)">Desglose por método de pago</div>
       ${filasMetodo}
       <div class="ln" style="border-top:1.5px solid var(--blk);margin-top:6px;padding-top:6px;color:var(--blk);font-weight:700;font-size:15px">
