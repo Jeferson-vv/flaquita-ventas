@@ -11,7 +11,9 @@
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:12px 16px;max-width:560px;margin:auto}
 h1{margin:2px 0 12px;padding:0 10px;height:78px;background:#000;border-radius:12px;overflow:hidden;border:2px solid var(--blk);border-bottom:3px solid #ec4899;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;gap:6px}
 h1 .logo-circle{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #fbcfe8;flex-shrink:0;z-index:2}
-h1 .banner-img{flex:1;min-width:0;height:78px;object-fit:cover;object-position:center 48%;display:block;background:#000}
+h1 .banner-wrap{flex:1;min-width:0;height:100%;display:block}
+h1 .banner-img{width:100%;height:100%;object-fit:cover;object-position:center 48%;display:block;background:#000}
+@media (min-width:480px){h1{height:84px;padding:0 14px;gap:10px}h1 .logo-circle{width:62px;height:62px}h1 .banner-img{object-fit:fill}}
 input,select{padding:12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:16px;font-weight:500;width:100%;box-sizing:border-box;margin:6px 0}
 input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 .btn{width:100%;padding:14px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:16px;font-weight:600;margin-top:6px;cursor:pointer}
@@ -61,7 +63,10 @@ const CONFIG = {
 
 <h1>
   <img class="logo-circle" src="logo.webp" alt="Logo La Flaquita">
-  <img class="banner-img" src="banner.jpg" alt="La Flaquita">
+  <picture class="banner-wrap">
+    <source media="(min-width: 480px)" srcset="banner-wide.jpg">
+    <img class="banner-img" src="banner.jpg" alt="La Flaquita">
+  </picture>
 </h1>
 
 <section id="login" hidden>
