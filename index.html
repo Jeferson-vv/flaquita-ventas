@@ -13,7 +13,10 @@ input,select{padding:12px;border-radius:8px;border:1.5px solid var(--bd);backgro
 input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 .btn{width:100%;padding:14px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:16px;font-weight:600;margin-top:6px;cursor:pointer}
 .msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
-.top{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-weight:600;font-size:13px;margin-bottom:10px;background:var(--card);padding:8px 12px;border-radius:8px;border:1px solid var(--bd)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--fg);font-weight:700;font-size:14px;margin-bottom:10px;background:var(--card);padding:10px 12px;border-radius:8px;border:1px solid var(--bd)}
+.top .acciones{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.top .sm{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;text-decoration:none;line-height:1.2}
+.top .sm[hidden]{display:none !important}
 .total{background:var(--blk);color:#fff;border-radius:10px;padding:14px;text-align:center;font-size:34px;font-weight:700;border-bottom:4px solid var(--ac)}
 .total small{display:block;font-size:13px;font-weight:400;opacity:.85}
 .pago{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:15px;font-weight:600}
@@ -24,7 +27,7 @@ input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 #heard{min-height:20px;color:var(--fg);font-weight:500;font-size:14px;text-align:center;margin-bottom:8px}
 .quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
 .quick input{flex:3;width:auto;margin:0}
-.quick button,.sm{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:14px;font-weight:600;cursor:pointer}
+.quick button,.sm{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:14px;font-weight:600;cursor:pointer;box-sizing:border-box}
 .quick button:hover,.sm:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
 #rapidos button{flex:1 1 45%}
 nav{display:flex;gap:6px;margin-bottom:12px}
@@ -70,10 +73,10 @@ const CONFIG = {
 
 <section id="app" hidden>
   <div class="top">
-    <span id="quien"></span>
-    <div style="display:flex;gap:6px;align-items:center">
-      <a id="linkAdmin" href="admin.html" class="sm" hidden style="flex:0 0 auto;padding:6px 10px;text-decoration:none">Admin</a>
-      <button class="sm" id="salir" style="flex:0 0 auto;padding:6px 12px">Salir</button>
+    <span id="quien">Nerida Vasquez</span>
+    <div class="acciones">
+      <a id="linkAdmin" href="admin.html" class="sm" hidden>Admin</a>
+      <button class="sm" id="salir">Salir</button>
     </div>
   </div>
   <nav>
@@ -166,13 +169,8 @@ async function cargarCarta() {
   return true;
 }
 
-async function iniciarApp(u) {
-  let user = u;
-  if (!user) {
-    const { data } = await sb.auth.getUser();
-    user = data && data.user;
-  }
-  $('quien').textContent = user ? user.email : '';
+async function iniciarApp() {
+  $('quien').textContent = 'Nerida Vasquez';
   $('login').hidden = true; $('app').hidden = false;
   try {
     const { data: esAdm } = await sb.rpc('es_admin');
