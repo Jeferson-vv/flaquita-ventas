@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Administración · La Flaquita</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Panel interno de inventario y carta de Chicharronería La Flaquita.">
+<title>La Flaquita · Inventario y Carta</title>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#c2410c"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--bg:#fff8ee;--fg:#2b1d0e;--card:#fff;--ac:#c2410c;--mu:#8a7560;--bd:#ecdcc6;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -53,18 +55,21 @@ const CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 
 <h1>
-  <span>⚙️ Admin · La Flaquita</span>
+  <span>🍖 La Flaquita · Inventario</span>
   <a href="index.html">← Ir a Ventas</a>
 </h1>
 
 <section id="login" hidden>
-  <div class="card">
-    <h3>Ingreso de Administrador</h3>
-    <input id="email" type="email" placeholder="Correo del administrador" autocomplete="username">
-    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
-    <button class="btn" id="entrar">Entrar</button>
+  <form class="card" id="loginForm" onsubmit="return false">
+    <h3>Gestión de Carta e Inventario · La Flaquita</h3>
+    <p style="margin:0 0 8px;font-size:13px;color:var(--mu)">Panel interno exclusivo para encargados del local.</p>
+    <label for="email" style="font-size:13px;color:var(--mu)">Correo de usuario</label>
+    <input id="email" type="email" placeholder="encargado@ejemplo.com" autocomplete="username" required>
+    <label for="pass" style="font-size:13px;color:var(--mu)">Clave de acceso</label>
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" required>
+    <button type="submit" class="btn" id="entrar">Entrar al panel</button>
     <p class="msg" id="loginMsg"></p>
-  </div>
+  </form>
 </section>
 
 <section id="denegado" hidden>

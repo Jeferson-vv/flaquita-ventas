@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mis Ventas</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Sistema interno de registro de ventas de Chicharronería La Flaquita.">
+<title>La Flaquita · Registro Interno de Ventas</title>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#c2410c"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{--bg:#fff8ee;--fg:#2b1d0e;--card:#fff;--ac:#c2410c;--mu:#8a7560;--bd:#ecdcc6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -49,16 +51,19 @@ const CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 <script src="parser.js"></script>
 
-<h1> Mis ventas</h1>
+<h1>🍖 La Flaquita · Ventas</h1>
 
 <section id="login" hidden>
-  <div class="card">
-    <h3>Ingresar</h3>
-    <input id="email" type="email" placeholder="Correo" autocomplete="username">
-    <input id="pass" type="password" placeholder="Contraseña" autocomplete="current-password">
-    <button class="btn" id="entrar">Entrar</button>
+  <form class="card" id="loginForm" onsubmit="return false">
+    <h3>Acceso de personal · La Flaquita</h3>
+    <p style="margin:0 0 8px;font-size:13px;color:var(--mu)">Herramienta interna para registro de pedidos en local.</p>
+    <label for="email" style="font-size:13px;color:var(--mu)">Correo de usuario</label>
+    <input id="email" type="email" placeholder="usuario@ejemplo.com" autocomplete="username" required>
+    <label for="pass" style="font-size:13px;color:var(--mu)">Clave de acceso</label>
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" required>
+    <button type="submit" class="btn" id="entrar">Entrar al sistema</button>
     <p class="msg" id="loginMsg"></p>
-  </div>
+  </form>
 </section>
 
 <section id="app" hidden>
