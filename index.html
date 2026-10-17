@@ -56,16 +56,16 @@ const CONFIG = {
 <h1>La Flaquita · Ventas</h1>
 
 <section id="login" hidden>
-  <form class="card" id="loginForm" onsubmit="return false">
+  <div class="card" id="loginForm">
     <h3>Acceso de personal · La Flaquita</h3>
     <p style="margin:0 0 8px;font-size:13px;color:var(--mu)">Herramienta interna para registro de pedidos en local.</p>
     <label for="email" style="font-size:13px;color:var(--mu)">Correo de usuario</label>
-    <input id="email" type="email" placeholder="usuario@ejemplo.com" autocomplete="username" required>
+    <input id="email" type="email" placeholder="usuario@ejemplo.com" autocomplete="username">
     <label for="pass" style="font-size:13px;color:var(--mu)">Clave de acceso</label>
-    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password" required>
-    <button type="submit" class="btn" id="entrar">Entrar al sistema</button>
+    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <button type="button" class="btn" id="entrar">Entrar al sistema</button>
     <p class="msg" id="loginMsg"></p>
-  </form>
+  </div>
 </section>
 
 <section id="app" hidden>
@@ -118,7 +118,7 @@ const horaStr = iso => new Date(iso).toLocaleTimeString('es-PE', { ...LIMA, hour
 const fdate = f => new Date(f + 'T12:00:00').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'short' });
 const CATEG = { chicharron: 'Chicharrón', sarza: 'Sarza', combinado: 'Combinados', bebida: 'Bebidas', cerveza: 'Cervezas', otro: 'Otros' };
 
-let sb = null, CAT = [], HOY = [], HIST = [];
+let sb = null, CAT = [], HOY = [], HIST = [], ingresando = false;
 
 /* ---------- Sonidos ---------- */
 let AC = null;
@@ -136,10 +136,21 @@ function setMsg(t) { $('loginMsg').textContent = t; }
 function mostrarLogin() { $('app').hidden = true; $('login').hidden = false; }
 
 async function entrar() {
+  if (ingresando) return;
+  const email = $('email').value.trim();
+  const password = $('pass').value;
+  if (!email || !password) { setMsg('Escribe tu correo y contraseña.'); return; }
+  ingresando = true;
   setMsg('Ingresando…');
-  const { error } = await sb.auth.signInWithPassword({ email: $('email').value.trim(), password: $('pass').value });
-  if (error) setMsg('No se pudo ingresar: ' + error.message);
-  else await iniciarApp();
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) { setMsg('No se pudo ingresar: ' + error.message); return; }
+    await iniciarApp(data && data.user);
+  } catch (e) {
+    setMsg('Error de conexión: ' + (e.message || e));
+  } finally {
+    ingresando = false;
+  }
 }
 
 async function cargarCarta() {
@@ -155,11 +166,18 @@ async function cargarCarta() {
   return true;
 }
 
-async function iniciarApp() {
-  const { data: { user } } = await sb.auth.getUser();
+async function iniciarApp(u) {
+  let user = u;
+  if (!user) {
+    const { data } = await sb.auth.getUser();
+    user = data && data.user;
+  }
   $('quien').textContent = user ? user.email : '';
   $('login').hidden = true; $('app').hidden = false;
-  sb.rpc('es_admin').then(({ data }) => { if (data) $('linkAdmin').hidden = false; }).catch(() => {});
+  try {
+    const { data: esAdm } = await sb.rpc('es_admin');
+    if (esAdm) $('linkAdmin').hidden = false;
+  } catch (e) {}
   if (!(await cargarCarta())) return;
   pintarRapidos();
   await cargarHoy();
@@ -168,7 +186,8 @@ async function iniciarApp() {
 
 async function init() {
   $('entrar').onclick = entrar;
-  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') entrar(); });
+  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); entrar(); } });
+  $('email').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('pass').focus(); } });
   if (CONFIG.url.includes('TU-PROYECTO') || typeof supabase === 'undefined') {
     $('login').hidden = false;
     setMsg('Falta configurar Supabase: revisa CONFIG en index.html (o no hay conexión a internet).');
@@ -176,8 +195,10 @@ async function init() {
   }
   sb = supabase.createClient(CONFIG.url, CONFIG.key);
   $('login').hidden = false;
-  const { data } = await sb.auth.getSession();
-  if (data.session) await iniciarApp();
+  try {
+    const { data } = await sb.auth.getSession();
+    if (data && data.session) await iniciarApp(data.session.user);
+  } catch (e) {}
 }
 
 $('salir').onclick = async () => { if (sb) await sb.auth.signOut(); location.reload(); };
