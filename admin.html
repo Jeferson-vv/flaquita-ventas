@@ -9,20 +9,19 @@
 <style>
 :root{--bg:#e6ecf5;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#1d4ed8;--mu:#374151;--bd:#cbd5e1;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:14px 16px;max-width:760px;margin:auto}
-h1{margin:4px 0 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--blk);color:#fff;padding:10px 14px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-.brand{display:flex;align-items:center;gap:12px}
+h1{margin:4px 0 12px;display:flex;align-items:center;gap:14px;background:var(--blk);color:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
 .brand img{width:54px;height:54px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #374151;flex-shrink:0}
-.brand-title{font-family:'Great Vibes',cursive;font-size:38px;font-weight:400;color:#f7cfa0;line-height:1;letter-spacing:.5px}
-h1 a{font-size:13px;color:#fff;text-decoration:none;border:1px solid #374151;background:var(--ac);padding:8px 14px;border-radius:8px;font-weight:600;flex-shrink:0}
+.brand-title{font-family:'Great Vibes',cursive;font-size:clamp(32px,8vw,42px);font-weight:400;color:#f7cfa0;line-height:1.1;letter-spacing:.5px;white-space:nowrap}
 input,select{padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;font-weight:500;width:100%;box-sizing:border-box;margin:4px 0}
 input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac);outline:none}
 .btn{width:100%;padding:12px 14px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
-.sm{padding:8px 12px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:13px;cursor:pointer;font-weight:600}
+.sm{padding:8px 12px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:13px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1.2}
 .sm:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
 .sm.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
 .msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
-.top{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-weight:600;font-size:13px;margin-bottom:10px;gap:8px;flex-wrap:wrap;background:var(--card);padding:8px 12px;border-radius:8px;border:1px solid var(--bd)}
+.top{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-weight:700;font-size:14px;margin-bottom:10px;gap:8px;flex-wrap:wrap;background:var(--card);padding:10px 12px;border-radius:8px;border:1px solid var(--bd)}
 nav{display:flex;gap:6px;margin-bottom:12px}
 nav button{flex:1;padding:10px 6px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:700;cursor:pointer}
 nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
@@ -64,7 +63,6 @@ const CONFIG = {
     <img src="logo.webp" alt="Logo La Flaquita">
     <span class="brand-title">La Flaquita</span>
   </div>
-  <a href="index.html">Ir a Ventas</a>
 </h1>
 
 <section id="login" hidden>
@@ -84,14 +82,18 @@ const CONFIG = {
   <div class="card">
     <h3>Acceso restringido al administrador</h3>
     <p id="denegadoMsg" style="font-size:14px;line-height:1.5;color:var(--mu)"></p>
-    <button class="sm" id="salirDenegado">Cerrar sesión e ingresar con otra cuenta</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="sm pri" href="index.html">Ir a Ventas</a>
+      <button class="sm" id="salirDenegado">Cerrar sesión</button>
+    </div>
   </div>
 </section>
 
 <section id="app" hidden>
   <div class="top">
-    <span id="quien"></span>
-    <div style="display:flex;gap:6px">
+    <span id="quien">Nerida Vasquez · Admin</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a class="sm pri" href="index.html">Ventas</a>
       <button class="sm" id="refrescar">Actualizar</button>
       <button class="sm" id="salir">Salir</button>
     </div>
