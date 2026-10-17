@@ -113,7 +113,11 @@ const CONFIG = {
     </div>
     <div class="quick" id="rapidos"></div>
     <div id="list"></div>
-    <div class="quick" style="margin-top:12px"><button class="sm" id="undo">Anular última venta</button></div>
+    <div class="quick" style="margin-top:12px">
+      <button class="sm" id="undo">Anular última venta</button>
+      <button class="sm" id="btnCierre" style="background:var(--ac);color:#fff;border-color:var(--ac)">Cierre de caja del día</button>
+    </div>
+    <div id="cierreBox" class="card" hidden style="border:2px solid var(--blk);margin-top:10px"></div>
   </div>
   <div id="v-hist" hidden></div>
   <div id="v-dash" hidden></div>
@@ -129,6 +133,7 @@ const diasAtras = n => { const d = new Date(); d.setDate(d.getDate() - n); retur
 const horaStr = iso => new Date(iso).toLocaleTimeString('es-PE', { ...LIMA, hour: '2-digit', minute: '2-digit' });
 const fdate = f => new Date(f + 'T12:00:00').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'short' });
 const CATEG = { chicharron: 'Chicharrón', sarza: 'Sarza', combinado: 'Combinados', bebida: 'Bebidas', cerveza: 'Cervezas', otro: 'Otros' };
+const METODOS = { efectivo: 'Efectivo', yape: 'Yape', plin: 'Plin', tarjeta: 'Tarjeta', transferencia: 'Transferencia' };
 
 let sb = null, CAT = [], HOY = [], HIST = [], ingresando = false;
 
@@ -224,10 +229,65 @@ function pintarHoy() {
   $('tot').textContent = money(tot);
   $('list').innerHTML = HOY.length ? HOY.map(v => `
     <div class="card ${v.estado === 'anulada' ? 'anul' : ''}">
-      <div class="vh"><b>${horaStr(v.hora)}</b><span>${esc(v.metodo_pago)}${v.estado === 'anulada' ? ' · ANULADA' : ''}</span><b>${money(v.total)}</b></div>
+      <div class="vh"><b>${horaStr(v.hora)}</b><span>${esc(METODOS[v.metodo_pago] || v.metodo_pago)}${v.estado === 'anulada' ? ' · ANULADA' : ''}</span><b>${money(v.total)}</b></div>
       ${v.venta_detalles.map(d => `<div class="ln"><span>${d.cantidad} × ${esc(d.productos.nombre)}</span><span>${money(d.cantidad * d.precio_unitario)}</span></div>`).join('')}
     </div>`).join('') : '<p class="vacio">Aún no hay ventas hoy.</p>';
+  if (!$('cierreBox').hidden) pintarCierreHoy();
 }
+
+function porMetodo(vs) {
+  const m = { efectivo: 0, yape: 0, plin: 0, tarjeta: 0, transferencia: 0 };
+  vs.forEach(v => { m[v.metodo_pago] = (m[v.metodo_pago] || 0) + Number(v.total); });
+  return m;
+}
+
+function pintarCierreHoy() {
+  const validas = HOY.filter(v => v.estado === 'valida');
+  const anuladas = HOY.filter(v => v.estado === 'anulada').length;
+  const tot = validas.reduce((s, v) => s + Number(v.total), 0);
+  const pm = porMetodo(validas);
+  const prod = grupo(validas);
+  const filasMetodo = Object.entries(pm)
+    .filter(([k, val]) => k === 'efectivo' || k === 'yape' || k === 'plin' || val > 0)
+    .map(([k, val]) => `<div class="ln" style="color:var(--fg);font-weight:${k === 'efectivo' ? '700' : '500'}"><span>${esc(METODOS[k] || k)}</span><span>${money(val)}</span></div>`)
+    .join('');
+  const filasProd = Object.entries(prod)
+    .map(([n, o]) => `<div class="ln"><span>${o.q} × ${esc(n)}</span><span>${money(o.s)}</span></div>`)
+    .join('');
+
+  $('cierreBox').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--bd);padding-bottom:8px;margin-bottom:8px">
+      <h3 style="margin:0">Cierre de Caja · ${fdate(hoyStr())}</h3>
+      <button class="sm" id="cerrarCuadre" style="flex:0 0 auto;padding:4px 10px">Cerrar cuadro</button>
+    </div>
+    <div style="font-size:13px;color:var(--mu);margin-bottom:8px">
+      Ventas válidas: <b>${validas.length}</b>${anuladas ? ` · Anuladas: <b>${anuladas}</b>` : ''}
+    </div>
+    <div style="background:#f8fafc;border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--blk)">Desglose por método de pago</div>
+      ${filasMetodo}
+      <div class="ln" style="border-top:1.5px solid var(--blk);margin-top:6px;padding-top:6px;color:var(--blk);font-weight:700;font-size:15px">
+        <span>Total del día</span><span>${money(tot)}</span>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--blk)">Productos vendidos hoy</div>
+      ${filasProd || '<p class="vacio" style="margin:6px 0">Sin productos vendidos hoy.</p>'}
+    </div>
+  `;
+  const btnCerrar = $('cerrarCuadre');
+  if (btnCerrar) btnCerrar.onclick = () => { $('cierreBox').hidden = true; };
+}
+
+$('btnCierre').onclick = () => {
+  if (active && rm) setMode(false);
+  const box = $('cierreBox');
+  box.hidden = !box.hidden;
+  if (!box.hidden) {
+    pintarCierreHoy();
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+};
 
 async function guardar(items, rejects) {
   const detalles = items.map(it => {
@@ -318,8 +378,10 @@ async function rHist() {
   HIST.forEach(v => (porDia[v.fecha] = porDia[v.fecha] || []).push(v));
   const dias = Object.keys(porDia).sort().reverse();
   $('v-hist').innerHTML = (dias.length ? dias.map(f => {
-    const vs = porDia[f], tot = vs.reduce((s, v) => s + Number(v.total), 0), g = grupo(vs);
+    const vs = porDia[f], tot = vs.reduce((s, v) => s + Number(v.total), 0), g = grupo(vs), pm = porMetodo(vs);
+    const desglosePago = Object.entries(pm).filter(([, val]) => val > 0).map(([k, val]) => `${METODOS[k] || k}: <b>${money(val)}</b>`).join(' · ');
     return `<details><summary><span>${fdate(f)} · ${vs.length} ventas</span><span>${money(tot)}</span></summary>
+      <div style="font-size:13px;color:var(--fg);padding:6px 0;border-bottom:1px solid var(--bd);margin-bottom:4px">${desglosePago}</div>
       ${Object.entries(g).map(([n, o]) => `<div class="ln"><span>${o.q} × ${esc(n)}</span><span>${money(o.s)}</span></div>`).join('')}</details>`;
   }).join('') : '<p class="vacio">Aún no hay ventas.</p>') +
   '<button class="sm" id="exp" style="width:100%;margin-top:10px">Exportar CSV</button>';
