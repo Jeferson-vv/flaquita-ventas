@@ -4,12 +4,16 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Panel interno de inventario y carta de Chicharronería La Flaquita.">
 <title>La Flaquita - Inventario y Carta</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d4ed8"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#1d4ed8"><link rel="icon" href="logo.webp"><link rel="apple-touch-icon" href="logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#e6ecf5;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#1d4ed8;--mu:#374151;--bd:#cbd5e1;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:14px 16px;max-width:760px;margin:auto}
-h1{font-size:20px;margin:4px 0 12px;display:flex;justify-content:space-between;align-items:center;background:var(--blk);color:#fff;padding:12px 14px;border-radius:10px}
-h1 a{font-size:13px;color:#fff;text-decoration:none;border:1px solid #374151;background:var(--ac);padding:6px 12px;border-radius:8px;font-weight:600}
+h1{margin:4px 0 12px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--blk);color:#fff;padding:10px 14px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{width:54px;height:54px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #374151;flex-shrink:0}
+.brand-title{font-family:'Great Vibes',cursive;font-size:38px;font-weight:400;color:#f7cfa0;line-height:1;letter-spacing:.5px}
+h1 a{font-size:13px;color:#fff;text-decoration:none;border:1px solid #374151;background:var(--ac);padding:8px 14px;border-radius:8px;font-weight:600;flex-shrink:0}
 input,select{padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;font-weight:500;width:100%;box-sizing:border-box;margin:4px 0}
 input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac);outline:none}
@@ -56,7 +60,10 @@ const CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 
 <h1>
-  <span>La Flaquita · Administración</span>
+  <div class="brand">
+    <img src="logo.webp" alt="Logo La Flaquita">
+    <span class="brand-title">La Flaquita</span>
+  </div>
   <a href="index.html">Ir a Ventas</a>
 </h1>
 
