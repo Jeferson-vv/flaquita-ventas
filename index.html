@@ -39,7 +39,13 @@ nav{display:flex;gap:6px;margin-bottom:12px}
 nav button{flex:1;padding:10px 4px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:700;cursor:pointer}
 nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.card[data-card-vid]{user-select:none;-webkit-user-select:none;transition:background .2s,border-color .2s}
+.card.pressing{background:#fdf2f8;border-color:var(--ac)}
 .card.anul{opacity:.5}
+.anul-bar{margin-top:8px;padding-top:8px;border-top:1px dashed var(--bd);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:700;color:#b91c1c}
+.anul-bar[hidden]{display:none !important}
+.anul-bar .btn-anular-item{flex:0 0 auto;background:#b91c1c;color:#fff;border-color:#b91c1c;padding:6px 12px}
+.anul-bar .btn-cancel-anular{flex:0 0 auto;padding:6px 10px}
 .vh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;font-size:14px;color:var(--fg)}
 .mp-sel{width:auto;margin:0;padding:4px 8px;font-size:13px;font-weight:700;border-radius:6px;border:1.5px solid var(--ac);background:#fdf2f8;color:var(--ac);cursor:pointer}
 .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.kpi div{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px}.kpi b{display:block;font-size:20px;color:var(--ac)}.kpi small{color:var(--mu);font-weight:600}
@@ -234,14 +240,83 @@ function pintarHoy() {
     const controlMetodo = v.estado === 'valida'
       ? `<select class="mp-sel" data-vid="${v.id}" title="Cambiar método de pago">${Object.entries(METODOS).map(([k, lbl]) => `<option value="${k}"${v.metodo_pago === k ? ' selected' : ''}>${esc(lbl)}</option>`).join('')}</select>`
       : `<span>${esc(METODOS[v.metodo_pago] || v.metodo_pago)} · ANULADA</span>`;
+    const barraAnular = v.estado === 'valida'
+      ? `<div class="anul-bar" hidden>
+           <span>¿Anular venta de ${horaStr(v.hora)} (${money(v.total)})?</span>
+           <div style="display:flex;gap:6px">
+             <button type="button" class="sm btn-anular-item" data-anular-id="${v.id}">Anular venta</button>
+             <button type="button" class="sm btn-cancel-anular">Cancelar</button>
+           </div>
+         </div>`
+      : '';
     return `
-    <div class="card ${v.estado === 'anulada' ? 'anul' : ''}">
+    <div class="card ${v.estado === 'anulada' ? 'anul' : ''}" ${v.estado === 'valida' ? `data-card-vid="${v.id}"` : ''}>
       <div class="vh"><b>${horaStr(v.hora)}</b>${controlMetodo}<b>${money(v.total)}</b></div>
       ${v.venta_detalles.map(d => `<div class="ln"><span>${d.cantidad} × ${esc(d.productos.nombre)}</span><span>${money(d.cantidad * d.precio_unitario)}</span></div>`).join('')}
+      ${barraAnular}
     </div>`;
   }).join('') : '<p class="vacio">Aún no hay ventas hoy.</p>';
   if (!$('cierreBox').hidden) pintarCierreHoy();
 }
+
+async function anularVentaPorId(vid) {
+  const v = HOY.find(x => x.id === Number(vid));
+  const { error } = await sb.from('ventas').update({ estado: 'anulada' }).eq('id', Number(vid));
+  if (error) { $('heard').textContent = 'No se pudo anular: ' + error.message; snd('err'); return; }
+  $('heard').textContent = `Venta${v ? ' de las ' + horaStr(v.hora) + ' (' + money(v.total) + ')' : ''} anulada (el stock descontado fue devuelto).`;
+  snd('ok');
+  await cargarCarta();
+  await cargarHoy();
+}
+
+let pressTimer = null, pressCard = null, pressX = 0, pressY = 0;
+function limpiarPress() {
+  if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+  if (pressCard) { pressCard.classList.remove('pressing'); pressCard = null; }
+}
+
+$('list').addEventListener('pointerdown', e => {
+  if (e.target.closest('select, button')) return;
+  const card = e.target.closest('.card[data-card-vid]');
+  if (!card) return;
+  limpiarPress();
+  pressCard = card;
+  pressX = e.clientX;
+  pressY = e.clientY;
+  card.classList.add('pressing');
+  pressTimer = setTimeout(() => {
+    card.classList.remove('pressing');
+    $('list').querySelectorAll('.anul-bar').forEach(b => { b.hidden = true; });
+    const bar = card.querySelector('.anul-bar');
+    if (bar) {
+      bar.hidden = false;
+      if (navigator.vibrate) navigator.vibrate(60);
+    }
+    pressTimer = null;
+    pressCard = null;
+  }, 1600);
+});
+$('list').addEventListener('pointermove', e => {
+  if (!pressTimer) return;
+  if (Math.abs(e.clientX - pressX) > 12 || Math.abs(e.clientY - pressY) > 12) limpiarPress();
+});
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => $('list').addEventListener(ev, limpiarPress));
+$('list').addEventListener('contextmenu', e => {
+  if (!e.target.closest('select, button') && e.target.closest('.card[data-card-vid]')) e.preventDefault();
+});
+
+$('list').addEventListener('click', e => {
+  const btnAnular = e.target.closest('.btn-anular-item');
+  if (btnAnular) {
+    anularVentaPorId(btnAnular.dataset.anularId);
+    return;
+  }
+  const btnCancel = e.target.closest('.btn-cancel-anular');
+  if (btnCancel) {
+    const bar = btnCancel.closest('.anul-bar');
+    if (bar) bar.hidden = true;
+  }
+});
 
 $('list').addEventListener('change', async e => {
   const sel = e.target.closest('.mp-sel');
