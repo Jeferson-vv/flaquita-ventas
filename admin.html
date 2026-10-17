@@ -9,10 +9,8 @@
 <style>
 :root{--bg:#e6ecf5;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#1d4ed8;--mu:#374151;--bd:#cbd5e1;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:14px 16px;max-width:760px;margin:auto}
-h1{margin:4px 0 12px;display:flex;align-items:center;gap:14px;background:var(--blk);color:#fff;padding:10px 16px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.15)}
-.brand{display:flex;align-items:center;gap:14px;min-width:0}
-.brand img{width:54px;height:54px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #374151;flex-shrink:0}
-.brand-title{font-family:'Great Vibes',cursive;font-size:clamp(32px,8vw,42px);font-weight:400;color:#f7cfa0;line-height:1.1;letter-spacing:.5px;white-space:nowrap}
+h1{margin:4px 0 12px;padding:0;background:#000;border-radius:12px;overflow:hidden;border:2px solid var(--blk);box-shadow:0 2px 8px rgba(0,0,0,.18);line-height:0}
+h1 img{width:100%;height:auto;max-height:195px;object-fit:contain;display:block;margin:auto;background:#000}
 input,select{padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;font-weight:500;width:100%;box-sizing:border-box;margin:4px 0}
 input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac);outline:none}
@@ -59,10 +57,7 @@ const CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 
 <h1>
-  <div class="brand">
-    <img src="logo.webp" alt="Logo La Flaquita">
-    <span class="brand-title">La Flaquita</span>
-  </div>
+  <img src="banner.jpg" alt="La Flaquita">
 </h1>
 
 <section id="login" hidden>
