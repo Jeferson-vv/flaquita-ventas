@@ -55,9 +55,25 @@ nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.kpi div{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px}.kpi b{display:block;font-size:20px;color:var(--ac)}.kpi small{color:var(--mu);font-weight:600}
 .card h3{margin:0 0 6px;font-size:15px;color:var(--blk)}
 .br{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0}.br span{width:96px;color:var(--fg);font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.br i{display:block;height:14px;background:var(--ac);border-radius:4px;min-width:2px}.br div{flex:1}.br b{min-width:60px;text-align:right;color:var(--blk)}
-details{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:6px}summary{display:flex;justify-content:space-between;cursor:pointer;font-weight:700;color:var(--blk)}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.05)}summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;color:var(--blk);gap:8px}
 .ln{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:var(--mu)}
 .vacio{text-align:center;color:var(--mu);font-weight:500}
+.h-filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.h-filtros button{flex:1;min-width:80px;padding:8px 8px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer}
+.h-filtros button.a{background:var(--blk);color:#fff;border-color:var(--blk)}
+.cat-box{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin-top:8px;background:#faf7f9}
+.cat-box.c-comida{border-left:4px solid #be185d;background:#fdf2f8}
+.cat-box.c-bebida{border-left:4px solid #0284c7;background:#f0f9ff}
+.cat-box.c-cerveza{border-left:4px solid #d97706;background:#fffbeb}
+.cat-box.c-otro{border-left:4px solid #4b5563;background:#f9fafb}
+.cat-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--blk);padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid rgba(0,0,0,.08)}
+.cat-head small{font-weight:600;color:var(--mu);margin-left:4px}
+.mp-badges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.mp-pill{font-size:12px;font-weight:600;padding:3px 8px;border-radius:99px;background:#f4f4f5;border:1px solid var(--bd);color:var(--fg)}
+.mp-pill b{color:var(--ac)}
+.prop-bar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:#e4e4e7;margin:6px 0}
+.sub-det{margin-top:8px;background:#fff;border:1px dashed var(--bd);border-radius:8px;padding:6px 10px}
+.sub-det summary{font-size:12px;color:var(--ac);font-weight:700}
 </style></head><body>
 
 <script>
@@ -231,7 +247,7 @@ $('salir').onclick = async () => { if (sb) await sb.auth.signOut(); location.rel
 /* ---------- Ventas ---------- */
 async function cargarHoy() {
   const { data, error } = await sb.from('ventas')
-    .select('id,hora,metodo_pago,total,estado,venta_detalles(cantidad,precio_unitario,productos(nombre))')
+    .select('id,hora,metodo_pago,total,estado,venta_detalles(cantidad,precio_unitario,productos(nombre,categoria))')
     .eq('fecha', hoyStr()).order('hora', { ascending: false });
   if (error) { $('heard').textContent = 'Error leyendo ventas: ' + error.message; return; }
   HOY = data; pintarHoy();
@@ -376,27 +392,115 @@ function porMetodo(vs) {
   return m;
 }
 
+const DEFINICION_BLOQUES = [
+  { key: 'comida',  titulo: 'Chicharrones, Combinados y Sarza', cls: 'c-comida',  color: '#be185d', cats: ['chicharron', 'combinado', 'sarza'] },
+  { key: 'bebida',  titulo: 'Gaseosas, Chicha y Bebidas',       cls: 'c-bebida',  color: '#0284c7', cats: ['bebida'] },
+  { key: 'cerveza', titulo: 'Cervezas',                         cls: 'c-cerveza', color: '#d97706', cats: ['cerveza'] },
+  { key: 'otro',    titulo: 'Otros productos',                  cls: 'c-otro',    color: '#4b5563', cats: ['otro'] }
+];
+
+function catDeDetalle(d) {
+  if (d.productos && d.productos.categoria) return d.productos.categoria;
+  const p = CAT.find(x => x.nombre === (d.productos && d.productos.nombre));
+  return (p && p.categoria) || 'otro';
+}
+
+function agruparPorBloques(vs) {
+  const mapa = {};
+  DEFINICION_BLOQUES.forEach(b => { mapa[b.key] = { ...b, unidades: 0, subtotal: 0, prods: {} }; });
+  vs.forEach(v => (v.venta_detalles || []).forEach(d => {
+    const c = catDeDetalle(d);
+    const blk = DEFINICION_BLOQUES.find(b => b.cats.includes(c)) || DEFINICION_BLOQUES[3];
+    const g = mapa[blk.key];
+    const n = (d.productos && d.productos.nombre) || 'Producto';
+    const sub = Number(d.cantidad) * Number(d.precio_unitario);
+    g.unidades += Number(d.cantidad);
+    g.subtotal += sub;
+    if (!g.prods[n]) g.prods[n] = { q: 0, s: 0 };
+    g.prods[n].q += Number(d.cantidad);
+    g.prods[n].s += sub;
+  }));
+  return DEFINICION_BLOQUES.map(b => {
+    const g = mapa[b.key];
+    g.lista = Object.entries(g.prods).sort((a, x) => x[1].s - a[1].s);
+    return g;
+  });
+}
+
+function htmlBloquesCategoria(vs, totDia) {
+  const bloques = agruparPorBloques(vs).filter(b => b.unidades > 0);
+  if (!bloques.length) return '<p class="vacio" style="margin:6px 0">Sin productos registrados.</p>';
+  const barra = totDia > 0 && bloques.length > 1
+    ? `<div class="prop-bar" title="Proporción por categoría">${bloques.map(b => `<div style="width:${Math.max(3, Math.round(b.subtotal / totDia * 100))}%;background:${b.color}"></div>`).join('')}</div>`
+    : '';
+  return barra + bloques.map(b => {
+    const pct = totDia > 0 ? Math.round(b.subtotal / totDia * 100) : 0;
+    return `
+      <div class="cat-box ${b.cls}">
+        <div class="cat-head">
+          <span>${esc(b.titulo)} <small>(${b.unidades} u.)</small></span>
+          <span>${money(b.subtotal)} <small>${pct}%</small></span>
+        </div>
+        ${b.lista.map(([n, o]) => `<div class="ln" style="color:var(--fg)"><span><b>${o.q}</b> × ${esc(n)}</span><span>${money(o.s)}</span></div>`).join('')}
+      </div>`;
+  }).join('');
+}
+
+function textoResumenDia(fechaStr, vs) {
+  const tot = vs.reduce((s, v) => s + Number(v.total), 0);
+  const pm = porMetodo(vs);
+  const bloques = agruparPorBloques(vs).filter(b => b.unidades > 0);
+  const lineas = [
+    `RESUMEN LA FLAQUITA - ${fdate(fechaStr).toUpperCase()} (${fechaStr})`,
+    `Ventas válidas: ${vs.length} | Total: ${money(tot)}`,
+    ''
+  ];
+  lineas.push('MÉTODOS DE PAGO:');
+  Object.entries(pm).filter(([, val]) => val > 0).forEach(([k, val]) => {
+    lineas.push(`- ${METODOS[k] || k}: ${money(val)}`);
+  });
+  bloques.forEach(b => {
+    lineas.push('');
+    lineas.push(`${b.titulo.toUpperCase()} (${b.unidades} u. · ${money(b.subtotal)}):`);
+    b.lista.forEach(([n, o]) => {
+      lineas.push(`- ${o.q} x ${n}: ${money(o.s)}`);
+    });
+  });
+  return lineas.join('\n');
+}
+
+async function copiarTextoResumen(txt, btn) {
+  try {
+    await navigator.clipboard.writeText(txt);
+    const prev = btn.textContent;
+    btn.textContent = 'Copiado al portapapeles';
+    snd('ok');
+    setTimeout(() => { btn.textContent = prev; }, 2000);
+  } catch (e) {
+    $('heard').textContent = 'No se pudo copiar automáticamente.';
+  }
+}
+
 function pintarCierreHoy() {
   const validas = HOY.filter(v => v.estado === 'valida');
   const anuladas = HOY.filter(v => v.estado === 'anulada').length;
   const tot = validas.reduce((s, v) => s + Number(v.total), 0);
   const pm = porMetodo(validas);
-  const prod = grupo(validas);
   const filasMetodo = Object.entries(pm)
     .filter(([k, val]) => k === 'efectivo' || k === 'yape' || k === 'plin' || val > 0)
     .map(([k, val]) => `<div class="ln" style="color:var(--fg);font-weight:${k === 'efectivo' ? '700' : '500'}"><span>${esc(METODOS[k] || k)}</span><span>${money(val)}</span></div>`)
     .join('');
-  const filasProd = Object.entries(prod)
-    .map(([n, o]) => `<div class="ln"><span>${o.q} × ${esc(n)}</span><span>${money(o.s)}</span></div>`)
-    .join('');
 
   $('cierreBox').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--bd);padding-bottom:8px;margin-bottom:8px">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1.5px solid var(--bd);padding-bottom:8px;margin-bottom:8px;gap:6px;flex-wrap:wrap">
       <h3 style="margin:0">Cierre de Caja · ${fdate(hoyStr())}</h3>
-      <button class="sm" id="cerrarCuadre" style="flex:0 0 auto;padding:4px 10px">Cerrar cuadro</button>
+      <div style="display:flex;gap:6px">
+        <button class="sm" id="copiarCierreHoy" style="flex:0 0 auto;padding:4px 10px">Copiar resumen</button>
+        <button class="sm" id="cerrarCuadre" style="flex:0 0 auto;padding:4px 10px">Cerrar</button>
+      </div>
     </div>
     <div style="font-size:13px;color:var(--mu);margin-bottom:8px">
-      Ventas válidas: <b>${validas.length}</b>${anuladas ? ` · Anuladas: <b>${anuladas}</b>` : ''}
+      Ventas válidas: <b>${validas.length}</b>${validas.length ? ` · Ticket prom.: <b>${money(tot / validas.length)}</b>` : ''}${anuladas ? ` · Anuladas: <b>${anuladas}</b>` : ''}
     </div>
     <div style="background:#fdf2f8;border:1px solid var(--bd);border-radius:8px;padding:10px;margin-bottom:10px">
       <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--blk)">Desglose por método de pago</div>
@@ -406,12 +510,14 @@ function pintarCierreHoy() {
       </div>
     </div>
     <div>
-      <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--blk)">Productos vendidos hoy</div>
-      ${filasProd || '<p class="vacio" style="margin:6px 0">Sin productos vendidos hoy.</p>'}
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--blk)">Ventas de hoy separadas por categoría</div>
+      ${htmlBloquesCategoria(validas, tot)}
     </div>
   `;
   const btnCerrar = $('cerrarCuadre');
   if (btnCerrar) btnCerrar.onclick = () => { $('cierreBox').hidden = true; };
+  const btnCopiar = $('copiarCierreHoy');
+  if (btnCopiar) btnCopiar.onclick = () => copiarTextoResumen(textoResumenDia(hoyStr(), validas), btnCopiar);
 }
 
 $('btnCierre').onclick = () => {
@@ -513,6 +619,8 @@ $('undo').onclick = async () => {
 };
 
 /* ---------- Historial y dashboard ---------- */
+let filtroHistPeriodo = '30', filtroHistFecha = '';
+
 async function cargarHist() {
   const { data, error } = await sb.from('ventas')
     .select('id,fecha,hora,total,estado,metodo_pago,venta_detalles(cantidad,precio_unitario,productos(nombre,categoria))')
@@ -530,28 +638,148 @@ function grupo(vs) {
   return m;
 }
 
+function pintarVistaHist() {
+  const hoy = hoyStr();
+  const inicioMes = hoy.slice(0, 8) + '01';
+  const minFecha = filtroHistPeriodo === '7' ? diasAtras(6)
+    : filtroHistPeriodo === '30' ? diasAtras(29)
+    : filtroHistPeriodo === 'mes' ? inicioMes
+    : '0000-00-00';
+
+  const filtradas = HIST.filter(v => {
+    if (filtroHistFecha) return v.fecha === filtroHistFecha;
+    return v.fecha >= minFecha;
+  });
+
+  const porDia = {};
+  filtradas.forEach(v => (porDia[v.fecha] = porDia[v.fecha] || []).push(v));
+  const dias = Object.keys(porDia).sort().reverse();
+
+  const totPeriodo = filtradas.reduce((s, v) => s + Number(v.total), 0);
+  const bloquesPeriodo = agruparPorBloques(filtradas);
+  const bComida  = bloquesPeriodo.find(b => b.key === 'comida');
+  const bBebida  = bloquesPeriodo.find(b => b.key === 'bebida');
+  const bCerveza = bloquesPeriodo.find(b => b.key === 'cerveza');
+  const pmPeriodo = porMetodo(filtradas);
+
+  const pillsMetodoPeriodo = Object.entries(pmPeriodo)
+    .filter(([, val]) => val > 0)
+    .map(([k, val]) => `<span class="mp-pill">${esc(METODOS[k] || k)}: <b>${money(val)}</b></span>`)
+    .join('');
+
+  const resumenHtml = filtradas.length ? `
+    <div class="card" style="background:#fff;border:1.5px solid var(--blk)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px">
+        <h3 style="margin:0">Resumen del período (${dias.length} ${dias.length === 1 ? 'día' : 'días'})</h3>
+        <span style="font-size:12px;color:var(--mu);font-weight:600">${filtradas.length} ventas · Prom. ${money(totPeriodo / filtradas.length)}/venta</span>
+      </div>
+      <div class="kpi" style="margin-bottom:8px">
+        <div style="border-left-color:var(--blk)"><small>Total vendido</small><b>${money(totPeriodo)}</b><small>${dias.length ? 'Prom. ' + money(totPeriodo / dias.length) + '/día' : ''}</small></div>
+        <div style="border-left-color:#be185d"><small>Chicharrones y Platos</small><b style="color:#be185d">${money(bComida ? bComida.subtotal : 0)}</b><small>${bComida ? bComida.unidades : 0} porciones/platos</small></div>
+        <div style="border-left-color:#0284c7"><small>Gaseosas y Bebidas</small><b style="color:#0284c7">${money(bBebida ? bBebida.subtotal : 0)}</b><small>${bBebida ? bBebida.unidades : 0} unidades</small></div>
+        <div style="border-left-color:#d97706"><small>Cervezas</small><b style="color:#d97706">${money(bCerveza ? bCerveza.subtotal : 0)}</b><small>${bCerveza ? bCerveza.unidades : 0} botellas</small></div>
+      </div>
+      <div class="mp-badges">${pillsMetodoPeriodo}</div>
+    </div>` : '';
+
+  const diasHtml = dias.length ? dias.map((f, idx) => {
+    const vs = porDia[f];
+    const tot = vs.reduce((s, v) => s + Number(v.total), 0);
+    const pm = porMetodo(vs);
+    const horas = vs.map(v => horaStr(v.hora));
+    const rangoHora = horas.length > 1 ? `${horas[horas.length - 1]} – ${horas[0]}` : (horas[0] || '');
+    const desglosePago = Object.entries(pm)
+      .filter(([, val]) => val > 0)
+      .map(([k, val]) => `<span class="mp-pill">${esc(METODOS[k] || k)}: <b>${money(val)}</b></span>`)
+      .join('');
+
+    const listaHoras = vs.map(v => {
+      const desc = (v.venta_detalles || []).map(d => `${d.cantidad}× ${esc(d.productos.nombre)}`).join(', ');
+      return `<div class="ln" style="border-bottom:1px solid #f4f4f5;padding:4px 0;gap:6px">
+        <span style="color:var(--fg)"><b>${horaStr(v.hora)}</b> · <small style="color:var(--ac);font-weight:700">${esc(METODOS[v.metodo_pago] || v.metodo_pago)}</small> · ${desc}</span>
+        <b style="color:var(--blk);white-space:nowrap">${money(v.total)}</b>
+      </div>`;
+    }).join('');
+
+    return `<details ${idx === 0 ? 'open' : ''}>
+      <summary>
+        <div>
+          <span style="font-size:15px">${fdate(f)}</span>
+          <small style="display:block;font-size:12px;color:var(--mu);font-weight:500">${vs.length} ${vs.length === 1 ? 'venta' : 'ventas'}${rangoHora ? ' · ' + rangoHora : ''}</small>
+        </div>
+        <span style="font-size:16px;color:var(--ac)">${money(tot)}</span>
+      </summary>
+      <div style="padding-top:6px;margin-top:6px;border-top:1px solid var(--bd)">
+        <div class="mp-badges">${desglosePago}<span class="mp-pill">Ticket prom.: <b>${money(tot / vs.length)}</b></span></div>
+        ${htmlBloquesCategoria(vs, tot)}
+        <details class="sub-det">
+          <summary><span>Ver las ${vs.length} ventas del día hora por hora</span><span>Detalle</span></summary>
+          <div style="margin-top:6px">${listaHoras}</div>
+        </details>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button type="button" class="sm btn-copiar-dia" data-fecha="${f}" style="flex:0 0 auto;padding:6px 12px;font-size:12px">Copiar resumen del ${fdate(f)}</button>
+        </div>
+      </div>
+    </details>`;
+  }).join('') : '<p class="vacio">No hay ventas registradas en este período.</p>';
+
+  $('v-hist').innerHTML = `
+    <div class="h-filtros">
+      <button type="button" data-hp="7" class="${!filtroHistFecha && filtroHistPeriodo === '7' ? 'a' : ''}">Últimos 7 días</button>
+      <button type="button" data-hp="30" class="${!filtroHistFecha && filtroHistPeriodo === '30' ? 'a' : ''}">30 días</button>
+      <button type="button" data-hp="mes" class="${!filtroHistFecha && filtroHistPeriodo === 'mes' ? 'a' : ''}">Este mes</button>
+      <button type="button" data-hp="todo" class="${!filtroHistFecha && filtroHistPeriodo === 'todo' ? 'a' : ''}">Todo</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+      <input type="date" id="histFechaInput" value="${esc(filtroHistFecha)}" style="margin:0;padding:8px 10px;font-size:14px;flex:1" title="Buscar un día específico">
+      ${filtroHistFecha ? '<button type="button" class="sm" id="limpiarFechaHist" style="flex:0 0 auto;padding:8px 12px">Ver todos</button>' : ''}
+    </div>
+    ${resumenHtml}
+    ${diasHtml}
+    <button class="sm" id="exp" style="width:100%;margin-top:10px">Descargar todo en Excel (CSV)</button>
+  `;
+}
+
 async function rHist() {
   $('v-hist').innerHTML = '<p class="vacio">Cargando…</p>';
   try { await cargarHist(); } catch (e) { $('v-hist').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
-  const porDia = {};
-  HIST.forEach(v => (porDia[v.fecha] = porDia[v.fecha] || []).push(v));
-  const dias = Object.keys(porDia).sort().reverse();
-  $('v-hist').innerHTML = (dias.length ? dias.map(f => {
-    const vs = porDia[f], tot = vs.reduce((s, v) => s + Number(v.total), 0), g = grupo(vs), pm = porMetodo(vs);
-    const desglosePago = Object.entries(pm).filter(([, val]) => val > 0).map(([k, val]) => `${METODOS[k] || k}: <b>${money(val)}</b>`).join(' · ');
-    return `<details><summary><span>${fdate(f)} · ${vs.length} ventas</span><span>${money(tot)}</span></summary>
-      <div style="font-size:13px;color:var(--fg);padding:6px 0;border-bottom:1px solid var(--bd);margin-bottom:4px">${desglosePago}</div>
-      ${Object.entries(g).map(([n, o]) => `<div class="ln"><span>${o.q} × ${esc(n)}</span><span>${money(o.s)}</span></div>`).join('')}</details>`;
-  }).join('') : '<p class="vacio">Aún no hay ventas.</p>') +
-  '<button class="sm" id="exp" style="width:100%;margin-top:10px">Exportar CSV</button>';
+  pintarVistaHist();
 }
 
+$('v-hist').addEventListener('click', e => {
+  const btnP = e.target.closest('[data-hp]');
+  if (btnP) {
+    filtroHistPeriodo = btnP.dataset.hp;
+    filtroHistFecha = '';
+    pintarVistaHist();
+    return;
+  }
+  if (e.target.id === 'limpiarFechaHist') {
+    filtroHistFecha = '';
+    pintarVistaHist();
+    return;
+  }
+  const btnCop = e.target.closest('.btn-copiar-dia');
+  if (btnCop) {
+    const f = btnCop.dataset.fecha;
+    const vs = HIST.filter(v => v.fecha === f);
+    if (vs.length) copiarTextoResumen(textoResumenDia(f, vs), btnCop);
+  }
+});
+
+$('v-hist').addEventListener('change', e => {
+  if (e.target.id === 'histFechaInput') {
+    filtroHistFecha = e.target.value || '';
+    pintarVistaHist();
+  }
+});
+
 function exportar() {
-  const filas = ['fecha,hora,metodo_pago,producto,cantidad,precio_unitario,subtotal'];
-  HIST.forEach(v => v.venta_detalles.forEach(d => filas.push([v.fecha, horaStr(v.hora), v.metodo_pago, '"' + d.productos.nombre + '"', d.cantidad, d.precio_unitario, d.cantidad * d.precio_unitario].join(','))));
+  const filas = ['fecha,hora,metodo_pago,categoria,producto,cantidad,precio_unitario,subtotal'];
+  HIST.forEach(v => v.venta_detalles.forEach(d => filas.push([v.fecha, horaStr(v.hora), v.metodo_pago, '"' + (CATEG[d.productos.categoria] || d.productos.categoria || '') + '"', '"' + d.productos.nombre + '"', d.cantidad, d.precio_unitario, d.cantidad * d.precio_unitario].join(','))));
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([filas.join('\n')], { type: 'text/csv' }));
-  a.download = 'ventas.csv'; a.click();
+  a.download = 'ventas-la-flaquita.csv'; a.click();
 }
 
 async function rDash() {
@@ -645,7 +873,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=24').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=25').then(r => r.update()).catch(() => {});
 }
 init();
 </script>
