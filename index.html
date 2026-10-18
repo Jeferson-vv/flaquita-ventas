@@ -212,12 +212,14 @@ async function cargarCarta() {
   return true;
 }
 
-async function iniciarApp() {
-  $('quien').textContent = 'Nerida Vasquez';
+async function iniciarApp(u) {
+  const nombre = (u && u.user_metadata && u.user_metadata.nombre) || 'Nerida Vasquez';
+  $('quien').textContent = nombre;
+  $('linkAdmin').hidden = true;
   $('login').hidden = true; $('app').hidden = false;
   try {
     const { data: esAdm } = await sb.rpc('es_admin');
-    if (esAdm) $('linkAdmin').hidden = false;
+    $('linkAdmin').hidden = !esAdm;
   } catch (e) {}
   if (!(await cargarCarta())) return;
   pintarRapidos();
@@ -855,7 +857,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=26').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=27').then(r => r.update()).catch(() => {});
 }
 init();
 </script>

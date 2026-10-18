@@ -327,3 +327,93 @@ drop policy if exists "admin crea productos" on productos;
 create policy "admin crea productos" on productos
   for insert to authenticated
   with check (es_admin());
+
+drop policy if exists "admin agrega administradores" on administradores;
+create policy "admin agrega administradores" on administradores
+  for insert to authenticated
+  with check (es_admin());
+
+drop policy if exists "admin elimina administradores" on administradores;
+create policy "admin elimina administradores" on administradores
+  for delete to authenticated
+  using (es_admin() and lower(email) <> lower(coalesce(auth.jwt() ->> 'email', '')));
+
+-- 9) Funciones para gestionar cuentas de personal (Dueña/Admin y Trabajadoras) desde admin.html
+create or replace function configurar_cuenta_personal(
+  p_email text,
+  p_nombre text default null,
+  p_es_admin boolean default false
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_mail text := lower(trim(coalesce(p_email, '')));
+begin
+  if not es_admin() then
+    raise exception 'Solo el administrador puede gestionar cuentas de personal';
+  end if;
+
+  if v_mail = '' then
+    raise exception 'Correo inválido';
+  end if;
+
+  -- Confirmar correo automáticamente en auth.users para que pueda entrar de inmediato sin verificar link
+  update auth.users
+  set email_confirmed_at = coalesce(email_confirmed_at, now()),
+      raw_user_meta_data = case
+        when p_nombre is not null and trim(p_nombre) <> ''
+        then coalesce(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object('nombre', trim(p_nombre))
+        else raw_user_meta_data
+      end
+  where lower(email) = v_mail;
+
+  if p_es_admin then
+    insert into public.administradores (email)
+    values (v_mail)
+    on conflict (email) do nothing;
+  else
+    if v_mail = lower(coalesce(auth.jwt() ->> 'email', '')) then
+      raise exception 'No puedes quitarte el permiso de administrador a tu propia cuenta actual';
+    end if;
+    delete from public.administradores where lower(email) = v_mail;
+  end if;
+end;
+$$;
+
+revoke all on function configurar_cuenta_personal(text, text, boolean) from public, anon;
+grant execute on function configurar_cuenta_personal(text, text, boolean) to authenticated;
+
+create or replace function listar_cuentas_personal()
+returns table (
+  email text,
+  nombre text,
+  es_admin boolean,
+  creado_en timestamptz
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not es_admin() then
+    raise exception 'Solo el administrador puede ver las cuentas de personal';
+  end if;
+
+  return query
+  select
+    coalesce(u.email::text, a.email) as email,
+    coalesce(u.raw_user_meta_data ->> 'nombre', '') as nombre,
+    (a.email is not null) as es_admin,
+    coalesce(u.created_at, a.creado_en) as creado_en
+  from auth.users u
+  full join public.administradores a on lower(u.email) = lower(a.email)
+  where coalesce(u.email, a.email) is not null
+  order by (a.email is not null) desc, coalesce(u.created_at, a.creado_en) asc;
+end;
+$$;
+
+revoke all on function listar_cuentas_personal() from public, anon;
+grant execute on function listar_cuentas_personal() to authenticated;
+

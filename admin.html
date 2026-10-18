@@ -107,6 +107,7 @@ const CONFIG = {
     <button id="t-stock" class="a">Stock y Entradas</button>
     <button id="t-carta">Carta y Precios</button>
     <button id="t-movs">Movimientos</button>
+    <button id="t-users">Personal</button>
   </nav>
 
   <!-- TAB 1: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO -->
@@ -228,6 +229,51 @@ const CONFIG = {
     </div>
     <div class="card" id="listaMovs"></div>
   </div>
+
+  <!-- TAB 4: GESTIÓN DE PERSONAL Y ACCESOS (DUEÑA / ADMIN Y TRABAJADORA) -->
+  <div id="v-users" hidden>
+    <div class="card">
+      <h3>Crear nueva cuenta (Dueña o Trabajadora)</h3>
+      <p style="margin:0 0 10px;font-size:13px;color:var(--mu)">Crea un usuario y contraseña para que ingrese a la app. Si eliges <b>Trabajadora (Solo Ventas)</b>, podrá anotar pedidos pero no verá el botón Admin ni podrá entrar aquí.</p>
+      <div class="grid2">
+        <label style="font-size:13px;color:var(--mu)">Nombre de la persona
+          <input id="nuNombre" type="text" placeholder="Ej: Nerida Vasquez o María (Caja)">
+        </label>
+        <label style="font-size:13px;color:var(--mu)">Tipo de permiso (Rol)
+          <select id="nuRol">
+            <option value="trabajadora">Trabajadora (Solo Ventas — Sin Admin)</option>
+            <option value="admin">Administrador / Dueña (Ventas + Admin)</option>
+          </select>
+        </label>
+      </div>
+      <div class="grid2" style="margin-top:4px">
+        <label style="font-size:13px;color:var(--mu)">Correo de acceso
+          <input id="nuEmail" type="email" placeholder="Ej: trabajadora@laflaquita.com" autocomplete="off">
+        </label>
+        <label style="font-size:13px;color:var(--mu)">Contraseña (mínimo 6 caracteres)
+          <input id="nuPass" type="text" placeholder="Ej: flaquita2026" autocomplete="off">
+        </label>
+      </div>
+      <button type="button" class="btn" id="btnCrearUsuario" style="margin-top:10px">Crear cuenta de acceso</button>
+      <p class="msg" id="nuMsg"></p>
+    </div>
+
+    <div class="card">
+      <h3>Dar permiso de Admin a un correo existente</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input id="admEmailDirecto" type="email" placeholder="correo@ejemplo.com" style="flex:2;min-width:180px;margin:0">
+        <button type="button" class="sm pri" id="btnDarAdminDirecto" style="padding:10px 14px">Hacer Administrador</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap">
+        <h3 style="margin:0">Cuentas registradas y permisos</h3>
+        <small style="color:var(--mu);font-weight:600">Puedes cambiar entre Admin y Solo Ventas cuando quieras</small>
+      </div>
+      <div id="listaUsuarios"></div>
+    </div>
+  </div>
 </section>
 
 <div id="toast" class="toast" hidden></div>
@@ -246,7 +292,7 @@ const TIPO_BADGE = {
   ajuste:    ['Conteo', 'b-warn']
 };
 
-let sb = null, PRODS = [], MOVS = [], tabActual = 'stock', toastTimer = null, ingresando = false;
+let sb = null, PRODS = [], MOVS = [], USUARIOS = [], usuarioActual = null, tabActual = 'stock', toastTimer = null, ingresando = false;
 
 function notify(msg) {
   const t = $('toast');
@@ -283,6 +329,7 @@ async function verificarYEntrar(u) {
     user = data && data.user;
   }
   if (!user) { $('login').hidden = false; $('app').hidden = true; $('denegado').hidden = true; return; }
+  usuarioActual = user;
 
   const { data: isAdmin, error } = await sb.rpc('es_admin');
   if (error) {
@@ -296,11 +343,12 @@ async function verificarYEntrar(u) {
     $('login').hidden = true;
     $('app').hidden = true;
     $('denegado').hidden = false;
-    $('denegadoMsg').innerHTML = `Has ingresado como <b>${esc(user.email)}</b>, pero este correo no está en la tabla <code>administradores</code>.<br><br>Solo el administrador puede cambiar precios y ajustar stock.`;
+    $('denegadoMsg').innerHTML = `Has ingresado como <b>${esc(user.email)}</b>, pero esta cuenta es de <b>Trabajadora (Solo Ventas)</b>.<br><br>Solo el administrador o dueña puede entrar a este panel.`;
     return;
   }
 
-  $('quien').textContent = 'Nerida Vasquez · Admin';
+  const nombre = (user.user_metadata && user.user_metadata.nombre) || 'Nerida Vasquez';
+  $('quien').textContent = nombre + ' · Admin';
   $('login').hidden = true;
   $('denegado').hidden = true;
   $('app').hidden = false;
@@ -320,6 +368,7 @@ async function cargarTodo() {
   pintarStock();
   pintarCarta();
   if (tabActual === 'movs') await cargarMovimientos();
+  if (tabActual === 'users') await cargarUsuarios();
 }
 
 function pintarSelectoresStock() {
@@ -660,18 +709,208 @@ async function cargarMovimientos() {
 $('movProd').onchange = cargarMovimientos;
 $('movTipo').onchange = cargarMovimientos;
 
+/* ---------- TAB 4: GESTIÓN DE PERSONAL Y ACCESOS ---------- */
+function guardarPersonalLocal(email, nombre, es_admin) {
+  try {
+    const mail = email.toLowerCase().trim();
+    const arr = JSON.parse(localStorage.getItem('flaquita_personal') || '[]').filter(x => x.email !== mail);
+    arr.push({ email: mail, nombre: nombre || '', es_admin: !!es_admin, creado_en: new Date().toISOString() });
+    localStorage.setItem('flaquita_personal', JSON.stringify(arr));
+  } catch (e) {}
+}
+
+async function cargarUsuarios() {
+  $('listaUsuarios').innerHTML = '<p class="vacio">Cargando cuentas…</p>';
+  let lista = [];
+  const { data: rpcData, error: rpcErr } = await sb.rpc('listar_cuentas_personal');
+  if (!rpcErr && Array.isArray(rpcData)) {
+    lista = rpcData;
+  } else {
+    const { data: adms } = await sb.from('administradores').select('email,creado_en');
+    const map = {};
+    (adms || []).forEach(a => {
+      const m = a.email.toLowerCase().trim();
+      map[m] = { email: m, nombre: '', es_admin: true, creado_en: a.creado_en };
+    });
+    if (usuarioActual && usuarioActual.email) {
+      const mi = usuarioActual.email.toLowerCase().trim();
+      map[mi] = {
+        email: mi,
+        nombre: (usuarioActual.user_metadata && usuarioActual.user_metadata.nombre) || 'Nerida Vasquez',
+        es_admin: true,
+        creado_en: usuarioActual.created_at
+      };
+    }
+    try {
+      const locales = JSON.parse(localStorage.getItem('flaquita_personal') || '[]');
+      locales.forEach(l => {
+        const m = (l.email || '').toLowerCase().trim();
+        if (!m) return;
+        if (map[m]) {
+          if (!map[m].nombre && l.nombre) map[m].nombre = l.nombre;
+        } else {
+          map[m] = { email: m, nombre: l.nombre || '', es_admin: !!l.es_admin, creado_en: l.creado_en };
+        }
+      });
+    } catch (e) {}
+    lista = Object.values(map);
+  }
+  USUARIOS = lista;
+  pintarUsuarios();
+}
+
+function pintarUsuarios() {
+  if (!USUARIOS.length) {
+    $('listaUsuarios').innerHTML = '<p class="vacio">No hay cuentas listadas todavía.</p>';
+    return;
+  }
+  const miEmail = (usuarioActual && usuarioActual.email || '').toLowerCase().trim();
+  $('listaUsuarios').innerHTML = USUARIOS.map(u => {
+    const mail = (u.email || '').toLowerCase().trim();
+    const esMiCuenta = mail === miEmail;
+    const badge = u.es_admin
+      ? '<span class="badge b-info">Administrador / Dueña (Ventas + Admin)</span>'
+      : '<span class="badge b-ok">Trabajadora (Solo Ventas)</span>';
+    const botonCambio = esMiCuenta
+      ? '<span class="badge" style="background:#f4f4f5;color:var(--mu)">Tu sesión actual</span>'
+      : u.es_admin
+        ? `<button type="button" class="sm" data-rol-email="${esc(mail)}" data-rol-admin="0">Cambiar a Solo Ventas</button>`
+        : `<button type="button" class="sm pri" data-rol-email="${esc(mail)}" data-rol-admin="1">Hacer Administrador</button>`;
+    return `
+      <div class="row">
+        <div>
+          <b>${esc(u.nombre || mail)}</b>
+          ${u.nombre ? `<div style="font-size:13px;color:var(--fg)">${esc(mail)}</div>` : ''}
+          <div style="margin-top:4px">${badge}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${botonCambio}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function cambiarPermisoCuenta(email, nombre, hacerAdmin) {
+  const mail = email.toLowerCase().trim();
+  const miEmail = (usuarioActual && usuarioActual.email || '').toLowerCase().trim();
+  if (!hacerAdmin && mail === miEmail) {
+    notify('No puedes quitarte el permiso de administrador a tu propia cuenta actual');
+    return false;
+  }
+
+  const { error: rpcErr } = await sb.rpc('configurar_cuenta_personal', {
+    p_email: mail,
+    p_nombre: nombre || null,
+    p_es_admin: !!hacerAdmin
+  });
+
+  if (rpcErr) {
+    if (hacerAdmin) {
+      const { error: insErr } = await sb.from('administradores').insert({ email: mail });
+      if (insErr && !String(insErr.message).includes('duplicate')) {
+        notify('No se pudo dar permiso Admin: ' + insErr.message);
+        return false;
+      }
+    } else {
+      const { error: delErr } = await sb.from('administradores').delete().eq('email', mail);
+      if (delErr) {
+        notify('No se pudo quitar permiso Admin: ' + delErr.message);
+        return false;
+      }
+    }
+  }
+
+  guardarPersonalLocal(mail, nombre, hacerAdmin);
+  await cargarUsuarios();
+  return true;
+}
+
+$('listaUsuarios').onclick = async e => {
+  const btn = e.target.closest('[data-rol-email]');
+  if (!btn) return;
+  const mail = btn.dataset.rolEmail;
+  const hacerAdmin = btn.dataset.rolAdmin === '1';
+  const u = USUARIOS.find(x => (x.email || '').toLowerCase() === mail);
+  btn.disabled = true;
+  const ok = await cambiarPermisoCuenta(mail, u && u.nombre, hacerAdmin);
+  btn.disabled = false;
+  if (ok) {
+    notify(hacerAdmin ? `${mail} ahora es Administrador` : `${mail} ahora es Solo Ventas (Trabajadora)`);
+  }
+};
+
+$('btnDarAdminDirecto').onclick = async () => {
+  const mail = ($('admEmailDirecto').value || '').toLowerCase().trim();
+  if (!mail || !mail.includes('@')) { notify('Escribe un correo válido'); $('admEmailDirecto').focus(); return; }
+  $('btnDarAdminDirecto').disabled = true;
+  const ok = await cambiarPermisoCuenta(mail, '', true);
+  $('btnDarAdminDirecto').disabled = false;
+  if (ok) {
+    $('admEmailDirecto').value = '';
+    notify(`${mail} agregado como Administrador`);
+  }
+};
+
+$('btnCrearUsuario').onclick = async () => {
+  const nombre = ($('nuNombre').value || '').trim();
+  const rol = $('nuRol').value;
+  const email = ($('nuEmail').value || '').toLowerCase().trim();
+  const password = $('nuPass').value || '';
+  const hacerAdmin = rol === 'admin';
+
+  if (!email || !email.includes('@')) { notify('Escribe un correo válido (ej: trabajadora@laflaquita.com)'); $('nuEmail').focus(); return; }
+  if (password.length < 6) { notify('La contraseña debe tener al menos 6 caracteres'); $('nuPass').focus(); return; }
+
+  $('btnCrearUsuario').disabled = true;
+  $('btnCrearUsuario').textContent = 'Creando cuenta…';
+  $('nuMsg').textContent = 'Registrando usuario…';
+
+  try {
+    const tempSb = supabase.createClient(CONFIG.url, CONFIG.key, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
+    });
+    const { data, error } = await tempSb.auth.signUp({
+      email,
+      password,
+      options: { data: { nombre: nombre || (hacerAdmin ? 'Administrador' : 'Trabajadora') } }
+    });
+    if (error && !String(error.message).toLowerCase().includes('already registered')) {
+      $('nuMsg').textContent = 'Error al crear cuenta: ' + error.message;
+      notify('Error: ' + error.message);
+      return;
+    }
+
+    await cambiarPermisoCuenta(email, nombre || (hacerAdmin ? 'Administrador' : 'Trabajadora'), hacerAdmin);
+
+    const etiquetaRol = hacerAdmin ? 'Administrador / Dueña (Ventas + Admin)' : 'Trabajadora (Solo Ventas)';
+    $('nuMsg').innerHTML = `Cuenta lista: <b>${esc(email)}</b> · Clave: <b>${esc(password)}</b> · Rol: <b>${etiquetaRol}</b>`;
+    $('nuNombre').value = '';
+    $('nuEmail').value = '';
+    $('nuPass').value = '';
+    notify(`Cuenta creada (${etiquetaRol})`);
+  } catch (e) {
+    $('nuMsg').textContent = 'Error: ' + (e.message || e);
+  } finally {
+    $('btnCrearUsuario').disabled = false;
+    $('btnCrearUsuario').textContent = 'Crear cuenta de acceso';
+  }
+};
+
 function showTab(t) {
   tabActual = t;
-  ['stock', 'carta', 'movs'].forEach(k => {
+  ['stock', 'carta', 'movs', 'users'].forEach(k => {
     $('v-' + k).hidden = k !== t;
     $('t-' + k).classList.toggle('a', k === t);
   });
   if (t === 'movs') cargarMovimientos();
+  if (t === 'users') cargarUsuarios();
 }
 
 $('t-stock').onclick = () => showTab('stock');
 $('t-carta').onclick = () => showTab('carta');
 $('t-movs').onclick = () => showTab('movs');
+$('t-users').onclick = () => showTab('users');
 $('refrescar').onclick = cargarTodo;
 
 const cerrarSesion = async () => { if (sb) await sb.auth.signOut(); location.reload(); };
