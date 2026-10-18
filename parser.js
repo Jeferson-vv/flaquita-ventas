@@ -4,13 +4,14 @@
 (function (root) {
   'use strict';
 
-  const W = { un: 1, una: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7,
-    ocho: 8, nueve: 9, diez: 10, once: 11, doce: 12, quince: 15, diecisiete: 17, veinte: 20 };
+  const W = { un: 1, una: 1, uno: 1, dos: 2, do: 2, duo: 2, par: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7,
+    ocho: 8, nueve: 9, diez: 10, once: 11, doce: 12, trece: 13, catorce: 14, quince: 15, dieciseis: 16, diecisiete: 17,
+    dieciocho: 18, diecinueve: 19, veinte: 20 };
   const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
 
   function norm(s) {
     s = String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-    s = s.replace(/\bdiez y siete\b/g, '17');
+    s = s.replace(/\bdiez y siete\b/g, '17').replace(/\bdiez y seis\b/g, '16').replace(/\bdiez y ocho\b/g, '18').replace(/\bdiez y nueve\b/g, '19');
     return s.replace(/\b[a-z]+\b/g, w => (has(W, w) ? String(W[w]) : w));
   }
 
@@ -18,23 +19,24 @@
   function preprocess(t) {
     return t
       .replace(/[-–—_"'¿?¡!:;()]/g, ' ')
+      .replace(/\b(salsas?|zarzas?|sarzas?)\b/g, ' sarza ')
       .replace(/\bsoles?\b/g, '')
       .replace(/(?<!\d)\.|\.(?!\d)/g, ' ')
       .replace(/\b(\d+)\s*(l|lt|lts|lit)\b/g, '$1 litros')
-      .replace(/\b(medio|media)\s+jarra\b/g, ' jh ')
+      .replace(/\b(medios?|medias?)\s+jarras?\b/g, ' jh ')
       .replace(/\bjarras?\b/g, ' jf ')
-      .replace(/\b2 (litros? )?(y medio|1\/2)( litros?)?\b|\b2[.,]5\b/g, ' sz25 ')
-      .replace(/\b1 (litros? )?(y medio|1\/2)( litros?)?\b|\b1[.,]5\b|\b1[.,]30?\b|\b1 litro (y )?(30|treinta)\b|\blitro (y )?(30|treinta)\b|\b1 (30|treinta)\b/g, ' sz15 ')
-      .replace(/\b(medio|media)\s+litro\b|\b1\/2( litro)?\b|\b500\s*(ml)?\b/g, ' sz05 ')
+      .replace(/\b2\s+litros?\s+(y\s+medio|1\/2)\b|\b2[.,]5(\s+litros?)?\b/g, ' sz25 ')
+      .replace(/\b1\s+litros?\s+(y\s+medio|1\/2)\b|\b1[.,]5(\s+litros?)?\b|\b1[.,]30?\b|\b1\s+litro\s+(y\s+)?(30|treinta)\b|\blitro\s+(y\s+)?(30|treinta)\b|\b1\s+(30|treinta)\b/g, ' sz15 ')
+      .replace(/\b(medios?|medias?)\s+litros?\b|\b1\/2\s+litros?\b|\b500\s*(ml)?\b/g, ' sz05 ')
       .replace(/\b400\s*(ml|mililitros)?\b/g, ' sz400 ')
       .replace(/\b625\s*(ml|mililitros)?\b/g, ' sz625 ')
-      .replace(/\bpersonal\b/g, ' szp ')
-      .replace(/\b3 litros?\b/g, ' sz3 ')
-      .replace(/\b2 litros?\b/g, ' sz2 ')
-      .replace(/\b(1 litros?|litros?)\b/g, ' sz1 ');
+      .replace(/\bpersonales?\b|\bpersonal\b/g, ' szp ')
+      .replace(/\b3\s+litros?\b/g, ' sz3 ')
+      .replace(/\b2\s+litros?\b/g, ' sz2 ')
+      .replace(/\b(1\s+litros?|litros?)\b/g, ' sz1 ');
   }
 
-  const FILL = /^(cervezas?|botellas?|vasos?|unidades?|porciones?|platos?|helad[ao]s?)$/;
+  const FILL = /^(cervezas?|botellas?|vasos?|unidades?|helad[ao]s?)$/;
   const BEER = { heineken: 'Heineken', arequip: 'Arequipeña', pilsen: 'Pilsen', trigo: 'Trigo', negra: 'Negra' };
   const SODA_SIZE = { sz400: '400 ml', sz625: '625 ml', sz05: '½ litro', sz1: '1 litro', sz15: '1½ litros', sz25: '2½ litros', sz3: '3 litros' };
   const ESC_SIZE = { szp: 'personal (vidrio)', sz05: '½ litro', sz1: '1 litro (vidrio)', sz15: '1½ litros', sz2: '2 litros' };
@@ -42,17 +44,19 @@
 
   function kindOf(w) {
     if (/^chicharr/.test(w)) return { k: 'ch' };
-    if (w === 'taypa' || w === 'plato' || w === 'combinado') return { k: 'ch', mod: w };
-    if (w === 'porcion') return { k: 'mod', mod: 'porcion' };
-    if (w === 'media' || w === 'medio') return { k: 'mod', mod: 'media' };
-    if (w === 'sarza' || w === 'sarzas') return { k: 'sarza' };
+    if (/^taypa/.test(w)) return { k: 'ch', mod: 'taypa' };
+    if (/^plat/.test(w) || /^normal/.test(w)) return { k: 'ch', mod: 'plato' };
+    if (/^combinad/.test(w)) return { k: 'ch', mod: 'combinado' };
+    if (/^porcion/.test(w)) return { k: 'mod', mod: 'porcion' };
+    if (/^medi[oa]s?$/.test(w) || w === '1/2') return { k: 'mod', mod: 'media' };
+    if (w === 'sarza' || w === 'cabeza') return { k: 'sarza' };
     if (w === 'jf' || w === 'jh') return { k: 'cm', jar: w };
-    if (w === 'chicha') return { k: 'cm' };
-    if (w === 'coca' || w === 'cola') return { k: 'so', brand: 'Coca' };
-    if (w === 'inca' || w === 'kola') return { k: 'so', brand: 'Inca' };
-    if (w === 'gaseosa' || w === 'gaseosas') return { k: 'so' };
+    if (/^chichas?$/.test(w) || /^morad[oa]s?$/.test(w)) return { k: 'cm' };
+    if (/^(cocas?|colas?)$/.test(w)) return { k: 'so', brand: 'Coca' };
+    if (/^(incas?|kolas?)$/.test(w)) return { k: 'so', brand: 'Inca' };
+    if (/^gaseosas?$/.test(w)) return { k: 'so' };
     if (/^escoces/.test(w)) return { k: 'es' };
-    if (/^(agua|aguas|cielo|luis)$/.test(w)) return { k: 'ag' };
+    if (/^(aguas?|cielo|luis)$/.test(w)) return { k: 'ag' };
     for (const b in BEER) if (w === b || w.startsWith(b)) return { k: 'be', beer: BEER[b] };
     return null;
   }
@@ -179,8 +183,10 @@
 
       if (/^\d+([.,]\d+)?$/.test(w)) {
         const v = parseFloat(w.replace(',', '.'));
-        if (/^(de|a|por)$/.test(prev) && cur && i - cur.end <= 4) { cur.price = v; cur.end = i; continue; }
-        if (next && (kindOf(next) || FILL.test(next) || matchCustomAt(tk, i + 1, customMatchers))) pend = v;
+        const isPrice = (/^(de|a|por)$/.test(prev) && cur && i - cur.end <= 4 && !pend) ||
+          (cur && cur.kind === 'ch' && !cur.price && (v === 10 || v === 15 || v === 17 || v === 20) && i - cur.end <= 2 && prev !== 'y');
+        if (isPrice) { cur.price = v; cur.end = i; continue; }
+        pend = v;
         continue;
       }
 
@@ -207,17 +213,27 @@
       if (!kd) continue;
 
       if (kd.k === 'mod') {
-        if (cur && (cur.kind === 'ch' || cur.kind === 'sarza') && pend === null && i - cur.end <= 3) { cur.mods.push(kd.mod); cur.end = i; }
-        else pmods.push(kd.mod);
+        if (cur && (cur.kind === 'ch' || cur.kind === 'sarza') && pend === null && i - cur.end <= 3 && prev !== 'y') {
+          cur.mods.push(kd.mod); cur.end = i;
+        } else if (kd.mod === 'porcion' && (pend !== null || pmods.includes('media') || prev === 'y' || !cur)) {
+          const it = {
+            kind: 'ch', q: pend === null ? 1 : pend, size: null, price: 0,
+            brand: null, jar: null, beer: null, mods: pmods.concat(['porcion']), sarza: false, end: i
+          };
+          out.push(it); cur = it;
+          pend = null; psz = null; pmods = [];
+        } else {
+          pmods.push(kd.mod);
+        }
         continue;
       }
 
-      if (kd.k === 'sarza' && cur && cur.kind === 'ch' && !cur.sarza && pend === null && i - cur.end <= 4) {
+      if (kd.k === 'sarza' && cur && cur.kind === 'ch' && pend === null && i - cur.end <= 4 && prev !== 'y') {
         cur.sarza = true; cur.end = i; continue;
       }
 
       let merged = false;
-      if (cur && pend === null) {
+      if (cur && pend === null && prev !== 'y') {
         if (kd.k === 'cm' && cur.kind === 'cm' && i - cur.end <= 3) {
           if (kd.jar && !cur.jar) cur.jar = kd.jar;
           cur.end = i; merged = true;
@@ -226,8 +242,12 @@
           cur.end = i; merged = true;
         } else if (kd.k === 'ag' && cur.kind === 'ag' && i - cur.end <= 1) {
           cur.end = i; merged = true;
-        } else if (kd.k === 'ch' && kd.mod && cur.kind === 'ch' && i - cur.end <= 2) {
-          cur.mods.push(kd.mod); cur.end = i; merged = true;
+        } else if (kd.k === 'sarza' && cur.kind === 'sarza' && i - cur.end <= 2) {
+          cur.end = i; merged = true;
+        } else if (kd.k === 'ch' && cur.kind === 'sarza' && i - cur.end <= 2) {
+          cur.kind = 'ch'; cur.sarza = true; if (kd.mod) cur.mods.push(kd.mod); cur.end = i; merged = true;
+        } else if (kd.k === 'ch' && cur.kind === 'ch' && i - cur.end <= 2) {
+          if (kd.mod) cur.mods.push(kd.mod); cur.end = i; merged = true;
         }
       }
 

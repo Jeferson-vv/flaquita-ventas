@@ -491,7 +491,7 @@ $('go').onclick = () => { const v = $('dic').value.trim(); if (v) { anotar(v); $
 $('dic').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').onclick(); });
 
 function pintarRapidos() {
-  $('rapidos').innerHTML = CAT.filter(p => p.categoria === 'chicharron')
+  $('rapidos').innerHTML = CAT.filter(p => p.categoria === 'chicharron' || p.categoria === 'combinado')
     .map(p => `<button class="sm" data-n="${esc(p.nombre)}">+ ${esc(p.nombre)} ${money(p.precio)}</button>`).join('');
 }
 $('rapidos').onclick = e => {
@@ -615,7 +615,7 @@ function handle(t) {
 }
 function startRec() {
   rec = new SR(); rec.lang = 'es-PE'; rec.continuous = true; rec.interimResults = false;
-  rec.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) { const t = e.results[i][0].transcript; $('heard').textContent = 'Escuché: "' + t + '"'; handle(t); } };
+  rec.onresult = e => { for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) { const t = e.results[i][0].transcript.replace(/\b(salsa|zarza)(s?)\b/gi, 'sarza$2'); $('heard').textContent = 'Escuché: "' + t + '"'; handle(t); } };
   rec.onend = () => { if (active) setTimeout(() => { try { startRec(); } catch (e) {} }, 300); };
   rec.onerror = e => {
     if (e.error === 'no-speech' || e.error === 'aborted') return;
@@ -645,7 +645,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=23').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=24').then(r => r.update()).catch(() => {});
 }
 init();
 </script>
