@@ -655,37 +655,14 @@ function pintarVistaHist() {
   filtradas.forEach(v => (porDia[v.fecha] = porDia[v.fecha] || []).push(v));
   const dias = Object.keys(porDia).sort().reverse();
 
-  const totPeriodo = filtradas.reduce((s, v) => s + Number(v.total), 0);
-  const bloquesPeriodo = agruparPorBloques(filtradas);
-  const bComida  = bloquesPeriodo.find(b => b.key === 'comida');
-  const bBebida  = bloquesPeriodo.find(b => b.key === 'bebida');
-  const bCerveza = bloquesPeriodo.find(b => b.key === 'cerveza');
-  const pmPeriodo = porMetodo(filtradas);
-
-  const pillsMetodoPeriodo = Object.entries(pmPeriodo)
-    .filter(([, val]) => val > 0)
-    .map(([k, val]) => `<span class="mp-pill">${esc(METODOS[k] || k)}: <b>${money(val)}</b></span>`)
-    .join('');
-
-  const resumenHtml = filtradas.length ? `
-    <div class="card" style="background:#fff;border:1.5px solid var(--blk)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px">
-        <h3 style="margin:0">Resumen del período (${dias.length} ${dias.length === 1 ? 'día' : 'días'})</h3>
-        <span style="font-size:12px;color:var(--mu);font-weight:600">${filtradas.length} ventas · Prom. ${money(totPeriodo / filtradas.length)}/venta</span>
-      </div>
-      <div class="kpi" style="margin-bottom:8px">
-        <div style="border-left-color:var(--blk)"><small>Total vendido</small><b>${money(totPeriodo)}</b><small>${dias.length ? 'Prom. ' + money(totPeriodo / dias.length) + '/día' : ''}</small></div>
-        <div style="border-left-color:#be185d"><small>Chicharrones y Platos</small><b style="color:#be185d">${money(bComida ? bComida.subtotal : 0)}</b><small>${bComida ? bComida.unidades : 0} porciones/platos</small></div>
-        <div style="border-left-color:#0284c7"><small>Gaseosas y Bebidas</small><b style="color:#0284c7">${money(bBebida ? bBebida.subtotal : 0)}</b><small>${bBebida ? bBebida.unidades : 0} unidades</small></div>
-        <div style="border-left-color:#d97706"><small>Cervezas</small><b style="color:#d97706">${money(bCerveza ? bCerveza.subtotal : 0)}</b><small>${bCerveza ? bCerveza.unidades : 0} botellas</small></div>
-      </div>
-      <div class="mp-badges">${pillsMetodoPeriodo}</div>
-    </div>` : '';
-
-  const diasHtml = dias.length ? dias.map((f, idx) => {
+  const diasHtml = dias.length ? dias.map(f => {
     const vs = porDia[f];
     const tot = vs.reduce((s, v) => s + Number(v.total), 0);
     const pm = porMetodo(vs);
+    const bloquesDia = agruparPorBloques(vs);
+    const dComida  = bloquesDia.find(b => b.key === 'comida');
+    const dBebida  = bloquesDia.find(b => b.key === 'bebida');
+    const dCerveza = bloquesDia.find(b => b.key === 'cerveza');
     const horas = vs.map(v => horaStr(v.hora));
     const rangoHora = horas.length > 1 ? `${horas[horas.length - 1]} – ${horas[0]}` : (horas[0] || '');
     const desglosePago = Object.entries(pm)
@@ -701,7 +678,7 @@ function pintarVistaHist() {
       </div>`;
     }).join('');
 
-    return `<details ${idx === 0 ? 'open' : ''}>
+    return `<details>
       <summary>
         <div>
           <span style="font-size:15px">${fdate(f)}</span>
@@ -709,8 +686,14 @@ function pintarVistaHist() {
         </div>
         <span style="font-size:16px;color:var(--ac)">${money(tot)}</span>
       </summary>
-      <div style="padding-top:6px;margin-top:6px;border-top:1px solid var(--bd)">
-        <div class="mp-badges">${desglosePago}<span class="mp-pill">Ticket prom.: <b>${money(tot / vs.length)}</b></span></div>
+      <div style="padding-top:8px;margin-top:8px;border-top:1px solid var(--bd)">
+        <div class="kpi" style="margin-bottom:8px">
+          <div style="border-left-color:var(--blk)"><small>Total del día</small><b>${money(tot)}</b><small>${vs.length} ventas · Prom. ${money(tot / vs.length)}</small></div>
+          <div style="border-left-color:#be185d"><small>Chicharrones y Platos</small><b style="color:#be185d">${money(dComida ? dComida.subtotal : 0)}</b><small>${dComida ? dComida.unidades : 0} porciones/platos</small></div>
+          <div style="border-left-color:#0284c7"><small>Gaseosas y Bebidas</small><b style="color:#0284c7">${money(dBebida ? dBebida.subtotal : 0)}</b><small>${dBebida ? dBebida.unidades : 0} unidades</small></div>
+          <div style="border-left-color:#d97706"><small>Cervezas</small><b style="color:#d97706">${money(dCerveza ? dCerveza.subtotal : 0)}</b><small>${dCerveza ? dCerveza.unidades : 0} botellas</small></div>
+        </div>
+        <div class="mp-badges">${desglosePago}</div>
         ${htmlBloquesCategoria(vs, tot)}
         <details class="sub-det">
           <summary><span>Ver las ${vs.length} ventas del día hora por hora</span><span>Detalle</span></summary>
@@ -734,7 +717,6 @@ function pintarVistaHist() {
       <input type="date" id="histFechaInput" value="${esc(filtroHistFecha)}" style="margin:0;padding:8px 10px;font-size:14px;flex:1" title="Buscar un día específico">
       ${filtroHistFecha ? '<button type="button" class="sm" id="limpiarFechaHist" style="flex:0 0 auto;padding:8px 12px">Ver todos</button>' : ''}
     </div>
-    ${resumenHtml}
     ${diasHtml}
     <button class="sm" id="exp" style="width:100%;margin-top:10px">Descargar todo en Excel (CSV)</button>
   `;
@@ -873,7 +855,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=25').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=26').then(r => r.update()).catch(() => {});
 }
 init();
 </script>
