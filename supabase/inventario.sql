@@ -322,3 +322,8 @@ create policy "admin actualiza productos" on productos
   for update to authenticated
   using (es_admin())
   with check (es_admin());
+
+drop policy if exists "admin crea productos" on productos;
+create policy "admin crea productos" on productos
+  for insert to authenticated
+  with check (es_admin());

@@ -164,9 +164,41 @@ const CONFIG = {
 
   <!-- TAB 2: PRECIOS, PRODUCTOS ACTIVOS Y CONFIGURACIÓN DE STOCK -->
   <div id="v-carta" hidden>
-    <div class="card" style="font-size:13px;color:var(--mu)">
-      <b>Nota:</b> Los nombres de los productos no se cambian para que el micrófono y <code>parser.js</code> los sigan reconociendo. Aquí puedes cambiar precios, activar/desactivar productos y elegir cuáles descuentan stock.
+    <div class="card">
+      <h3>Agregar nuevo producto a la carta</h3>
+      <div class="grid2">
+        <label style="font-size:13px;color:var(--mu)">Nombre del producto
+          <input id="npNombre" type="text" placeholder="Ej: Cusqueña Dorada, Fanta 1 litro, Tamal">
+        </label>
+        <div style="display:flex;gap:8px">
+          <label style="flex:1;font-size:13px;color:var(--mu)">Categoría
+            <select id="npCat">
+              <option value="bebida">Bebidas</option>
+              <option value="cerveza">Cervezas</option>
+              <option value="chicharron">Chicharrón</option>
+              <option value="combinado">Combinados</option>
+              <option value="sarza">Sarza</option>
+              <option value="otro">Otros</option>
+            </select>
+          </label>
+          <label style="flex:1;font-size:13px;color:var(--mu)">Precio (S/)
+            <input id="npPrecio" type="number" min="0" step="0.50" placeholder="Ej: 10.00">
+          </label>
+        </div>
+      </div>
+      <div class="p-controls" style="margin-top:8px">
+        <label><input type="checkbox" id="npCtrlStock" checked> Controla stock</label>
+        <label>Stock inicial
+          <input id="npStockIni" type="number" step="1" min="0" value="0">
+        </label>
+        <label>Stock mín.
+          <input id="npStockMin" type="number" step="1" min="0" value="6">
+        </label>
+        <label><input type="checkbox" id="npWeb" checked> Visible web</label>
+      </div>
+      <button type="button" class="btn" id="btnCrearProd" style="margin-top:10px">Crear producto</button>
     </div>
+
     <div class="filters">
       <input id="busqCarta" placeholder="Buscar producto…">
       <select id="catCarta">
@@ -491,6 +523,69 @@ function pintarCarta() {
 
 $('busqCarta').oninput = pintarCarta;
 $('catCarta').onchange = pintarCarta;
+
+$('npCat').onchange = () => {
+  const c = $('npCat').value;
+  $('npCtrlStock').checked = (c === 'bebida' || c === 'cerveza');
+};
+
+$('btnCrearProd').onclick = async () => {
+  const nombre = ($('npNombre').value || '').trim();
+  const categoria = $('npCat').value;
+  const precio = parseFloat($('npPrecio').value);
+  const controla_stock = $('npCtrlStock').checked;
+  const stockIni = parseInt($('npStockIni').value, 10) || 0;
+  const stock_minimo = parseInt($('npStockMin').value, 10) || 0;
+  const visible_web = $('npWeb').checked;
+
+  if (!nombre) { notify('Escribe el nombre del nuevo producto'); $('npNombre').focus(); return; }
+  if (Number.isNaN(precio) || precio < 0) { notify('Indica un precio válido (0 o mayor)'); $('npPrecio').focus(); return; }
+  if (PRODS.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
+    notify('Ya existe un producto con ese nombre');
+    return;
+  }
+
+  const maxOrden = PRODS.reduce((m, p) => Math.max(m, Number(p.orden) || 0), 0);
+  $('btnCrearProd').disabled = true;
+  $('btnCrearProd').textContent = 'Creando…';
+
+  const { data: creado, error } = await sb.from('productos')
+    .insert({
+      nombre,
+      categoria,
+      precio,
+      activo: true,
+      visible_web,
+      controla_stock,
+      stock: 0,
+      stock_minimo,
+      orden: maxOrden + 10
+    })
+    .select('id')
+    .single();
+
+  $('btnCrearProd').disabled = false;
+  $('btnCrearProd').textContent = 'Crear producto';
+
+  if (error) {
+    notify('No se pudo crear: ' + error.message);
+    return;
+  }
+
+  if (controla_stock && stockIni > 0 && creado && creado.id) {
+    await sb.rpc('aplicar_stock', {
+      p_producto_id: creado.id,
+      p_cantidad: stockIni,
+      p_nota: 'Stock inicial al crear producto'
+    });
+  }
+
+  $('npNombre').value = '';
+  $('npPrecio').value = '';
+  $('npStockIni').value = '0';
+  notify(`Producto "${nombre}" creado correctamente`);
+  await cargarTodo();
+};
 
 $('listaCarta').onclick = async e => {
   const id = e.target.dataset && e.target.dataset.save;

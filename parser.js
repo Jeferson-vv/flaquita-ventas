@@ -103,6 +103,56 @@
     return { name, price: it.price > 0 ? it.price : cp };
   }
 
+  const STD_NAMES = new Set([
+    'Chicharrón Taypa', 'Chicharrón plato normal', 'Chicharrón 1 porción', 'Chicharrón ½ porción',
+    'Combinado Taypa con sarza', 'Sarza de cabeza', 'Sarza ½ porción',
+    'Chicha morada 1 litro', 'Chicha morada ½ litro', 'Chicha morada de cortesía',
+    'Coca 3 litros', 'Coca 2½ litros', 'Coca 1½ litros', 'Coca 1 litro', 'Coca ½ litro', 'Coca 625 ml', 'Coca 400 ml',
+    'Inca 3 litros', 'Inca 2½ litros', 'Inca 1½ litros', 'Inca 1 litro', 'Inca ½ litro', 'Inca 625 ml', 'Inca 400 ml',
+    'Escocesa 2 litros', 'Escocesa 1½ litros', 'Escocesa 1 litro (vidrio)', 'Escocesa ½ litro', 'Escocesa personal (vidrio)',
+    'Agua (Cielo, San Luis)', 'Heineken', 'Arequipeña', 'Pilsen', 'Trigo', 'Negra'
+  ]);
+  const STOP_WORDS = /^(de|del|con|sin|en|el|la|los|las|un|una|por|para|y|o|a)$/;
+  function stem(w) {
+    if (w.length > 4 && w.endsWith('es') && !/^sz/.test(w)) return w.slice(0, -2);
+    if (w.length > 3 && w.endsWith('s') && !/^sz/.test(w)) return w.slice(0, -1);
+    return w;
+  }
+  function buildCustomMatchers(cat) {
+    const list = [];
+    for (const p of cat) {
+      if (!p || !p.nombre || STD_NAMES.has(p.nombre)) continue;
+      const tokens = preprocess(norm(p.nombre))
+        .replace(/,/g, ' ')
+        .split(/\s+/)
+        .filter(w => w && !STOP_WORDS.test(w))
+        .map(stem);
+      if (tokens.length) list.push({ prod: p, tokens });
+    }
+    list.sort((a, b) => b.tokens.length - a.tokens.length);
+    return list;
+  }
+  function matchCustomAt(tk, idx, matchers) {
+    if (!matchers.length) return null;
+    const w0 = stem(tk[idx]);
+    for (const m of matchers) {
+      if (m.tokens[0] !== w0) continue;
+      let ok = true, maxEnd = idx;
+      const windowEnd = Math.min(tk.length - 1, idx + m.tokens.length + 2);
+      for (let j = 1; j < m.tokens.length; j++) {
+        const target = m.tokens[j];
+        let foundAt = -1;
+        for (let k = idx + 1; k <= windowEnd; k++) {
+          if (stem(tk[k]) === target) { foundAt = k; break; }
+        }
+        if (foundAt === -1) { ok = false; break; }
+        if (foundAt > maxEnd) maxEnd = foundAt;
+      }
+      if (ok) return { prod: m.prod, end: maxEnd };
+    }
+    return null;
+  }
+
   function parseMetodo(n0) {
     if (/\b(yape\w*|llape\w*|jape|ya\s+pe)\b/.test(n0)) return 'yape';
     if (/\b(plin\w*|plim)\b/.test(n0)) return 'plin';
@@ -115,6 +165,7 @@
   // catalog: [{ nombre, precio }]. Devuelve { items: [{name, q, price}], rejects: [texto], metodo: string|null }
   function parseVenta(txt, catalog) {
     const cat = catalog || [];
+    const customMatchers = buildCustomMatchers(cat);
     const n0 = norm(txt);
     const metodo = parseMetodo(n0);
     const courtesy = /\b(cortesia|invit\w*)\b/.test(n0);
@@ -129,7 +180,19 @@
       if (/^\d+([.,]\d+)?$/.test(w)) {
         const v = parseFloat(w.replace(',', '.'));
         if (/^(de|a|por)$/.test(prev) && cur && i - cur.end <= 4) { cur.price = v; cur.end = i; continue; }
-        if (next && (kindOf(next) || FILL.test(next))) pend = v;
+        if (next && (kindOf(next) || FILL.test(next) || matchCustomAt(tk, i + 1, customMatchers))) pend = v;
+        continue;
+      }
+
+      const cm = matchCustomAt(tk, i, customMatchers);
+      if (cm) {
+        const it = {
+          kind: 'custom', customProd: cm.prod, q: pend === null ? 1 : pend,
+          size: null, price: 0, brand: null, jar: null, beer: null, mods: [], sarza: false, end: cm.end
+        };
+        out.push(it); cur = it;
+        pend = null; psz = null; pmods = [];
+        i = cm.end;
         continue;
       }
 
@@ -182,6 +245,10 @@
     const items = [], rejects = [];
     const catPrice = name => { const p = cat.find(x => x.nombre === name); return p ? Number(p.precio) : null; };
     for (const it of out) {
+      if (it.kind === 'custom') {
+        items.push({ name: it.customProd.nombre, q: it.q, price: it.price > 0 ? it.price : Number(it.customProd.precio) });
+        continue;
+      }
       const r = resolve(it, courtesy, catPrice);
       if (r.error) rejects.push(r.error);
       else items.push({ name: r.name, q: it.q, price: r.price });
