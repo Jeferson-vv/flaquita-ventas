@@ -660,9 +660,12 @@ async function guardarNombresRapidos(lista) {
   try { localStorage.setItem('flaquita_rapidos_v1', JSON.stringify(lista)); } catch (e) {}
   if (sb) {
     try {
-      await sb.from('configuracion')
+      const { error } = await sb.from('configuracion')
         .upsert({ clave: 'botones_rapidos', valor: lista, actualizado: new Date().toISOString() });
-    } catch (e) {}
+      if (error) console.warn('No se pudo guardar en tabla configuracion:', error.message);
+    } catch (e) {
+      console.warn('Error guardando configuracion:', e);
+    }
   }
 }
 
@@ -756,7 +759,7 @@ $('rapidos').onclick = async e => {
   }
 
   if (btn.dataset.rapReset) {
-    guardarNombresRapidos(RAPIDOS_DEFAULT);
+    await guardarNombresRapidos(RAPIDOS_DEFAULT);
     pintarRapidos();
     $('heard').textContent = 'Botones rápidos restaurados a los 5 principales.';
     return;
@@ -775,7 +778,7 @@ $('rapidos').onclick = async e => {
     const lista = obtenerNombresRapidos();
     if (idx > 0) {
       [lista[idx - 1], lista[idx]] = [lista[idx], lista[idx - 1]];
-      guardarNombresRapidos(lista);
+      await guardarNombresRapidos(lista);
       pintarRapidos();
     }
     return;
@@ -786,7 +789,7 @@ $('rapidos').onclick = async e => {
     const lista = obtenerNombresRapidos();
     if (idx < lista.length - 1) {
       [lista[idx + 1], lista[idx]] = [lista[idx], lista[idx + 1]];
-      guardarNombresRapidos(lista);
+      await guardarNombresRapidos(lista);
       pintarRapidos();
     }
     return;
@@ -796,7 +799,7 @@ $('rapidos').onclick = async e => {
     const quitar = btn.dataset.rapDel;
     const lista = obtenerNombresRapidos().filter(x => x !== quitar);
     if (!lista.length) { $('heard').textContent = 'Debe quedar al menos 1 botón rápido.'; return; }
-    guardarNombresRapidos(lista);
+    await guardarNombresRapidos(lista);
     pintarRapidos();
     return;
   }
@@ -807,7 +810,7 @@ $('rapidos').onclick = async e => {
     const lista = obtenerNombresRapidos();
     if (!lista.includes(sel.value)) {
       lista.push(sel.value);
-      guardarNombresRapidos(lista);
+      await guardarNombresRapidos(lista);
       pintarRapidos();
     }
     return;
@@ -836,7 +839,7 @@ $('rapidos').onclick = async e => {
     }
     const lista = obtenerNombresRapidos().map(x => x === oldName ? nuevoNombre : x);
     await cargarCarta();
-    guardarNombresRapidos(lista);
+    await guardarNombresRapidos(lista);
     pintarRapidos();
     $('heard').textContent = `Actualizado: ${nuevoNombre} (${money(nuevoPrecio)})`;
     snd('ok');
@@ -856,7 +859,7 @@ $('rapidos').onclick = async e => {
       const ex = CAT.find(p => p.nombre.toLowerCase() === nombre.toLowerCase());
       const lista = obtenerNombresRapidos();
       if (!lista.includes(ex.nombre)) lista.push(ex.nombre);
-      guardarNombresRapidos(lista);
+      await guardarNombresRapidos(lista);
       pintarRapidos();
       $('heard').textContent = `"${ex.nombre}" ya existía en la carta y fue añadido a los botones rápidos.`;
       snd('ok');
@@ -886,7 +889,7 @@ $('rapidos').onclick = async e => {
     const lista = obtenerNombresRapidos();
     await cargarCarta();
     lista.push(nombre);
-    guardarNombresRapidos(lista);
+    await guardarNombresRapidos(lista);
     pintarRapidos();
     $('heard').textContent = `Nuevo botón rápido creado: ${nombre} (${money(precio)})`;
     snd('ok');
@@ -1086,7 +1089,10 @@ async function rDash() {
 
 function show(v) {
   ['hoy', 'hist', 'dash'].forEach(k => { $('v-' + k).hidden = k !== v; $('t-' + k).classList.toggle('a', k === v); });
-  if (v === 'hoy') cargarHoy();
+  if (v === 'hoy') {
+    cargarConfiguracionRapidos().then(() => pintarRapidos());
+    cargarHoy();
+  }
   if (v === 'hist') rHist();
   if (v === 'dash') rDash();
 }
@@ -1141,7 +1147,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=30').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=31').then(r => r.update()).catch(() => {});
 }
 init();
 </script>
