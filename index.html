@@ -34,7 +34,21 @@ input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 .quick input{flex:3;width:auto;margin:0}
 .quick button,.sm{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:14px;font-weight:600;cursor:pointer;box-sizing:border-box}
 .quick button:hover,.sm:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
-#rapidos button{flex:1 1 45%}
+.rap-box{background:var(--card);border:1.5px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.rap-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.rap-top span{font-size:14px;font-weight:700;color:var(--blk)}
+.rap-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f4f4f5}
+.rap-row:last-child{border-bottom:0;padding-bottom:2px}
+.rap-info{flex:1;min-width:0}
+.rap-info b{display:block;font-size:14px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rap-info small{font-size:13px;font-weight:700;color:var(--ac)}
+.rap-btns{display:flex;gap:6px;flex-shrink:0}
+.rap-btns button{min-width:44px;padding:8px 10px;border-radius:8px;border:1.5px solid var(--blk);background:#fdf2f8;color:var(--blk);font-size:14px;font-weight:800;cursor:pointer;transition:transform .08s,background .12s}
+.rap-btns button:hover,.rap-btns button:active{background:var(--ac);color:#fff;border-color:var(--ac);transform:scale(0.97)}
+.rap-edit-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid #f4f4f5}
+.rap-edit-row input[type="text"]{flex:2;min-width:120px;margin:0;padding:7px 8px;font-size:13px}
+.rap-edit-row input[type="number"]{width:74px;margin:0;padding:7px 8px;font-size:13px}
+.rap-edit-row .sm{flex:0 0 auto;padding:6px 9px;font-size:12px}
 nav{display:flex;gap:6px;margin-bottom:12px}
 nav button{flex:1;padding:10px 4px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:700;cursor:pointer}
 nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
@@ -140,7 +154,7 @@ const CONFIG = {
       <input id="dic" placeholder='Escribe o dicta: "dos chicharrones de 20 y una coca de 1 litro pago con yape"'>
       <button class="sm" id="go">Anotar</button>
     </div>
-    <div class="quick" id="rapidos"></div>
+    <div class="rap-box" id="rapidos"></div>
     <div id="list"></div>
     <div class="quick" style="margin-top:12px">
       <button class="sm" id="undo">Anular última venta</button>
@@ -598,15 +612,256 @@ async function anotar(txt) {
 $('go').onclick = () => { const v = $('dic').value.trim(); if (v) { anotar(v); $('dic').value = ''; } };
 $('dic').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').onclick(); });
 
-function pintarRapidos() {
-  $('rapidos').innerHTML = CAT.filter(p => p.categoria === 'chicharron' || p.categoria === 'combinado')
-    .map(p => `<button class="sm" data-n="${esc(p.nombre)}">+ ${esc(p.nombre)} ${money(p.precio)}</button>`).join('');
+const RAPIDOS_DEFAULT = [
+  'Combinado Taypa',
+  'Combinado Taypa con sarza',
+  'Combinado Normal',
+  'Porción de chicharrón',
+  'Media porción'
+];
+let editandoRapidos = false;
+
+function obtenerNombresRapidos() {
+  try {
+    const guardado = JSON.parse(localStorage.getItem('flaquita_rapidos_v1') || 'null');
+    if (Array.isArray(guardado) && guardado.length) {
+      const validos = guardado.filter(n => CAT.some(p => p.nombre === n));
+      if (validos.length) return validos;
+    }
+  } catch (e) {}
+  const def = RAPIDOS_DEFAULT.filter(n => CAT.some(p => p.nombre === n));
+  return def.length ? def : CAT.filter(p => p.categoria === 'chicharron' || p.categoria === 'combinado').slice(0, 5).map(p => p.nombre);
 }
-$('rapidos').onclick = e => {
-  const n = e.target.dataset && e.target.dataset.n;
-  if (!n) return;
-  const p = CAT.find(x => x.nombre === n);
-  if (p) guardar([{ name: p.nombre, q: 1, price: Number(p.precio) }], []);
+
+function guardarNombresRapidos(lista) {
+  try { localStorage.setItem('flaquita_rapidos_v1', JSON.stringify(lista)); } catch (e) {}
+}
+
+function pintarRapidos() {
+  const nombres = obtenerNombresRapidos();
+  const prodsRapidos = nombres.map(n => CAT.find(p => p.nombre === n)).filter(Boolean);
+
+  if (!editandoRapidos) {
+    $('rapidos').innerHTML = `
+      <div class="rap-top">
+        <span>Registro rápido</span>
+        <button type="button" class="sm" data-rap-toggle="1" style="flex:0 0 auto;padding:5px 10px;font-size:12px">Editar / + Nuevo</button>
+      </div>
+      ${prodsRapidos.map(p => `
+        <div class="rap-row">
+          <div class="rap-info">
+            <b>${esc(p.nombre)}</b>
+            <small>${money(p.precio)}</small>
+          </div>
+          <div class="rap-btns">
+            <button type="button" data-n="${esc(p.nombre)}" data-q="1">×1</button>
+            <button type="button" data-n="${esc(p.nombre)}" data-q="2">×2</button>
+            <button type="button" data-n="${esc(p.nombre)}" data-q="3">×3</button>
+          </div>
+        </div>
+      `).join('')}
+    `;
+    return;
+  }
+
+  const disponibles = CAT.filter(p => !nombres.includes(p.nombre));
+  $('rapidos').innerHTML = `
+    <div class="rap-top">
+      <span>Configurar botones rápidos</span>
+      <div style="display:flex;gap:6px">
+        <button type="button" class="sm" data-rap-reset="1" style="flex:0 0 auto;padding:5px 8px;font-size:12px">Restaurar 5</button>
+        <button type="button" class="sm" data-rap-toggle="1" style="flex:0 0 auto;padding:5px 10px;font-size:12px;background:var(--ac);color:#fff;border-color:var(--ac)">Listo</button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--mu);margin-bottom:6px">Puedes cambiar el nombre o precio y tocar <b>Guardar</b>, ordenar con las flechas o quitar de la lista:</div>
+    ${prodsRapidos.map((p, idx) => `
+      <div class="rap-edit-row" data-rap-card="${p.id}">
+        <input type="text" data-edit-nombre="${p.id}" value="${esc(p.nombre)}" title="Nombre del producto">
+        <input type="number" step="0.50" min="0" data-edit-precio="${p.id}" value="${Number(p.precio).toFixed(2)}" title="Precio S/">
+        <button type="button" class="sm" data-rap-save="${p.id}" data-old-name="${esc(p.nombre)}" style="background:var(--ac);color:#fff;border-color:var(--ac)">Guardar</button>
+        <button type="button" class="sm" data-rap-up="${idx}" ${idx === 0 ? 'disabled' : ''}>↑</button>
+        <button type="button" class="sm" data-rap-dn="${idx}" ${idx === prodsRapidos.length - 1 ? 'disabled' : ''}>↓</button>
+        <button type="button" class="sm" data-rap-del="${esc(p.nombre)}" style="color:#b91c1c;border-color:#fca5a5">Quitar</button>
+      </div>
+    `).join('')}
+
+    ${disponibles.length ? `
+      <div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--bd)">
+        <div style="font-size:12px;font-weight:700;color:var(--blk);margin-bottom:4px">Agregar producto de la carta a esta lista rápida</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select id="selAddRapido" style="margin:0;padding:8px;font-size:13px;flex:1">
+            ${disponibles.map(p => `<option value="${esc(p.nombre)}">${esc(p.nombre)} (${money(p.precio)})</option>`).join('')}
+          </select>
+          <button type="button" class="sm" id="btnAddRapidoExistente" style="flex:0 0 auto;padding:8px 12px">+ Agregar</button>
+        </div>
+      </div>
+    ` : ''}
+
+    <div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--bd)">
+      <div style="font-size:12px;font-weight:700;color:var(--blk);margin-bottom:4px">Crear nuevo producto rápido</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <input type="text" id="nrNombre" placeholder="Nombre (ej: Chicharrón de 18)" style="flex:2;min-width:140px;margin:0;padding:8px;font-size:13px">
+        <select id="nrCat" style="flex:1;min-width:110px;margin:0;padding:8px;font-size:13px">
+          <option value="combinado">Combinados</option>
+          <option value="chicharron">Chicharrón</option>
+          <option value="bebida">Bebidas</option>
+          <option value="cerveza">Cervezas</option>
+          <option value="sarza">Sarza</option>
+          <option value="otro">Otros</option>
+        </select>
+        <input type="number" id="nrPrecio" step="0.50" min="0" placeholder="Precio S/" style="width:90px;margin:0;padding:8px;font-size:13px">
+        <button type="button" class="sm" id="btnCrearRapidoNuevo" style="flex:1 1 100%;background:var(--blk);color:#fff;border-color:var(--blk);padding:9px">+ Crear y añadir a botones rápidos</button>
+      </div>
+    </div>
+  `;
+}
+
+$('rapidos').onclick = async e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+
+  if (btn.dataset.rapToggle) {
+    editandoRapidos = !editandoRapidos;
+    pintarRapidos();
+    return;
+  }
+
+  if (btn.dataset.rapReset) {
+    guardarNombresRapidos(RAPIDOS_DEFAULT);
+    pintarRapidos();
+    $('heard').textContent = 'Botones rápidos restaurados a los 5 principales.';
+    return;
+  }
+
+  if (btn.dataset.n) {
+    const n = btn.dataset.n;
+    const q = parseInt(btn.dataset.q || '1', 10) || 1;
+    const p = CAT.find(x => x.nombre === n);
+    if (p) guardar([{ name: p.nombre, q, price: Number(p.precio) }], []);
+    return;
+  }
+
+  if (btn.dataset.rapUp !== undefined) {
+    const idx = Number(btn.dataset.rapUp);
+    const lista = obtenerNombresRapidos();
+    if (idx > 0) {
+      [lista[idx - 1], lista[idx]] = [lista[idx], lista[idx - 1]];
+      guardarNombresRapidos(lista);
+      pintarRapidos();
+    }
+    return;
+  }
+
+  if (btn.dataset.rapDn !== undefined) {
+    const idx = Number(btn.dataset.rapDn);
+    const lista = obtenerNombresRapidos();
+    if (idx < lista.length - 1) {
+      [lista[idx + 1], lista[idx]] = [lista[idx], lista[idx + 1]];
+      guardarNombresRapidos(lista);
+      pintarRapidos();
+    }
+    return;
+  }
+
+  if (btn.dataset.rapDel) {
+    const quitar = btn.dataset.rapDel;
+    const lista = obtenerNombresRapidos().filter(x => x !== quitar);
+    if (!lista.length) { $('heard').textContent = 'Debe quedar al menos 1 botón rápido.'; return; }
+    guardarNombresRapidos(lista);
+    pintarRapidos();
+    return;
+  }
+
+  if (btn.id === 'btnAddRapidoExistente') {
+    const sel = $('selAddRapido');
+    if (!sel || !sel.value) return;
+    const lista = obtenerNombresRapidos();
+    if (!lista.includes(sel.value)) {
+      lista.push(sel.value);
+      guardarNombresRapidos(lista);
+      pintarRapidos();
+    }
+    return;
+  }
+
+  if (btn.dataset.rapSave) {
+    const id = Number(btn.dataset.rapSave);
+    const oldName = btn.dataset.oldName;
+    const row = btn.closest('[data-rap-card]');
+    const nuevoNombre = (row.querySelector('[data-edit-nombre]').value || '').trim();
+    const nuevoPrecio = parseFloat(row.querySelector('[data-edit-precio]').value);
+    if (!nuevoNombre || Number.isNaN(nuevoPrecio) || nuevoPrecio < 0) {
+      $('heard').textContent = 'Indica un nombre y precio válidos.';
+      snd('err');
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = '…';
+    const { error } = await sb.from('productos').update({ nombre: nuevoNombre, precio: nuevoPrecio }).eq('id', id);
+    btn.disabled = false;
+    btn.textContent = 'Guardar';
+    if (error) {
+      $('heard').textContent = 'No se pudo editar (requiere cuenta Admin): ' + error.message;
+      snd('err');
+      return;
+    }
+    const lista = obtenerNombresRapidos().map(x => x === oldName ? nuevoNombre : x);
+    await cargarCarta();
+    guardarNombresRapidos(lista);
+    pintarRapidos();
+    $('heard').textContent = `Actualizado: ${nuevoNombre} (${money(nuevoPrecio)})`;
+    snd('ok');
+    return;
+  }
+
+  if (btn.id === 'btnCrearRapidoNuevo') {
+    const nombre = ($('nrNombre').value || '').trim();
+    const categoria = $('nrCat').value;
+    const precio = parseFloat($('nrPrecio').value);
+    if (!nombre || Number.isNaN(precio) || precio < 0) {
+      $('heard').textContent = 'Escribe el nombre y el precio del nuevo producto.';
+      snd('err');
+      return;
+    }
+    if (CAT.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
+      const ex = CAT.find(p => p.nombre.toLowerCase() === nombre.toLowerCase());
+      const lista = obtenerNombresRapidos();
+      if (!lista.includes(ex.nombre)) lista.push(ex.nombre);
+      guardarNombresRapidos(lista);
+      pintarRapidos();
+      $('heard').textContent = `"${ex.nombre}" ya existía en la carta y fue añadido a los botones rápidos.`;
+      snd('ok');
+      return;
+    }
+    const maxOrden = CAT.reduce((m, p) => Math.max(m, Number(p.orden) || 0), 0);
+    btn.disabled = true;
+    btn.textContent = 'Creando…';
+    const { error } = await sb.from('productos').insert({
+      nombre,
+      categoria,
+      precio,
+      activo: true,
+      visible_web: true,
+      controla_stock: (categoria === 'bebida' || categoria === 'cerveza'),
+      stock: 0,
+      stock_minimo: (categoria === 'bebida' || categoria === 'cerveza') ? 6 : 0,
+      orden: maxOrden + 10
+    });
+    btn.disabled = false;
+    btn.textContent = '+ Crear y añadir a botones rápidos';
+    if (error) {
+      $('heard').textContent = 'No se pudo crear en la base de datos: ' + error.message;
+      snd('err');
+      return;
+    }
+    const lista = obtenerNombresRapidos();
+    await cargarCarta();
+    lista.push(nombre);
+    guardarNombresRapidos(lista);
+    pintarRapidos();
+    $('heard').textContent = `Nuevo botón rápido creado: ${nombre} (${money(precio)})`;
+    snd('ok');
+  }
 };
 
 $('undo').onclick = async () => {
@@ -857,7 +1112,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=28').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=29').then(r => r.update()).catch(() => {});
 }
 init();
 </script>
