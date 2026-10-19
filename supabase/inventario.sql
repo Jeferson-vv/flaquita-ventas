@@ -417,3 +417,32 @@ $$;
 revoke all on function listar_cuentas_personal() from public, anon;
 grant execute on function listar_cuentas_personal() to authenticated;
 
+-- 10) Tabla de configuración compartida (para sincronizar botones rápidos entre celular, laptop, etc.)
+create table if not exists configuracion (
+  clave       text primary key,
+  valor       jsonb not null default '{}'::jsonb,
+  actualizado timestamptz not null default now()
+);
+
+alter table configuracion enable row level security;
+
+-- Cualquier usuario autenticado (dueña o trabajadora) puede leer la configuración
+drop policy if exists "todos leen configuracion" on configuracion;
+create policy "todos leen configuracion" on configuracion
+  for select to authenticated using (true);
+
+-- Tanto admin como usuarios autenticados pueden actualizar/guardar configuración
+drop policy if exists "autenticados guardan configuracion" on configuracion;
+create policy "autenticados guardan configuracion" on configuracion
+  for all to authenticated
+  using (true)
+  with check (true);
+
+-- Insertar configuración inicial de botones rápidos si no existe
+insert into configuracion (clave, valor)
+values (
+  'botones_rapidos',
+  '["Combinado Taypa","Combinado Taypa con sarza","Combinado Normal","Porción de chicharrón","Media porción"]'::jsonb
+)
+on conflict (clave) do nothing;
+

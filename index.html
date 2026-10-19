@@ -226,6 +226,23 @@ async function cargarCarta() {
   return true;
 }
 
+let NOMBRES_RAPIDOS = null;
+
+async function cargarConfiguracionRapidos() {
+  try {
+    const { data, error } = await sb.from('configuracion')
+      .select('valor')
+      .eq('clave', 'botones_rapidos')
+      .maybeSingle();
+    if (!error && data && Array.isArray(data.valor)) {
+      NOMBRES_RAPIDOS = data.valor;
+      localStorage.setItem('flaquita_rapidos_v1', JSON.stringify(data.valor));
+      return;
+    }
+  } catch (e) {}
+  NOMBRES_RAPIDOS = null;
+}
+
 async function iniciarApp(u) {
   const nombre = (u && u.user_metadata && u.user_metadata.nombre) || 'Nerida Vasquez';
   $('quien').textContent = nombre;
@@ -236,6 +253,7 @@ async function iniciarApp(u) {
     $('linkAdmin').hidden = !esAdm;
   } catch (e) {}
   if (!(await cargarCarta())) return;
+  await cargarConfiguracionRapidos();
   pintarRapidos();
   await cargarHoy();
   iniciarVoz();
@@ -622,6 +640,10 @@ const RAPIDOS_DEFAULT = [
 let editandoRapidos = false;
 
 function obtenerNombresRapidos() {
+  if (Array.isArray(NOMBRES_RAPIDOS) && NOMBRES_RAPIDOS.length) {
+    const validos = NOMBRES_RAPIDOS.filter(n => CAT.some(p => p.nombre === n));
+    if (validos.length) return validos;
+  }
   try {
     const guardado = JSON.parse(localStorage.getItem('flaquita_rapidos_v1') || 'null');
     if (Array.isArray(guardado) && guardado.length) {
@@ -633,8 +655,15 @@ function obtenerNombresRapidos() {
   return def.length ? def : CAT.filter(p => p.categoria === 'chicharron' || p.categoria === 'combinado').slice(0, 5).map(p => p.nombre);
 }
 
-function guardarNombresRapidos(lista) {
+async function guardarNombresRapidos(lista) {
+  NOMBRES_RAPIDOS = lista;
   try { localStorage.setItem('flaquita_rapidos_v1', JSON.stringify(lista)); } catch (e) {}
+  if (sb) {
+    try {
+      await sb.from('configuracion')
+        .upsert({ clave: 'botones_rapidos', valor: lista, actualizado: new Date().toISOString() });
+    } catch (e) {}
+  }
 }
 
 function pintarRapidos() {
@@ -1112,7 +1141,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=29').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=30').then(r => r.update()).catch(() => {});
 }
 init();
 </script>
