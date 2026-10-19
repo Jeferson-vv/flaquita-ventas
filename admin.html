@@ -198,6 +198,7 @@ const CONFIG = {
         <label><input type="checkbox" id="npWeb" checked> Visible web</label>
       </div>
       <button type="button" class="btn" id="btnCrearProd" style="margin-top:10px">Crear producto</button>
+      <p class="msg" id="npMsg"></p>
     </div>
 
     <div class="filters">
@@ -587,9 +588,11 @@ $('btnCrearProd').onclick = async () => {
   const stock_minimo = parseInt($('npStockMin').value, 10) || 0;
   const visible_web = $('npWeb').checked;
 
-  if (!nombre) { notify('Escribe el nombre del nuevo producto'); $('npNombre').focus(); return; }
-  if (Number.isNaN(precio) || precio < 0) { notify('Indica un precio válido (0 o mayor)'); $('npPrecio').focus(); return; }
+  $('npMsg').textContent = '';
+  if (!nombre) { $('npMsg').textContent = 'Escribe el nombre del nuevo producto.'; notify('Escribe el nombre del nuevo producto'); $('npNombre').focus(); return; }
+  if (Number.isNaN(precio) || precio < 0) { $('npMsg').textContent = 'Indica un precio válido (0 o mayor).'; notify('Indica un precio válido (0 o mayor)'); $('npPrecio').focus(); return; }
   if (PRODS.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
+    $('npMsg').textContent = 'Ya existe un producto con ese nombre en la carta.';
     notify('Ya existe un producto con ese nombre');
     return;
   }
@@ -597,6 +600,7 @@ $('btnCrearProd').onclick = async () => {
   const maxOrden = PRODS.reduce((m, p) => Math.max(m, Number(p.orden) || 0), 0);
   $('btnCrearProd').disabled = true;
   $('btnCrearProd').textContent = 'Creando…';
+  $('npMsg').textContent = 'Guardando en la base de datos…';
 
   const { data: creado, error } = await sb.from('productos')
     .insert({
@@ -617,6 +621,10 @@ $('btnCrearProd').onclick = async () => {
   $('btnCrearProd').textContent = 'Crear producto';
 
   if (error) {
+    const esRls = String(error.message || '').toLowerCase().includes('row-level security');
+    $('npMsg').innerHTML = esRls
+      ? 'Falta activar el permiso de crear productos en Supabase (ejecuta el comando SQL de <code>admin crea productos</code> en SQL Editor).'
+      : 'No se pudo crear: ' + esc(error.message);
     notify('No se pudo crear: ' + error.message);
     return;
   }
@@ -632,6 +640,7 @@ $('btnCrearProd').onclick = async () => {
   $('npNombre').value = '';
   $('npPrecio').value = '';
   $('npStockIni').value = '0';
+  $('npMsg').innerHTML = `Producto <b>${esc(nombre)}</b> (${money(precio)}) agregado a la carta.`;
   notify(`Producto "${nombre}" creado correctamente`);
   await cargarTodo();
 };
