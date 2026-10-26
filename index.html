@@ -1044,7 +1044,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=34').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=35').then(r => r.update()).catch(() => {});
 }
 
 init();

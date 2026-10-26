@@ -32,6 +32,7 @@
     };
   </script>
   <style>
+    [hidden] { display: none !important; }
     * { -webkit-tap-highlight-color: transparent; }
     body {
       padding-top: env(safe-area-inset-top, 0px);
@@ -53,56 +54,6 @@ const CONFIG = {
 };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
-
-<!-- ================= PANTALLA DE LOGIN ================= -->
-<section id="login" hidden class="min-h-screen flex flex-col justify-center px-5 py-8 max-w-md mx-auto">
-  <div class="bg-black rounded-2xl p-3 mb-6 flex items-center gap-3 border-2 border-slate-900 border-b-4 border-b-brand-500 shadow-lg overflow-hidden h-20">
-    <img src="logo.webp" alt="Logo La Flaquita" class="w-14 h-14 rounded-full object-cover border border-brand-200 shrink-0">
-    <img src="banner.jpg" alt="La Flaquita" class="w-full h-full object-cover rounded-lg">
-  </div>
-  <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-    <h2 class="text-lg font-extrabold text-slate-900">Panel de Administración</h2>
-    <p class="text-xs text-slate-500 mt-0.5 mb-4">Acceso exclusivo para la dueña y administradores.</p>
-    <div class="space-y-3">
-      <div>
-        <label for="email" class="block text-xs font-bold text-slate-600 mb-1">Correo de usuario</label>
-        <input id="email" type="email" placeholder="encargado@ejemplo.com" autocomplete="username"
-          class="w-full h-12 px-4 rounded-xl border border-slate-300 bg-slate-50 text-base font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:bg-white">
-      </div>
-      <div>
-        <label for="pass" class="block text-xs font-bold text-slate-600 mb-1">Clave de acceso</label>
-        <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password"
-          class="w-full h-12 px-4 rounded-xl border border-slate-300 bg-slate-50 text-base font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:bg-white">
-      </div>
-      <button type="button" id="entrar"
-        class="w-full h-12 rounded-xl bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white font-bold text-base shadow-md transition">
-        Entrar al panel
-      </button>
-      <p id="loginMsg" class="text-xs text-rose-600 font-semibold min-h-[18px] text-center pt-1"></p>
-    </div>
-  </div>
-</section>
-
-<!-- ================= PANTALLA ACCESO DENEGADO ================= -->
-<section id="denegado" hidden class="min-h-screen flex flex-col justify-center px-5 py-8 max-w-md mx-auto">
-  <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 text-center space-y-4">
-    <div class="w-14 h-14 rounded-full bg-rose-100 text-rose-700 mx-auto flex items-center justify-center">
-      <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zm9-3.75a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-    </div>
-    <h3 class="text-lg font-extrabold text-slate-900">Acceso solo para Administradores</h3>
-    <p id="denegadoMsg" class="text-sm text-slate-600 leading-relaxed"></p>
-    <div class="flex flex-col gap-2.5 pt-2">
-      <a href="index.html" class="w-full h-12 rounded-xl bg-brand-700 text-white font-bold flex items-center justify-center shadow">
-        Ir a Ventas
-      </a>
-      <button id="salirDenegado" class="w-full h-12 rounded-xl border border-slate-300 bg-white text-slate-700 font-bold">
-        Cerrar sesión
-      </button>
-    </div>
-  </div>
-</section>
 
 <!-- ================= APLICACIÓN MÓVIL PRINCIPAL (ADMIN) ================= -->
 <section id="app" hidden class="min-h-screen pb-28 max-w-md mx-auto relative">
@@ -607,8 +558,6 @@ function notify(msg) {
   toastTimer = setTimeout(() => { t.hidden = true; }, 3000);
 }
 
-function setMsg(t) { $('loginMsg').textContent = t; }
-
 async function leerUsuariosEliminados() {
   if (!sb) return [];
   try {
@@ -639,57 +588,26 @@ async function guardarUsuariosEliminados(lista) {
 }
 
 /* ---------- AUTENTICACIÓN Y VERIFICACIÓN DE ADMIN ---------- */
-async function entrar() {
-  if (ingresando) return;
-  const email = $('email').value.trim();
-  const password = $('pass').value;
-  if (!email || !password) { setMsg('Escribe tu correo y contraseña.'); return; }
-  ingresando = true;
-  setMsg('Verificando acceso…');
-  try {
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if (error) { setMsg('No se pudo ingresar: ' + error.message); return; }
-    await verificarYEntrar(data && data.user);
-  } catch (e) {
-    setMsg('Error de conexión: ' + (e.message || e));
-  } finally {
-    ingresando = false;
-  }
-}
-
 async function verificarYEntrar(u) {
   let user = u;
   if (!user) {
     const { data } = await sb.auth.getUser();
     user = data && data.user;
   }
-  if (!user) { $('login').hidden = false; $('app').hidden = true; $('denegado').hidden = true; return; }
+  if (!user) { location.replace('index.html'); return; }
   usuarioActual = user;
 
   const mail = (user.email || '').toLowerCase().trim();
   const eliminados = await leerUsuariosEliminados();
   if (eliminados.includes(mail)) {
     await sb.auth.signOut();
-    $('app').hidden = true;
-    $('denegado').hidden = true;
-    $('login').hidden = false;
-    setMsg('Tu cuenta ha sido eliminada por el administrador.');
+    location.replace('index.html');
     return;
   }
 
   const { data: isAdmin, error } = await sb.rpc('es_admin');
-  if (error) {
-    $('login').hidden = true;
-    $('denegado').hidden = false;
-    $('denegadoMsg').innerHTML = `No se pudo verificar permisos de administrador (<code>${esc(error.message)}</code>).`;
-    return;
-  }
-
-  if (!isAdmin) {
-    $('login').hidden = true;
-    $('app').hidden = true;
-    $('denegado').hidden = false;
-    $('denegadoMsg').innerHTML = `Has ingresado como <b>${esc(user.email)}</b>, pero esta cuenta es de <b>Trabajadora (Solo Ventas)</b>.<br><br>Solo la dueña o administrador puede entrar a este panel.`;
+  if (error || !isAdmin) {
+    location.replace('index.html');
     return;
   }
 
@@ -700,8 +618,6 @@ async function verificarYEntrar(u) {
   $('quien').textContent = nombre;
   $('quienEmail').textContent = user.email || 'Administradora';
 
-  $('login').hidden = true;
-  $('denegado').hidden = true;
   $('app').hidden = false;
   await cargarTodo();
 }
@@ -1961,9 +1877,8 @@ $('refrescar').onclick = async () => {
   notify('Datos al día');
 };
 
-const cerrarSesion = async () => { if (sb) await sb.auth.signOut(); location.reload(); };
+const cerrarSesion = async () => { if (sb) await sb.auth.signOut(); location.replace('index.html'); };
 $('salir').onclick = cerrarSesion;
-$('salirDenegado').onclick = cerrarSesion;
 
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible' && sb && !$('app').hidden && usuarioActual) {
@@ -1971,7 +1886,7 @@ document.addEventListener('visibilitychange', async () => {
     const mi = (usuarioActual.email || '').toLowerCase().trim();
     if (eliminados.includes(mi)) {
       await sb.auth.signOut();
-      location.reload();
+      location.replace('index.html');
     }
   }
 });
@@ -1981,20 +1896,17 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=34').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=35').then(r => r.update()).catch(() => {});
 }
 
 async function init() {
-  $('entrar').onclick = entrar;
-  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); entrar(); } });
-  $('email').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('pass').focus(); } });
   sb = supabase.createClient(CONFIG.url, CONFIG.key);
   try {
     const { data } = await sb.auth.getSession();
     if (data && data.session) await verificarYEntrar(data.session.user);
-    else $('login').hidden = false;
+    else location.replace('index.html');
   } catch (e) {
-    $('login').hidden = false;
+    location.replace('index.html');
   }
 }
 
