@@ -2,13 +2,13 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Panel interno de inventario y carta de Chicharronería La Flaquita.">
-<title>La Flaquita - Inventario y Carta</title>
+<meta name="description" content="Panel interno de administración, dashboard, historial, inventario y personal de Chicharronería La Flaquita.">
+<title>La Flaquita - Panel Administrador</title>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#be185d"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#ead6de;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#be185d;--mu:#3f3f46;--bd:#cdb3bf;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:12px 16px;max-width:760px;margin:auto}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:12px 16px;max-width:820px;margin:auto}
 h1{margin:2px 0 12px;padding:0 10px;height:78px;background:#000;border-radius:12px;overflow:hidden;border:2px solid var(--blk);border-bottom:3px solid #ec4899;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;gap:6px}
 h1 .logo-circle{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #fbcfe8;flex-shrink:0;z-index:2}
 h1 .banner-wrap{flex:1;min-width:0;height:100%;display:block}
@@ -18,24 +18,28 @@ input,select{padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);ba
 input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac);outline:none}
 .btn{width:100%;padding:12px 14px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
-.sm{padding:8px 12px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:13px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1.2}
+.sm{padding:8px 12px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:13px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1.2;box-sizing:border-box}
 .sm:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
 .sm.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+.sm.danger{background:#fff1f2;color:var(--err);border-color:#fca5a5}
+.sm.danger:hover{background:var(--err);color:#fff;border-color:var(--err)}
 .msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
 .top{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-weight:700;font-size:14px;margin-bottom:10px;gap:8px;flex-wrap:wrap;background:var(--card);padding:10px 12px;border-radius:8px;border:1px solid var(--bd)}
-nav{display:flex;gap:6px;margin-bottom:12px}
-nav button{flex:1;padding:10px 6px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:700;cursor:pointer}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+@media (min-width:640px){nav{grid-template-columns:repeat(6,1fr)}}
+nav button{padding:10px 6px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer;transition:background .12s,border-color .12s}
 nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .card h3{margin:0 0 8px;font-size:15px;color:var(--blk)}
-.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-.kpi div{background:var(--card);border:1.5px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;user-select:none}
-.kpi div:hover{border-color:var(--ac);transform:translateY(-1px)}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin-bottom:12px}
+.kpi div{background:var(--card);border:1.5px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px;transition:transform .1s,border-color .15s,background .15s;user-select:none}
+.kpi div[data-filtro]{cursor:pointer}
+.kpi div[data-filtro]:hover{border-color:var(--ac);transform:translateY(-1px)}
 .kpi div.activo{background:#fdf2f8;border-color:var(--ac);border-left:5px solid var(--ac);box-shadow:0 2px 6px rgba(190,24,93,.15)}
 .kpi b{display:block;font-size:20px;color:var(--ac)}
 .kpi small{color:var(--mu);font-size:12px;font-weight:600;display:block}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+@media (max-width:600px){.grid2{grid-template-columns:1fr}}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--bd)}
 .row:last-child{border-bottom:0}
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700}
@@ -51,6 +55,36 @@ nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
 .filters > *{flex:1;min-width:140px;margin:0}
 .vacio{text-align:center;color:var(--mu);padding:16px 0;font-weight:500}
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--blk);color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.22);z-index:99}
+.br{display:flex;align-items:center;gap:8px;font-size:13px;margin:6px 0}
+.br span{width:130px;color:var(--fg);font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex-shrink:0}
+.br div{flex:1;background:#f4f4f5;border-radius:4px;overflow:hidden;height:14px}
+.br i{display:block;height:100%;background:var(--ac);border-radius:4px;min-width:2px}
+.br b{min-width:74px;text-align:right;color:var(--blk);font-size:12.5px}
+details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;color:var(--blk);gap:8px}
+.ln{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:var(--mu)}
+.h-filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.h-filtros button{flex:1;min-width:80px;padding:8px 8px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer}
+.h-filtros button.a{background:var(--blk);color:#fff;border-color:var(--blk)}
+.cat-box{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin-top:8px;background:#faf7f9}
+.cat-box.c-comida{border-left:4px solid #be185d;background:#fdf2f8}
+.cat-box.c-bebida{border-left:4px solid #0284c7;background:#f0f9ff}
+.cat-box.c-cerveza{border-left:4px solid #d97706;background:#fffbeb}
+.cat-box.c-otro{border-left:4px solid #4b5563;background:#f9fafb}
+.cat-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--blk);padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid rgba(0,0,0,.08)}
+.cat-head small{font-weight:600;color:var(--mu);margin-left:4px}
+.mp-badges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.mp-pill{font-size:12px;font-weight:600;padding:3px 8px;border-radius:99px;background:#f4f4f5;border:1px solid var(--bd);color:var(--fg)}
+.mp-pill b{color:var(--ac)}
+.prop-bar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:#e4e4e7;margin:6px 0}
+.sub-det{margin-top:8px;background:#fff;border:1px dashed var(--bd);border-radius:8px;padding:6px 10px}
+.sub-det summary{font-size:12px;color:var(--ac);font-weight:700}
+.stk-bar-wrap{width:110px;height:8px;background:#e4e4e7;border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
+.stk-bar-fill{height:100%;border-radius:99px}
+.chip-btn{padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--bd);background:#fdf2f8;color:var(--ac);font-weight:700;cursor:pointer}
+.chip-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
+.sec-title{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--bd)}
+.sec-title h2{margin:0;font-size:16px;color:var(--blk)}
 </style></head><body>
 
 <script>
@@ -71,8 +105,8 @@ const CONFIG = {
 
 <section id="login" hidden>
   <div class="card" id="loginForm">
-    <h3>Gestión de Carta e Inventario · La Flaquita</h3>
-    <p style="margin:0 0 8px;font-size:13px;color:var(--mu)">Panel interno exclusivo para encargados del local.</p>
+    <h3>Panel de Administración · La Flaquita</h3>
+    <p style="margin:0 0 8px;font-size:13px;color:var(--mu)">Panel exclusivo para la dueña y administradores del local.</p>
     <label for="email" style="font-size:13px;color:var(--mu)">Correo de usuario</label>
     <input id="email" type="email" placeholder="encargado@ejemplo.com" autocomplete="username">
     <label for="pass" style="font-size:13px;color:var(--mu)">Clave de acceso</label>
@@ -97,29 +131,44 @@ const CONFIG = {
   <div class="top">
     <span id="quien">Nerida Vasquez · Admin</span>
     <div style="display:flex;gap:8px;align-items:center">
-      <a class="sm pri" href="index.html">Ventas</a>
+      <a class="sm pri" href="index.html">Ir a Ventas</a>
       <button class="sm" id="refrescar">Actualizar</button>
       <button class="sm" id="salir">Salir</button>
     </div>
   </div>
 
   <nav>
-    <button id="t-stock" class="a">Stock y Entradas</button>
+    <button id="t-dash" class="a">Dashboard</button>
+    <button id="t-hist">Historial</button>
+    <button id="t-stock">Stock y Entradas</button>
     <button id="t-carta">Carta y Precios</button>
     <button id="t-movs">Movimientos</button>
     <button id="t-users">Personal</button>
   </nav>
 
-  <!-- TAB 1: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO -->
-  <div id="v-stock">
+  <!-- TAB 1: DASHBOARD INTEGRAL (VENTAS + STOCK) -->
+  <div id="v-dash"></div>
+
+  <!-- TAB 2: HISTORIAL DE VENTAS -->
+  <div id="v-hist" hidden></div>
+
+  <!-- TAB 3: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO -->
+  <div id="v-stock" hidden>
     <div class="kpi" id="stockKpi"></div>
 
     <div class="grid2">
-      <div class="card">
-        <h3>Registrar entrada (compra)</h3>
+      <div class="card" style="border-top:3px solid var(--ok)">
+        <h3>Registrar entrada (compra de mercadería)</h3>
         <label style="font-size:13px;color:var(--mu)">Producto
           <select id="entProd"></select>
         </label>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0 6px">
+          <span style="font-size:12px;color:var(--mu);font-weight:600">Suma rápida:</span>
+          <button type="button" class="chip-btn" data-sum-cant="6">+6 u.</button>
+          <button type="button" class="chip-btn" data-sum-cant="12">+12 (1 caja)</button>
+          <button type="button" class="chip-btn" data-sum-cant="24">+24 (2 cajas)</button>
+          <button type="button" class="chip-btn" data-sum-cant="36">+36 (3 cajas)</button>
+        </div>
         <div style="display:flex;gap:8px">
           <label style="flex:1;font-size:13px;color:var(--mu)">Cantidad que entra
             <input id="entCant" type="number" min="1" step="1" placeholder="Ej: 24">
@@ -128,20 +177,21 @@ const CONFIG = {
             <input id="entNota" type="text" placeholder="Ej: 2 cajas proveedor">
           </label>
         </div>
-        <button class="btn" id="btnEntrada">Sumar al stock</button>
+        <button class="btn" id="btnEntrada" style="background:var(--ok)">Sumar al stock</button>
       </div>
 
-      <div class="card">
-        <h3>Conteo físico (ajuste)</h3>
+      <div class="card" style="border-top:3px solid var(--ac)">
+        <h3>Conteo físico (ajuste de inventario)</h3>
         <label style="font-size:13px;color:var(--mu)">Producto
           <select id="ajProd"></select>
         </label>
+        <div id="ajInfoActual" style="font-size:12px;color:var(--mu);margin:4px 0 6px;font-weight:600">Selecciona un producto para comparar con el sistema</div>
         <div style="display:flex;gap:8px">
           <label style="flex:1;font-size:13px;color:var(--mu)">Stock real contado
             <input id="ajCant" type="number" step="1" placeholder="Ej: 15">
           </label>
           <label style="flex:2;font-size:13px;color:var(--mu)">Motivo / Nota
-            <input id="ajNota" type="text" placeholder="Conteo físico">
+            <input id="ajNota" type="text" placeholder="Conteo físico en tienda">
           </label>
         </div>
         <button class="btn" id="btnAjuste">Guardar conteo físico</button>
@@ -151,19 +201,38 @@ const CONFIG = {
     <div class="card" id="cardListaStock">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <h3 style="margin:0" id="tituloListaStock">Inventario de productos con control de stock</h3>
-        <select id="filtroStock" style="width:auto;margin:0;padding:6px 10px;font-size:13px">
-          <option value="todos">Todos con control de stock</option>
+        <span id="resumenFiltroStock" style="font-size:12px;font-weight:700;color:var(--mu)"></span>
+      </div>
+      <div class="filters">
+        <input id="busqStock" placeholder="Buscar bebida o producto en stock…">
+        <select id="catStock">
+          <option value="">Todas las categorías</option>
+          <option value="bebida">Gaseosas, Agua y Bebidas</option>
+          <option value="cerveza">Cervezas</option>
+          <option value="chicharron">Chicharrón</option>
+          <option value="combinado">Combinados</option>
+          <option value="sarza">Sarza</option>
+          <option value="otro">Otros</option>
+        </select>
+        <select id="filtroStock">
+          <option value="todos">Estado: Todos con stock</option>
+          <option value="alertas">Alertas (Bajo o Sin stock)</option>
           <option value="ok">Solo Stock OK</option>
           <option value="bajo">Solo Stock bajo</option>
           <option value="agotado">Solo Sin stock (≤ 0)</option>
-          <option value="alertas">Alertas (bajo o sin stock)</option>
+        </select>
+        <select id="ordenStock">
+          <option value="critico">Orden: Menor stock primero</option>
+          <option value="carta">Orden: Según la carta</option>
+          <option value="mayor">Orden: Mayor stock primero</option>
+          <option value="nombre">Orden: Nombre A–Z</option>
         </select>
       </div>
       <div id="listaStock"></div>
     </div>
   </div>
 
-  <!-- TAB 2: PRECIOS, PRODUCTOS ACTIVOS Y CONFIGURACIÓN DE STOCK -->
+  <!-- TAB 4: PRECIOS, PRODUCTOS ACTIVOS Y CONFIGURACIÓN DE STOCK -->
   <div id="v-carta" hidden>
     <div class="card">
       <h3>Agregar nuevo producto a la carta</h3>
@@ -216,7 +285,7 @@ const CONFIG = {
     <div id="listaCarta"></div>
   </div>
 
-  <!-- TAB 3: ÚLTIMOS MOVIMIENTOS DE STOCK -->
+  <!-- TAB 5: ÚLTIMOS MOVIMIENTOS DE STOCK -->
   <div id="v-movs" hidden>
     <div class="filters">
       <select id="movProd"><option value="">Todos los productos</option></select>
@@ -231,11 +300,11 @@ const CONFIG = {
     <div class="card" id="listaMovs"></div>
   </div>
 
-  <!-- TAB 4: GESTIÓN DE PERSONAL Y ACCESOS (DUEÑA / ADMIN Y TRABAJADORA) -->
+  <!-- TAB 6: GESTIÓN DE PERSONAL Y ACCESOS (DUEÑA / ADMIN Y TRABAJADORA) -->
   <div id="v-users" hidden>
     <div class="card">
       <h3>Crear nueva cuenta (Dueña o Trabajadora)</h3>
-      <p style="margin:0 0 10px;font-size:13px;color:var(--mu)">Crea un usuario y contraseña para que ingrese a la app. Si eliges <b>Trabajadora (Solo Ventas)</b>, podrá anotar pedidos pero no verá el botón Admin ni podrá entrar aquí.</p>
+      <p style="margin:0 0 10px;font-size:13px;color:var(--mu)">Crea un usuario y contraseña para que ingrese a la app. Si eliges <b>Trabajadora (Solo Ventas)</b>, solo podrá anotar pedidos del día pero no verá el botón Admin, ni el Historial, ni el Dashboard.</p>
       <div class="grid2">
         <label style="font-size:13px;color:var(--mu)">Nombre de la persona
           <input id="nuNombre" type="text" placeholder="Ej: Nerida Vasquez o María (Caja)">
@@ -270,7 +339,7 @@ const CONFIG = {
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap">
         <h3 style="margin:0">Cuentas registradas y permisos</h3>
-        <small style="color:var(--mu);font-weight:600">Puedes cambiar entre Admin y Solo Ventas cuando quieras</small>
+        <small style="color:var(--mu);font-weight:600">Cambia permisos o elimina usuarios que ya no deban tener acceso</small>
       </div>
       <div id="listaUsuarios"></div>
     </div>
@@ -284,8 +353,13 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = n => 'S/ ' + Number(n || 0).toFixed(2);
 const LIMA = { timeZone: 'America/Lima' };
+const hoyStr = () => new Date().toLocaleDateString('en-CA', LIMA);
+const diasAtras = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.toLocaleDateString('en-CA', LIMA); };
+const horaStr = iso => new Date(iso).toLocaleTimeString('es-PE', { ...LIMA, hour: '2-digit', minute: '2-digit' });
+const fdate = f => new Date(f + 'T12:00:00').toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'short' });
 const fechaHoraStr = iso => new Date(iso).toLocaleString('es-PE', { ...LIMA, day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 const CATEG = { chicharron: 'Chicharrón', sarza: 'Sarza', combinado: 'Combinados', bebida: 'Bebidas', cerveza: 'Cervezas', otro: 'Otros' };
+const METODOS = { efectivo: 'Efectivo', yape: 'Yape', plin: 'Plin', tarjeta: 'Tarjeta', transferencia: 'Transferencia' };
 const TIPO_BADGE = {
   entrada:   ['Entrada', 'b-ok'],
   venta:     ['Venta', 'b-info'],
@@ -293,7 +367,16 @@ const TIPO_BADGE = {
   ajuste:    ['Conteo', 'b-warn']
 };
 
-let sb = null, PRODS = [], MOVS = [], USUARIOS = [], usuarioActual = null, tabActual = 'stock', toastTimer = null, ingresando = false;
+const DEFINICION_BLOQUES = [
+  { key: 'comida',  titulo: 'Chicharrones, Combinados y Sarza', cls: 'c-comida',  color: '#be185d', cats: ['chicharron', 'combinado', 'sarza'] },
+  { key: 'bebida',  titulo: 'Gaseosas, Chicha y Bebidas',       cls: 'c-bebida',  color: '#0284c7', cats: ['bebida'] },
+  { key: 'cerveza', titulo: 'Cervezas',                         cls: 'c-cerveza', color: '#d97706', cats: ['cerveza'] },
+  { key: 'otro',    titulo: 'Otros productos',                  cls: 'c-otro',    color: '#4b5563', cats: ['otro'] }
+];
+
+let sb = null, PRODS = [], HIST = [], MOVS = [], USUARIOS = [], ELIMINADOS = [], usuarioActual = null, tabActual = 'dash', toastTimer = null, ingresando = false;
+let filtroDashPeriodo = '30';
+let filtroHistPeriodo = '30', filtroHistFecha = '';
 
 function notify(msg) {
   const t = $('toast');
@@ -304,6 +387,35 @@ function notify(msg) {
 }
 
 function setMsg(t) { $('loginMsg').textContent = t; }
+
+async function leerUsuariosEliminados() {
+  if (!sb) return [];
+  try {
+    const { data } = await sb.from('configuracion')
+      .select('valor')
+      .eq('clave', 'usuarios_eliminados')
+      .maybeSingle();
+    if (data && Array.isArray(data.valor)) {
+      ELIMINADOS = data.valor.map(x => String(x).toLowerCase().trim()).filter(Boolean);
+      return ELIMINADOS;
+    }
+  } catch (e) {}
+  ELIMINADOS = [];
+  return ELIMINADOS;
+}
+
+async function guardarUsuariosEliminados(lista) {
+  const limpios = Array.from(new Set((lista || []).map(x => String(x).toLowerCase().trim()).filter(Boolean)));
+  ELIMINADOS = limpios;
+  if (!sb) return;
+  try {
+    await sb.from('configuracion').upsert({
+      clave: 'usuarios_eliminados',
+      valor: limpios,
+      actualizado: new Date().toISOString()
+    }, { onConflict: 'clave' });
+  } catch (e) {}
+}
 
 async function entrar() {
   if (ingresando) return;
@@ -332,6 +444,17 @@ async function verificarYEntrar(u) {
   if (!user) { $('login').hidden = false; $('app').hidden = true; $('denegado').hidden = true; return; }
   usuarioActual = user;
 
+  const mail = (user.email || '').toLowerCase().trim();
+  const eliminados = await leerUsuariosEliminados();
+  if (eliminados.includes(mail)) {
+    await sb.auth.signOut();
+    $('app').hidden = true;
+    $('denegado').hidden = true;
+    $('login').hidden = false;
+    setMsg('Tu cuenta ha sido eliminada por el administrador.');
+    return;
+  }
+
   const { data: isAdmin, error } = await sb.rpc('es_admin');
   if (error) {
     $('login').hidden = true;
@@ -344,7 +467,7 @@ async function verificarYEntrar(u) {
     $('login').hidden = true;
     $('app').hidden = true;
     $('denegado').hidden = false;
-    $('denegadoMsg').innerHTML = `Has ingresado como <b>${esc(user.email)}</b>, pero esta cuenta es de <b>Trabajadora (Solo Ventas)</b>.<br><br>Solo el administrador o dueña puede entrar a este panel.`;
+    $('denegadoMsg').innerHTML = `Has ingresado como <b>${esc(user.email)}</b>, pero esta cuenta es de <b>Trabajadora (Solo Ventas)</b>.<br><br>Solo la dueña o administrador puede entrar a este panel.`;
     return;
   }
 
@@ -356,22 +479,569 @@ async function verificarYEntrar(u) {
   await cargarTodo();
 }
 
-async function cargarTodo() {
+async function cargarProductos() {
   const { data, error } = await sb.from('productos')
     .select('id,nombre,categoria,precio,activo,visible_web,orden,controla_stock,stock,stock_minimo')
     .order('orden');
   if (error) {
     notify('Error leyendo productos: ' + error.message);
-    return;
+    return false;
   }
   PRODS = data || [];
+  return true;
+}
+
+async function cargarHist() {
+  const { data, error } = await sb.from('ventas')
+    .select('id,fecha,hora,total,estado,metodo_pago,venta_detalles(cantidad,precio_unitario,productos(nombre,categoria))')
+    .gte('fecha', diasAtras(365)).order('hora', { ascending: false });
+  if (error) throw error;
+  HIST = (data || []).filter(v => v.estado === 'valida');
+}
+
+async function cargarTodo() {
+  await cargarProductos();
   pintarSelectoresStock();
   pintarStock();
   pintarCarta();
+  if (tabActual === 'dash') await rDash();
+  if (tabActual === 'hist') await rHist();
   if (tabActual === 'movs') await cargarMovimientos();
   if (tabActual === 'users') await cargarUsuarios();
 }
 
+/* ---------- UTILIDADES DE VENTAS Y CATEGORÍAS ---------- */
+function porMetodo(vs) {
+  const m = { efectivo: 0, yape: 0, plin: 0, tarjeta: 0, transferencia: 0 };
+  vs.forEach(v => { m[v.metodo_pago] = (m[v.metodo_pago] || 0) + Number(v.total); });
+  return m;
+}
+
+function catDeDetalle(d) {
+  if (d.productos && d.productos.categoria) return d.productos.categoria;
+  const p = PRODS.find(x => x.nombre === (d.productos && d.productos.nombre));
+  return (p && p.categoria) || 'otro';
+}
+
+function esPlatoChicharron(d) {
+  const c = catDeDetalle(d);
+  if (c === 'bebida' || c === 'cerveza') return false;
+  if (c === 'chicharron' || c === 'combinado') return true;
+  const n = ((d.productos && d.productos.nombre) || '').toLowerCase();
+  return /chicharr|combinad|taypa|porci|plato/.test(n);
+}
+
+function agruparPorBloques(vs) {
+  const mapa = {};
+  DEFINICION_BLOQUES.forEach(b => { mapa[b.key] = { ...b, unidades: 0, subtotal: 0, prods: {} }; });
+  vs.forEach(v => (v.venta_detalles || []).forEach(d => {
+    const c = catDeDetalle(d);
+    const blk = DEFINICION_BLOQUES.find(b => b.cats.includes(c)) || DEFINICION_BLOQUES[3];
+    const g = mapa[blk.key];
+    const n = (d.productos && d.productos.nombre) || 'Producto';
+    const sub = Number(d.cantidad) * Number(d.precio_unitario);
+    g.unidades += Number(d.cantidad);
+    g.subtotal += sub;
+    if (!g.prods[n]) g.prods[n] = { q: 0, s: 0 };
+    g.prods[n].q += Number(d.cantidad);
+    g.prods[n].s += sub;
+  }));
+  return DEFINICION_BLOQUES.map(b => {
+    const g = mapa[b.key];
+    g.lista = Object.entries(g.prods).sort((a, x) => x[1].s - a[1].s);
+    return g;
+  });
+}
+
+function htmlBloquesCategoria(vs, totDia) {
+  const bloques = agruparPorBloques(vs).filter(b => b.unidades > 0);
+  if (!bloques.length) return '<p class="vacio" style="margin:6px 0">Sin productos registrados.</p>';
+  const barra = totDia > 0 && bloques.length > 1
+    ? `<div class="prop-bar" title="Proporción por categoría">${bloques.map(b => `<div style="width:${Math.max(3, Math.round(b.subtotal / totDia * 100))}%;background:${b.color}"></div>`).join('')}</div>`
+    : '';
+  return barra + bloques.map(b => {
+    const pct = totDia > 0 ? Math.round(b.subtotal / totDia * 100) : 0;
+    return `
+      <div class="cat-box ${b.cls}">
+        <div class="cat-head">
+          <span>${esc(b.titulo)} <small>(${b.unidades} u.)</small></span>
+          <span>${money(b.subtotal)} <small>${pct}%</small></span>
+        </div>
+        ${b.lista.map(([n, o]) => `<div class="ln" style="color:var(--fg)"><span><b>${o.q}</b> × ${esc(n)}</span><span>${money(o.s)}</span></div>`).join('')}
+      </div>`;
+  }).join('');
+}
+
+function textoResumenDia(fechaStr, vs) {
+  const tot = vs.reduce((s, v) => s + Number(v.total), 0);
+  const pm = porMetodo(vs);
+  const bloques = agruparPorBloques(vs).filter(b => b.unidades > 0);
+  const lineas = [
+    `RESUMEN LA FLAQUITA - ${fdate(fechaStr).toUpperCase()} (${fechaStr})`,
+    `Ventas válidas: ${vs.length} | Total: ${money(tot)}`,
+    ''
+  ];
+  lineas.push('MÉTODOS DE PAGO:');
+  Object.entries(pm).filter(([, val]) => val > 0).forEach(([k, val]) => {
+    lineas.push(`- ${METODOS[k] || k}: ${money(val)}`);
+  });
+  bloques.forEach(b => {
+    lineas.push('');
+    lineas.push(`${b.titulo.toUpperCase()} (${b.unidades} u. · ${money(b.subtotal)}):`);
+    b.lista.forEach(([n, o]) => {
+      lineas.push(`- ${o.q} x ${n}: ${money(o.s)}`);
+    });
+  });
+  return lineas.join('\n');
+}
+
+async function copiarTextoResumen(txt, btn) {
+  try {
+    await navigator.clipboard.writeText(txt);
+    const prev = btn.textContent;
+    btn.textContent = 'Copiado al portapapeles';
+    notify('Resumen copiado al portapapeles');
+    setTimeout(() => { btn.textContent = prev; }, 2000);
+  } catch (e) {
+    notify('No se pudo copiar automáticamente');
+  }
+}
+
+/* ---------- TAB 1: DASHBOARD INTEGRAL (VENTAS + INVENTARIO/STOCK) ---------- */
+async function rDash() {
+  if (!HIST.length) {
+    $('v-dash').innerHTML = '<p class="vacio">Cargando dashboard…</p>';
+    try { await cargarHist(); } catch (e) { $('v-dash').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
+  } else {
+    cargarHist().then(() => { if (tabActual === 'dash') pintarVistaDash(); }).catch(() => {});
+  }
+  pintarVistaDash();
+}
+
+function pintarVistaDash() {
+  const hoy = hoyStr();
+  const inicioMes = hoy.slice(0, 8) + '01';
+  const minFecha = filtroDashPeriodo === 'hoy' ? hoy
+    : filtroDashPeriodo === '7' ? diasAtras(6)
+    : filtroDashPeriodo === '30' ? diasAtras(29)
+    : filtroDashPeriodo === 'mes' ? inicioMes
+    : '0000-00-00';
+
+  const vsPeriodo = HIST.filter(v => v.fecha >= minFecha);
+  const vsHoy = HIST.filter(v => v.fecha === hoy);
+  const totHoy = vsHoy.reduce((s, v) => s + Number(v.total), 0);
+  let platosHoy = 0;
+  vsHoy.forEach(v => (v.venta_detalles || []).forEach(d => { if (esPlatoChicharron(d)) platosHoy += Number(d.cantidad) || 0; }));
+
+  const porDia = {};
+  vsPeriodo.forEach(v => { porDia[v.fecha] = (porDia[v.fecha] || 0) + Number(v.total); });
+  const ks = Object.keys(porDia).sort();
+  const T = vsPeriodo.reduce((s, v) => s + Number(v.total), 0);
+  const mejor = ks.length ? ks.reduce((a, k) => porDia[k] > porDia[a] ? k : a, ks[0]) : null;
+
+  let platosPeriodo = 0, montoPlatosPeriodo = 0;
+  const topPlatos = {}, topBebidas = {};
+  vsPeriodo.forEach(v => (v.venta_detalles || []).forEach(d => {
+    const n = (d.productos && d.productos.nombre) || 'Producto';
+    const q = Number(d.cantidad) || 0;
+    const sub = q * Number(d.precio_unitario || 0);
+    if (esPlatoChicharron(d)) {
+      platosPeriodo += q;
+      montoPlatosPeriodo += sub;
+      if (!topPlatos[n]) topPlatos[n] = { q: 0, s: 0 };
+      topPlatos[n].q += q;
+      topPlatos[n].s += sub;
+    } else {
+      if (!topBebidas[n]) topBebidas[n] = { q: 0, s: 0 };
+      topBebidas[n].q += q;
+      topBebidas[n].s += sub;
+    }
+  }));
+
+  const l7 = [...Array(7)].map((_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - 6 + i);
+    const f = d.toLocaleDateString('en-CA', LIMA);
+    const totF = HIST.filter(v => v.fecha === f).reduce((s, v) => s + Number(v.total), 0);
+    const cantF = HIST.filter(v => v.fecha === f).length;
+    return [f, totF, cantF];
+  });
+  const mx7 = Math.max(1, ...l7.map(x => x[1]));
+
+  const pm = porMetodo(vsPeriodo);
+  const mxM = Math.max(1, ...Object.values(pm));
+
+  const listaTopPlatos = Object.entries(topPlatos).sort((a, b) => b[1].q - a[1].q).slice(0, 6);
+  const mxTP = listaTopPlatos.length ? listaTopPlatos[0][1].q : 1;
+
+  const listaTopBebidas = Object.entries(topBebidas).sort((a, b) => b[1].q - a[1].q).slice(0, 6);
+  const mxTB = listaTopBebidas.length ? listaTopBebidas[0][1].q : 1;
+
+  const bars = (rows, mx, color) => rows.length
+    ? rows.map(([l, v, t]) => `<div class="br"><span title="${esc(l)}">${esc(l)}</span><div><i style="width:${mx ? Math.max(3, Math.round(v / mx * 100)) : 0}%;${color ? 'background:' + color : ''}"></i></div><b>${t}</b></div>`).join('')
+    : '<p class="vacio" style="padding:8px 0">Sin registros en este período.</p>';
+
+  // Resumen de Stock en vivo
+  const ctrl = PRODS.filter(p => p.controla_stock && p.activo);
+  const agotados = ctrl.filter(p => p.stock <= 0);
+  const bajos = ctrl.filter(p => p.stock > 0 && p.stock <= p.stock_minimo);
+  const ok = ctrl.filter(p => p.stock > p.stock_minimo);
+  const alertas = [...agotados, ...bajos].sort((a, b) => a.stock - b.stock);
+  const totalUnidadesStock = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0), 0);
+  const valorStock = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0) * Number(p.precio || 0), 0);
+
+  const stockOrdenado = [...ctrl].sort((a, b) => a.stock - b.stock);
+
+  $('v-dash').innerHTML = `
+    <div class="sec-title" style="margin-top:2px">
+      <h2>Resumen de Ventas</h2>
+      <div class="h-filtros" style="margin:0">
+        <button type="button" data-dp="hoy" class="${filtroDashPeriodo === 'hoy' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">Hoy</button>
+        <button type="button" data-dp="7" class="${filtroDashPeriodo === '7' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">7 días</button>
+        <button type="button" data-dp="30" class="${filtroDashPeriodo === '30' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">30 días</button>
+        <button type="button" data-dp="mes" class="${filtroDashPeriodo === 'mes' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">Este mes</button>
+        <button type="button" data-dp="todo" class="${filtroDashPeriodo === 'todo' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">Todo</button>
+      </div>
+    </div>
+
+    <div class="kpi">
+      <div style="border-left-color:var(--blk)">
+        <small>Vendido hoy (${fdate(hoy)})</small>
+        <b>${money(totHoy)}</b>
+        <small>${vsHoy.length} ${vsHoy.length === 1 ? 'venta' : 'ventas'} · ${platosHoy} platos</small>
+      </div>
+      <div style="border-left-color:var(--ac)">
+        <small>Total en período</small>
+        <b>${money(T)}</b>
+        <small>${vsPeriodo.length} pedidos · ${ks.length} ${ks.length === 1 ? 'día' : 'días'}</small>
+      </div>
+      <div style="border-left-color:#be185d">
+        <small>Platos de chicharrón</small>
+        <b>${platosPeriodo} platos</b>
+        <small>${money(montoPlatosPeriodo)} en platos</small>
+      </div>
+      <div style="border-left-color:#0284c7">
+        <small>Promedio por día</small>
+        <b style="color:#0284c7">${money(ks.length ? T / ks.length : 0)}</b>
+        <small>Ticket prom.: ${money(vsPeriodo.length ? T / vsPeriodo.length : 0)}</small>
+      </div>
+      <div style="border-left-color:var(--ok)">
+        <small>Mejor día del período</small>
+        <b style="color:var(--ok)">${mejor ? money(porDia[mejor]) : 'S/ 0.00'}</b>
+        <small>${mejor ? fdate(mejor) : 'Sin ventas'}</small>
+      </div>
+    </div>
+
+    <div class="sec-title">
+      <h2>Dashboard de Stock e Inventario</h2>
+      <div style="display:flex;gap:6px">
+        <button type="button" class="sm pri" id="btnIrStockDash" style="padding:6px 12px;font-size:12px">Gestionar Stock y Entradas →</button>
+      </div>
+    </div>
+
+    <div class="kpi">
+      <div data-dash-stk="todos" style="cursor:pointer;border-left-color:var(--blk)">
+        <small>Productos con stock</small>
+        <b style="color:var(--blk)">${ctrl.length}</b>
+        <small>${totalUnidadesStock} unidades en local</small>
+      </div>
+      <div data-dash-stk="ok" style="cursor:pointer;border-left-color:var(--ok)">
+        <small>Stock OK</small>
+        <b style="color:var(--ok)">${ok.length}</b>
+        <small>Abastecidos</small>
+      </div>
+      <div data-dash-stk="bajo" style="cursor:pointer;border-left-color:var(--warn)">
+        <small>Stock bajo</small>
+        <b style="color:var(--warn)">${bajos.length}</b>
+        <small>Por reponer pronto</small>
+      </div>
+      <div data-dash-stk="agotado" style="cursor:pointer;border-left-color:var(--err)">
+        <small>Sin stock (≤ 0)</small>
+        <b style="color:var(--err)">${agotados.length}</b>
+        <small>Agotados</small>
+      </div>
+      <div style="border-left-color:#0284c7">
+        <small>Valorizado en stock</small>
+        <b style="color:#0284c7">${money(valorStock)}</b>
+        <small>En bebidas y cervezas</small>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card" style="border-left:4px solid ${alertas.length ? 'var(--err)' : 'var(--ok)'}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h3 style="margin:0">${alertas.length ? `⚠ Alertas de reposición (${alertas.length})` : '✓ Estado de reposición'}</h3>
+          ${alertas.length ? `<button type="button" class="chip-btn" data-dash-stk="alertas">Ver en Stock</button>` : ''}
+        </div>
+        ${alertas.length ? alertas.slice(0, 8).map(p => `
+          <div class="row" style="padding:6px 0">
+            <div>
+              <b style="font-size:13.5px">${esc(p.nombre)}</b>
+              <div style="font-size:11.5px;color:var(--mu)">Mínimo sugerido: ${p.stock_minimo} u.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:5px">
+              ${estadoStockBadge(p)}
+              <button type="button" class="chip-btn" data-fast-in-q="${p.id}" data-q="12" title="Sumar 12 unidades">+12</button>
+              <button type="button" class="sm" data-fast-in="${p.id}" style="padding:4px 8px;font-size:12px">+ Entrada</button>
+              <button type="button" class="sm" data-fast-aj="${p.id}" style="padding:4px 8px;font-size:12px">Conteo</button>
+            </div>
+          </div>
+        `).join('') : '<p class="vacio" style="color:var(--ok);padding:12px 0">Todos los productos con control de stock tienen buen nivel de inventario.</p>'}
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h3 style="margin:0">Nivel de stock actual (menor a mayor)</h3>
+          <small style="color:var(--mu);font-weight:600">Acción rápida</small>
+        </div>
+        <div style="max-height:270px;overflow-y:auto;padding-right:4px">
+          ${stockOrdenado.map(p => {
+            const meta = Math.max(12, (p.stock_minimo || 6) * 3);
+            const pct = Math.max(0, Math.min(100, Math.round((p.stock / meta) * 100)));
+            const col = p.stock <= 0 ? 'var(--err)' : (p.stock <= p.stock_minimo ? 'var(--warn)' : 'var(--ok)');
+            return `
+              <div class="row" style="padding:5px 0;font-size:13px">
+                <div style="flex:1;min-width:120px">
+                  <b>${esc(p.nombre)}</b>
+                </div>
+                <div style="display:flex;align-items:center;gap:5px">
+                  <div class="stk-bar-wrap" style="width:64px"><div class="stk-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+                  <b style="min-width:36px;text-align:right;color:${col}">${p.stock} u.</b>
+                  <button type="button" class="chip-btn" data-fast-in="${p.id}" title="Registrar entrada">+</button>
+                  <button type="button" class="chip-btn" data-fast-aj="${p.id}" title="Ajustar conteo físico" style="background:#f4f4f5;color:var(--blk)">=</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title">
+      <h2>Análisis Detallado de Ventas</h2>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Evolución últimos 7 días</h3>
+        ${bars(l7.map(([f, v, c]) => [fdate(f).split(',')[0] + ' ' + f.slice(8) + ` (${c})`, v, money(v)]), mx7)}
+      </div>
+      <div class="card">
+        <h3>Ingresos por método de pago</h3>
+        ${bars(Object.entries(pm).map(([k, v]) => [METODOS[k] || k, v, `${money(v)} (${T > 0 ? Math.round(v / T * 100) : 0}%)`]), mxM, '#0284c7')}
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Platos más vendidos</h3>
+        ${bars(listaTopPlatos.map(([n, o]) => [n, o.q, `${o.q} u · ${money(o.s)}`]), mxTP, '#be185d')}
+      </div>
+      <div class="card">
+        <h3>Bebidas y cervezas más vendidas</h3>
+        ${bars(listaTopBebidas.map(([n, o]) => [n, o.q, `${o.q} u · ${money(o.s)}`]), mxTB, '#d97706')}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Desglose por categorías en el período</h3>
+      ${htmlBloquesCategoria(vsPeriodo, T)}
+    </div>
+  `;
+}
+
+$('v-dash').addEventListener('click', async e => {
+  const btnDp = e.target.closest('[data-dp]');
+  if (btnDp) {
+    filtroDashPeriodo = btnDp.dataset.dp;
+    pintarVistaDash();
+    return;
+  }
+  if (e.target.id === 'btnIrStockDash') {
+    showTab('stock');
+    return;
+  }
+  const stkCard = e.target.closest('[data-dash-stk]');
+  if (stkCard) {
+    $('filtroStock').value = stkCard.dataset.dashStk;
+    showTab('stock');
+    pintarStock();
+    return;
+  }
+  const btnFastQ = e.target.closest('[data-fast-in-q]');
+  if (btnFastQ) {
+    const id = btnFastQ.dataset.fastInQ;
+    const q = parseInt(btnFastQ.dataset.q || '12', 10);
+    await ejecutarEntrada(id, q, `Entrada rápida (+${q}) desde Dashboard`);
+    return;
+  }
+  const btnIn = e.target.closest('[data-fast-in]');
+  if (btnIn) {
+    await promptEntradaRapida(btnIn.dataset.fastIn);
+    return;
+  }
+  const btnAj = e.target.closest('[data-fast-aj]');
+  if (btnAj) {
+    await promptAjusteRapido(btnAj.dataset.fastAj);
+  }
+});
+
+/* ---------- TAB 2: HISTORIAL DE VENTAS ---------- */
+async function rHist() {
+  if (!HIST.length) {
+    $('v-hist').innerHTML = '<p class="vacio">Cargando historial…</p>';
+    try { await cargarHist(); } catch (e) { $('v-hist').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
+  } else {
+    cargarHist().then(() => { if (tabActual === 'hist') pintarVistaHist(); }).catch(() => {});
+  }
+  pintarVistaHist();
+}
+
+function pintarVistaHist() {
+  const hoy = hoyStr();
+  const inicioMes = hoy.slice(0, 8) + '01';
+  const minFecha = filtroHistPeriodo === '7' ? diasAtras(6)
+    : filtroHistPeriodo === '30' ? diasAtras(29)
+    : filtroHistPeriodo === 'mes' ? inicioMes
+    : '0000-00-00';
+
+  const filtradas = HIST.filter(v => {
+    if (filtroHistFecha) return v.fecha === filtroHistFecha;
+    return v.fecha >= minFecha;
+  });
+
+  const totPeriodo = filtradas.reduce((s, v) => s + Number(v.total), 0);
+  let platosPeriodo = 0;
+  filtradas.forEach(v => (v.venta_detalles || []).forEach(d => {
+    if (esPlatoChicharron(d)) platosPeriodo += Number(d.cantidad) || 0;
+  }));
+
+  const porDia = {};
+  filtradas.forEach(v => (porDia[v.fecha] = porDia[v.fecha] || []).push(v));
+  const dias = Object.keys(porDia).sort().reverse();
+
+  const diasHtml = dias.length ? dias.map(f => {
+    const vs = porDia[f];
+    const tot = vs.reduce((s, v) => s + Number(v.total), 0);
+    const pm = porMetodo(vs);
+    const bloquesDia = agruparPorBloques(vs);
+    const dComida  = bloquesDia.find(b => b.key === 'comida');
+    const dBebida  = bloquesDia.find(b => b.key === 'bebida');
+    const dCerveza = bloquesDia.find(b => b.key === 'cerveza');
+    const horas = vs.map(v => horaStr(v.hora));
+    const rangoHora = horas.length > 1 ? `${horas[horas.length - 1]} – ${horas[0]}` : (horas[0] || '');
+    const desglosePago = Object.entries(pm)
+      .filter(([, val]) => val > 0)
+      .map(([k, val]) => `<span class="mp-pill">${esc(METODOS[k] || k)}: <b>${money(val)}</b></span>`)
+      .join('');
+
+    const listaHoras = vs.map(v => {
+      const desc = (v.venta_detalles || []).map(d => `${d.cantidad}× ${esc(d.productos.nombre)}`).join(', ');
+      return `<div class="ln" style="border-bottom:1px solid #f4f4f5;padding:4px 0;gap:6px">
+        <span style="color:var(--fg)"><b>${horaStr(v.hora)}</b> · <small style="color:var(--ac);font-weight:700">${esc(METODOS[v.metodo_pago] || v.metodo_pago)}</small> · ${desc}</span>
+        <b style="color:var(--blk);white-space:nowrap">${money(v.total)}</b>
+      </div>`;
+    }).join('');
+
+    return `<details>
+      <summary>
+        <div>
+          <span style="font-size:15px">${fdate(f)}</span>
+          <small style="display:block;font-size:12px;color:var(--mu);font-weight:500">${vs.length} ${vs.length === 1 ? 'venta' : 'ventas'}${rangoHora ? ' · ' + rangoHora : ''}</small>
+        </div>
+        <span style="font-size:16px;color:var(--ac)">${money(tot)}</span>
+      </summary>
+      <div style="padding-top:8px;margin-top:8px;border-top:1px solid var(--bd)">
+        <div class="kpi" style="margin-bottom:8px">
+          <div style="border-left-color:var(--blk)"><small>Total del día</small><b>${money(tot)}</b><small>${vs.length} ventas · Prom. ${money(tot / vs.length)}</small></div>
+          <div style="border-left-color:#be185d"><small>Chicharrones y Platos</small><b style="color:#be185d">${money(dComida ? dComida.subtotal : 0)}</b><small>${dComida ? dComida.unidades : 0} porciones/platos</small></div>
+          <div style="border-left-color:#0284c7"><small>Gaseosas y Bebidas</small><b style="color:#0284c7">${money(dBebida ? dBebida.subtotal : 0)}</b><small>${dBebida ? dBebida.unidades : 0} unidades</small></div>
+          <div style="border-left-color:#d97706"><small>Cervezas</small><b style="color:#d97706">${money(dCerveza ? dCerveza.subtotal : 0)}</b><small>${dCerveza ? dCerveza.unidades : 0} botellas</small></div>
+        </div>
+        <div class="mp-badges">${desglosePago}</div>
+        ${htmlBloquesCategoria(vs, tot)}
+        <details class="sub-det">
+          <summary><span>Ver las ${vs.length} ventas del día hora por hora</span><span>Detalle</span></summary>
+          <div style="margin-top:6px">${listaHoras}</div>
+        </details>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button type="button" class="sm btn-copiar-dia" data-fecha="${f}" style="flex:0 0 auto;padding:6px 12px;font-size:12px">Copiar resumen del ${fdate(f)}</button>
+        </div>
+      </div>
+    </details>`;
+  }).join('') : '<p class="vacio">No hay ventas registradas en este período.</p>';
+
+  $('v-hist').innerHTML = `
+    <div class="h-filtros">
+      <button type="button" data-hp="7" class="${!filtroHistFecha && filtroHistPeriodo === '7' ? 'a' : ''}">Últimos 7 días</button>
+      <button type="button" data-hp="30" class="${!filtroHistFecha && filtroHistPeriodo === '30' ? 'a' : ''}">30 días</button>
+      <button type="button" data-hp="mes" class="${!filtroHistFecha && filtroHistPeriodo === 'mes' ? 'a' : ''}">Este mes</button>
+      <button type="button" data-hp="todo" class="${!filtroHistFecha && filtroHistPeriodo === 'todo' ? 'a' : ''}">Todo</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+      <input type="date" id="histFechaInput" value="${esc(filtroHistFecha)}" style="margin:0;padding:8px 10px;font-size:14px;flex:1;min-width:160px" title="Buscar un día específico">
+      ${filtroHistFecha ? '<button type="button" class="sm" id="limpiarFechaHist" style="flex:0 0 auto;padding:8px 12px">Ver todos</button>' : ''}
+      <button type="button" class="sm pri" id="exp" style="flex:0 0 auto;padding:8px 14px">Descargar Excel (CSV)</button>
+    </div>
+    <div class="card" style="padding:9px 12px;background:#fdf2f8;border-color:#f9a8d4;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:13px">
+      <span><b>${dias.length}</b> ${dias.length === 1 ? 'día' : 'días'} · <b>${filtradas.length}</b> ventas válidas · <b>${platosPeriodo}</b> platos de chicharrón</span>
+      <b style="color:var(--ac);font-size:15px">Total: ${money(totPeriodo)}</b>
+    </div>
+    ${diasHtml}
+  `;
+}
+
+$('v-hist').addEventListener('click', e => {
+  const btnP = e.target.closest('[data-hp]');
+  if (btnP) {
+    filtroHistPeriodo = btnP.dataset.hp;
+    filtroHistFecha = '';
+    pintarVistaHist();
+    return;
+  }
+  if (e.target.id === 'limpiarFechaHist') {
+    filtroHistFecha = '';
+    pintarVistaHist();
+    return;
+  }
+  if (e.target.id === 'exp') {
+    exportar();
+    return;
+  }
+  const btnCop = e.target.closest('.btn-copiar-dia');
+  if (btnCop) {
+    const f = btnCop.dataset.fecha;
+    const vs = HIST.filter(v => v.fecha === f);
+    if (vs.length) copiarTextoResumen(textoResumenDia(f, vs), btnCop);
+  }
+});
+
+$('v-hist').addEventListener('change', e => {
+  if (e.target.id === 'histFechaInput') {
+    filtroHistFecha = e.target.value || '';
+    pintarVistaHist();
+  }
+});
+
+function exportar() {
+  const filas = ['fecha,hora,metodo_pago,categoria,producto,cantidad,precio_unitario,subtotal'];
+  HIST.forEach(v => v.venta_detalles.forEach(d => filas.push([
+    v.fecha,
+    horaStr(v.hora),
+    v.metodo_pago,
+    '"' + (CATEG[d.productos.categoria] || d.productos.categoria || '') + '"',
+    '"' + d.productos.nombre + '"',
+    d.cantidad,
+    d.precio_unitario,
+    d.cantidad * d.precio_unitario
+  ].join(','))));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([filas.join('\n')], { type: 'text/csv' }));
+  a.download = 'ventas-la-flaquita.csv';
+  a.click();
+}
+
+/* ---------- TAB 3: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO ---------- */
 function pintarSelectoresStock() {
   const conStock = PRODS.filter(p => p.controla_stock);
   const lista = conStock.length ? conStock : PRODS;
@@ -388,7 +1058,29 @@ function pintarSelectoresStock() {
   if (prevEnt && lista.some(p => String(p.id) === prevEnt)) $('entProd').value = prevEnt;
   if (prevAj && lista.some(p => String(p.id) === prevAj)) $('ajProd').value = prevAj;
   if (prevMov) $('movProd').value = prevMov;
+  actualizarInfoAjuste();
 }
+
+function actualizarInfoAjuste() {
+  const info = $('ajInfoActual');
+  if (!info) return;
+  const p = PRODS.find(x => String(x.id) === String($('ajProd').value));
+  if (!p) {
+    info.textContent = 'Selecciona un producto para comparar con el sistema';
+    return;
+  }
+  info.innerHTML = `En sistema figuran <b>${p.stock} unidades</b> (Stock mínimo: ${p.stock_minimo}).`;
+}
+$('ajProd').onchange = actualizarInfoAjuste;
+
+document.querySelectorAll('[data-sum-cant]').forEach(btn => {
+  btn.onclick = () => {
+    const add = parseInt(btn.dataset.sumCant || '0', 10);
+    const actual = parseInt($('entCant').value || '0', 10) || 0;
+    $('entCant').value = actual + add;
+    $('entCant').focus();
+  };
+});
 
 function estadoStockBadge(p) {
   if (p.stock <= 0) return `<span class="badge b-err">Sin stock (${p.stock})</span>`;
@@ -401,13 +1093,16 @@ function pintarStock() {
   const agotados = ctrl.filter(p => p.stock <= 0).length;
   const bajos = ctrl.filter(p => p.stock > 0 && p.stock <= p.stock_minimo).length;
   const ok = ctrl.length - agotados - bajos;
+  const totalUnidades = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0), 0);
+  const valorTotal = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0) * Number(p.precio || 0), 0);
   const modo = $('filtroStock').value;
 
   $('stockKpi').innerHTML = `
-    <div data-filtro="todos" class="${modo === 'todos' ? 'activo' : ''}"><small>Con control de stock</small><b>${ctrl.length}</b></div>
-    <div data-filtro="ok" class="${modo === 'ok' ? 'activo' : ''}"><small>Stock OK</small><b style="color:var(--ok)">${ok}</b></div>
-    <div data-filtro="bajo" class="${modo === 'bajo' ? 'activo' : ''}"><small>Stock bajo</small><b style="color:var(--warn)">${bajos}</b></div>
-    <div data-filtro="agotado" class="${modo === 'agotado' ? 'activo' : ''}"><small>Sin stock (≤ 0)</small><b style="color:var(--err)">${agotados}</b></div>
+    <div data-filtro="todos" class="${modo === 'todos' ? 'activo' : ''}"><small>Con control de stock</small><b>${ctrl.length}</b><small>${totalUnidades} u. totales</small></div>
+    <div data-filtro="ok" class="${modo === 'ok' ? 'activo' : ''}"><small>Stock OK</small><b style="color:var(--ok)">${ok}</b><small>En buen nivel</small></div>
+    <div data-filtro="bajo" class="${modo === 'bajo' ? 'activo' : ''}"><small>Stock bajo</small><b style="color:var(--warn)">${bajos}</b><small>En límite mínimo</small></div>
+    <div data-filtro="agotado" class="${modo === 'agotado' ? 'activo' : ''}"><small>Sin stock (≤ 0)</small><b style="color:var(--err)">${agotados}</b><small>Por reponer urgente</small></div>
+    <div data-filtro="alertas" class="${modo === 'alertas' ? 'activo' : ''}" style="border-left-color:#0284c7"><small>Valor en stock</small><b style="color:#0284c7">${money(valorTotal)}</b><small>${bajos + agotados} en alerta</small></div>
   `;
 
   const titulos = {
@@ -419,7 +1114,13 @@ function pintarStock() {
   };
   $('tituloListaStock').textContent = titulos[modo] || titulos.todos;
 
+  const q = ($('busqStock').value || '').toLowerCase().trim();
+  const cat = $('catStock').value;
+  const orden = $('ordenStock').value;
+
   const mostrar = ctrl.filter(p => {
+    if (cat && p.categoria !== cat) return false;
+    if (q && !p.nombre.toLowerCase().includes(q)) return false;
     if (modo === 'ok') return p.stock > p.stock_minimo && p.stock > 0;
     if (modo === 'bajo') return p.stock > 0 && p.stock <= p.stock_minimo;
     if (modo === 'agotado') return p.stock <= 0;
@@ -427,34 +1128,57 @@ function pintarStock() {
     return true;
   });
 
+  mostrar.sort((a, b) => {
+    if (orden === 'critico') return a.stock - b.stock || a.orden - b.orden;
+    if (orden === 'mayor') return b.stock - a.stock || a.orden - b.orden;
+    if (orden === 'nombre') return a.nombre.localeCompare(b.nombre, 'es');
+    return (a.orden || 0) - (b.orden || 0);
+  });
+
+  $('resumenFiltroStock').textContent = `Mostrando ${mostrar.length} de ${ctrl.length} productos`;
+
   if (!mostrar.length) {
     const msgVacio = {
-      todos: 'No hay productos con control de stock activo. Actívalo en "Carta y Precios".',
-      ok: 'No hay productos con Stock OK en este momento.',
+      todos: 'No hay productos que coincidan con la búsqueda.',
+      ok: 'No hay productos con Stock OK en este filtro.',
       bajo: 'No hay productos con stock bajo.',
       agotado: 'No hay productos sin stock.',
-      alertas: 'No hay productos con stock bajo o agotado.'
+      alertas: '¡Excelente! No hay productos con stock bajo o agotado.'
     };
     $('listaStock').innerHTML = `<p class="vacio">${msgVacio[modo] || msgVacio.todos}</p>`;
     return;
   }
 
-  $('listaStock').innerHTML = mostrar.map(p => `
-    <div class="row">
-      <div>
-        <b>${esc(p.nombre)}</b>
-        <div style="font-size:12px;color:var(--mu)">${esc(CATEG[p.categoria] || p.categoria)} · ${money(p.precio)} · Mínimo: ${p.stock_minimo}</div>
+  $('listaStock').innerHTML = mostrar.map(p => {
+    const meta = Math.max(12, (p.stock_minimo || 6) * 3);
+    const pct = Math.max(0, Math.min(100, Math.round((p.stock / meta) * 100)));
+    const col = p.stock <= 0 ? 'var(--err)' : (p.stock <= p.stock_minimo ? 'var(--warn)' : 'var(--ok)');
+    return `
+      <div class="row">
+        <div style="flex:1;min-width:180px">
+          <b>${esc(p.nombre)}</b>
+          <div style="font-size:12px;color:var(--mu);margin-top:2px">
+            <div class="stk-bar-wrap"><div class="stk-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+            ${esc(CATEG[p.categoria] || p.categoria)} · ${money(p.precio)} · Mín: ${p.stock_minimo}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          ${estadoStockBadge(p)}
+          <button class="chip-btn" data-fast-in-q="${p.id}" data-q="6" title="Sumar 6 unidades">+6</button>
+          <button class="chip-btn" data-fast-in-q="${p.id}" data-q="12" title="Sumar 12 unidades">+12</button>
+          <button class="sm" data-fast-in="${p.id}">+ Entrada</button>
+          <button class="sm" data-fast-aj="${p.id}">Conteo</button>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        ${estadoStockBadge(p)}
-        <button class="sm" data-fast-in="${p.id}">+ Entrada</button>
-        <button class="sm" data-fast-aj="${p.id}">Conteo</button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 $('filtroStock').onchange = pintarStock;
+$('busqStock').oninput = pintarStock;
+$('catStock').onchange = pintarStock;
+$('ordenStock').onchange = pintarStock;
+
 $('stockKpi').onclick = e => {
   const card = e.target.closest('[data-filtro]');
   if (!card) return;
@@ -464,25 +1188,42 @@ $('stockKpi').onclick = e => {
   $('cardListaStock').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 };
 
+async function promptEntradaRapida(idIn) {
+  const p = PRODS.find(x => String(x.id) === String(idIn));
+  if (!p) return;
+  const v = prompt(`Entrada de "${p.nombre}" (Stock actual: ${p.stock}).\n¿Cuántas unidades ingresan?`, '12');
+  if (v === null) return;
+  const cant = parseInt(v, 10);
+  if (!cant || cant <= 0) { notify('Ingresa una cantidad mayor a 0'); return; }
+  await ejecutarEntrada(p.id, cant, 'Entrada rápida');
+}
+
+async function promptAjusteRapido(idAj) {
+  const p = PRODS.find(x => String(x.id) === String(idAj));
+  if (!p) return;
+  const v = prompt(`Conteo físico de "${p.nombre}" (Stock en sistema: ${p.stock}).\n¿Cuántas unidades hay físicamente?`, String(Math.max(0, p.stock)));
+  if (v === null) return;
+  const fisico = parseInt(v, 10);
+  if (Number.isNaN(fisico)) { notify('Ingresa un número válido'); return; }
+  await ejecutarAjuste(p.id, fisico, 'Conteo físico rápido');
+}
+
 $('listaStock').onclick = async e => {
-  const idIn = e.target.dataset && e.target.dataset.fastIn;
-  const idAj = e.target.dataset && e.target.dataset.fastAj;
-  if (idIn) {
-    const p = PRODS.find(x => String(x.id) === String(idIn));
-    if (!p) return;
-    const v = prompt(`Entrada de "${p.nombre}" (Stock actual: ${p.stock}).\n¿Cuántas unidades ingresan?`, '12');
-    if (v === null) return;
-    const cant = parseInt(v, 10);
-    if (!cant || cant <= 0) { notify('Ingresa una cantidad mayor a 0'); return; }
-    await ejecutarEntrada(p.id, cant, 'Entrada rápida');
-  } else if (idAj) {
-    const p = PRODS.find(x => String(x.id) === String(idAj));
-    if (!p) return;
-    const v = prompt(`Conteo físico de "${p.nombre}" (Stock en sistema: ${p.stock}).\n¿Cuántas unidades hay físicamente?`, String(Math.max(0, p.stock)));
-    if (v === null) return;
-    const fisico = parseInt(v, 10);
-    if (Number.isNaN(fisico)) { notify('Ingresa un número válido'); return; }
-    await ejecutarAjuste(p.id, fisico, 'Conteo físico rápido');
+  const btnQ = e.target.closest('[data-fast-in-q]');
+  if (btnQ) {
+    const id = btnQ.dataset.fastInQ;
+    const q = parseInt(btnQ.dataset.q || '6', 10);
+    await ejecutarEntrada(id, q, `Entrada rápida (+${q})`);
+    return;
+  }
+  const btnIn = e.target.closest('[data-fast-in]');
+  if (btnIn) {
+    await promptEntradaRapida(btnIn.dataset.fastIn);
+    return;
+  }
+  const btnAj = e.target.closest('[data-fast-aj]');
+  if (btnAj) {
+    await promptAjusteRapido(btnAj.dataset.fastAj);
   }
 };
 
@@ -532,7 +1273,7 @@ $('btnAjuste').onclick = async () => {
   }
 };
 
-/* ---------- TAB 2: CARTA Y PRECIOS ---------- */
+/* ---------- TAB 4: CARTA Y PRECIOS ---------- */
 function pintarCarta() {
   const q = ($('busqCarta').value || '').toLowerCase().trim();
   const cat = $('catCarta').value;
@@ -672,7 +1413,7 @@ $('listaCarta').onclick = async e => {
   await cargarTodo();
 };
 
-/* ---------- TAB 3: ÚLTIMOS MOVIMIENTOS ---------- */
+/* ---------- TAB 5: ÚLTIMOS MOVIMIENTOS ---------- */
 async function cargarMovimientos() {
   $('listaMovs').innerHTML = '<p class="vacio">Cargando movimientos…</p>';
   let q = sb.from('stock_movimientos')
@@ -718,7 +1459,7 @@ async function cargarMovimientos() {
 $('movProd').onchange = cargarMovimientos;
 $('movTipo').onchange = cargarMovimientos;
 
-/* ---------- TAB 4: GESTIÓN DE PERSONAL Y ACCESOS ---------- */
+/* ---------- TAB 6: GESTIÓN DE PERSONAL Y ACCESOS ---------- */
 function guardarPersonalLocal(email, nombre, es_admin) {
   try {
     const mail = email.toLowerCase().trim();
@@ -728,8 +1469,17 @@ function guardarPersonalLocal(email, nombre, es_admin) {
   } catch (e) {}
 }
 
+function eliminarPersonalLocal(email) {
+  try {
+    const mail = email.toLowerCase().trim();
+    const arr = JSON.parse(localStorage.getItem('flaquita_personal') || '[]').filter(x => (x.email || '').toLowerCase().trim() !== mail);
+    localStorage.setItem('flaquita_personal', JSON.stringify(arr));
+  } catch (e) {}
+}
+
 async function cargarUsuarios() {
   $('listaUsuarios').innerHTML = '<p class="vacio">Cargando cuentas…</p>';
+  const eliminados = await leerUsuariosEliminados();
   let lista = [];
   const { data: rpcData, error: rpcErr } = await sb.rpc('listar_cuentas_personal');
   if (!rpcErr && Array.isArray(rpcData)) {
@@ -764,7 +1514,7 @@ async function cargarUsuarios() {
     } catch (e) {}
     lista = Object.values(map);
   }
-  USUARIOS = lista;
+  USUARIOS = lista.filter(u => !eliminados.includes((u.email || '').toLowerCase().trim()));
   pintarUsuarios();
 }
 
@@ -780,11 +1530,14 @@ function pintarUsuarios() {
     const badge = u.es_admin
       ? '<span class="badge b-info">Administrador / Dueña (Ventas + Admin)</span>'
       : '<span class="badge b-ok">Trabajadora (Solo Ventas)</span>';
-    const botonCambio = esMiCuenta
+    const controles = esMiCuenta
       ? '<span class="badge" style="background:#f4f4f5;color:var(--mu)">Tu sesión actual</span>'
-      : u.es_admin
-        ? `<button type="button" class="sm" data-rol-email="${esc(mail)}" data-rol-admin="0">Cambiar a Solo Ventas</button>`
-        : `<button type="button" class="sm pri" data-rol-email="${esc(mail)}" data-rol-admin="1">Hacer Administrador</button>`;
+      : `
+        ${u.es_admin
+          ? `<button type="button" class="sm" data-rol-email="${esc(mail)}" data-rol-admin="0">Cambiar a Solo Ventas</button>`
+          : `<button type="button" class="sm pri" data-rol-email="${esc(mail)}" data-rol-admin="1">Hacer Administrador</button>`}
+        <button type="button" class="sm danger" data-del-email="${esc(mail)}">Eliminar</button>
+      `;
     return `
       <div class="row">
         <div>
@@ -792,8 +1545,8 @@ function pintarUsuarios() {
           ${u.nombre ? `<div style="font-size:13px;color:var(--fg)">${esc(mail)}</div>` : ''}
           <div style="margin-top:4px">${badge}</div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${botonCambio}
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          ${controles}
         </div>
       </div>
     `;
@@ -806,6 +1559,12 @@ async function cambiarPermisoCuenta(email, nombre, hacerAdmin) {
   if (!hacerAdmin && mail === miEmail) {
     notify('No puedes quitarte el permiso de administrador a tu propia cuenta actual');
     return false;
+  }
+
+  // Si estaba en la lista de eliminados y se vuelve a activar/crear, quitarlo de eliminados
+  const eliminados = await leerUsuariosEliminados();
+  if (eliminados.includes(mail)) {
+    await guardarUsuariosEliminados(eliminados.filter(x => x !== mail));
   }
 
   const { error: rpcErr } = await sb.rpc('configurar_cuenta_personal', {
@@ -835,7 +1594,55 @@ async function cambiarPermisoCuenta(email, nombre, hacerAdmin) {
   return true;
 }
 
+async function eliminarCuentaUsuario(email) {
+  const mail = (email || '').toLowerCase().trim();
+  const miEmail = (usuarioActual && usuarioActual.email || '').toLowerCase().trim();
+  if (!mail) return false;
+  if (mail === miEmail) {
+    notify('No puedes eliminar tu propia cuenta en sesión');
+    return false;
+  }
+
+  const u = USUARIOS.find(x => (x.email || '').toLowerCase().trim() === mail);
+  const etiqueta = u && u.nombre ? `${u.nombre} (${mail})` : mail;
+  if (!confirm(`¿Seguro que deseas eliminar la cuenta de "${etiqueta}"?\n\nEsta persona ya no podrá entrar al sistema ni ver las ventas ni movimientos.`)) {
+    return false;
+  }
+
+  // 1) Bloquear de inmediato en configuración compartida
+  const eliminados = await leerUsuariosEliminados();
+  if (!eliminados.includes(mail)) {
+    eliminados.push(mail);
+    await guardarUsuariosEliminados(eliminados);
+  }
+
+  // 2) Quitar de tabla administradores por seguridad directa
+  try {
+    await sb.from('administradores').delete().eq('email', mail);
+  } catch (e) {}
+
+  // 3) Ejecutar RPC en base de datos para borrar de auth.users y desvincular llaves foráneas
+  try {
+    await sb.rpc('eliminar_cuenta_personal', { p_email: mail });
+  } catch (e) {}
+
+  // 4) Quitar de caché local y refrescar lista
+  eliminarPersonalLocal(mail);
+  await cargarUsuarios();
+  notify(`Usuario ${mail} eliminado del sistema`);
+  return true;
+}
+
 $('listaUsuarios').onclick = async e => {
+  const btnDel = e.target.closest('[data-del-email]');
+  if (btnDel) {
+    const mail = btnDel.dataset.delEmail;
+    btnDel.disabled = true;
+    await eliminarCuentaUsuario(mail);
+    btnDel.disabled = false;
+    return;
+  }
+
   const btn = e.target.closest('[data-rol-email]');
   if (!btn) return;
   const mail = btn.dataset.rolEmail;
@@ -879,7 +1686,7 @@ $('btnCrearUsuario').onclick = async () => {
     const tempSb = supabase.createClient(CONFIG.url, CONFIG.key, {
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
     });
-    const { data, error } = await tempSb.auth.signUp({
+    const { error } = await tempSb.auth.signUp({
       email,
       password,
       options: { data: { nombre: nombre || (hacerAdmin ? 'Administrador' : 'Trabajadora') } }
@@ -908,19 +1715,30 @@ $('btnCrearUsuario').onclick = async () => {
 
 function showTab(t) {
   tabActual = t;
-  ['stock', 'carta', 'movs', 'users'].forEach(k => {
+  ['dash', 'hist', 'stock', 'carta', 'movs', 'users'].forEach(k => {
     $('v-' + k).hidden = k !== t;
     $('t-' + k).classList.toggle('a', k === t);
   });
+  if (t === 'dash') rDash();
+  if (t === 'hist') rHist();
+  if (t === 'stock') pintarStock();
+  if (t === 'carta') pintarCarta();
   if (t === 'movs') cargarMovimientos();
   if (t === 'users') cargarUsuarios();
 }
 
+$('t-dash').onclick = () => showTab('dash');
+$('t-hist').onclick = () => showTab('hist');
 $('t-stock').onclick = () => showTab('stock');
 $('t-carta').onclick = () => showTab('carta');
 $('t-movs').onclick = () => showTab('movs');
 $('t-users').onclick = () => showTab('users');
-$('refrescar').onclick = cargarTodo;
+$('refrescar').onclick = async () => {
+  notify('Actualizando datos…');
+  await cargarHist().catch(() => {});
+  await cargarTodo();
+  notify('Datos actualizados');
+};
 
 const cerrarSesion = async () => { if (sb) await sb.auth.signOut(); location.reload(); };
 $('salir').onclick = cerrarSesion;
@@ -938,6 +1756,25 @@ async function init() {
   } catch (e) {
     $('login').hidden = false;
   }
+}
+
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && sb && !$('app').hidden && usuarioActual) {
+    const eliminados = await leerUsuariosEliminados();
+    const mi = (usuarioActual.email || '').toLowerCase().trim();
+    if (eliminados.includes(mi)) {
+      await sb.auth.signOut();
+      location.reload();
+    }
+  }
+});
+
+if ('serviceWorker' in navigator) {
+  let recargando = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!recargando) { recargando = true; location.reload(); }
+  });
+  navigator.serviceWorker.register('sw.js?v=33').then(r => r.update()).catch(() => {});
 }
 
 init();

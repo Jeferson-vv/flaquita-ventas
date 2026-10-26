@@ -49,9 +49,12 @@ input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
 .rap-edit-row input[type="text"]{flex:2;min-width:120px;margin:0;padding:7px 8px;font-size:13px}
 .rap-edit-row input[type="number"]{width:74px;margin:0;padding:7px 8px;font-size:13px}
 .rap-edit-row .sm{flex:0 0 auto;padding:6px 9px;font-size:12px}
-nav{display:flex;gap:6px;margin-bottom:12px}
-nav button{flex:1;padding:10px 4px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:14px;font-weight:700;cursor:pointer}
-nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
+.platos-mini{background:#fdf2f8;border:1.5px solid #f9a8d4;border-left:4px solid var(--ac);border-radius:10px;padding:7px 11px;margin-bottom:8px;display:flex;flex-direction:column;gap:4px}
+.platos-mini-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--blk)}
+.platos-mini-badge{background:var(--ac);color:#fff;padding:2px 10px;border-radius:99px;font-size:13px;font-weight:800}
+.platos-mini-tags{display:flex;flex-wrap:wrap;gap:5px}
+.platos-mini-tag{font-size:11.5px;font-weight:600;background:#fff;border:1px solid #fbcfe8;color:var(--fg);padding:2px 7px;border-radius:6px}
+.platos-mini-tag b{color:var(--ac)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 #list,#list .card,#list .card *{-webkit-user-select:none !important;user-select:none !important;-webkit-touch-callout:none !important}
 #list .vh>b,#list .ln,#list .ln *{pointer-events:none}
@@ -127,15 +130,10 @@ const CONFIG = {
   <div class="top">
     <span id="quien">Nerida Vasquez</span>
     <div class="acciones">
-      <a id="linkAdmin" href="admin.html" class="sm" hidden>Admin</a>
+      <a id="linkAdmin" href="admin.html" class="sm" style="background:var(--ac);color:#fff;border-color:var(--ac)" hidden>Admin</a>
       <button class="sm" id="salir">Salir</button>
     </div>
   </div>
-  <nav>
-    <button id="t-hoy" class="a">Hoy</button>
-    <button id="t-hist">Historial</button>
-    <button id="t-dash">Dashboard</button>
-  </nav>
 
   <div id="v-hoy">
     <div class="total"><small>Total vendido hoy</small><span id="tot">S/ 0.00</span></div>
@@ -154,6 +152,7 @@ const CONFIG = {
       <input id="dic" placeholder='Escribe o dicta: "dos chicharrones de 20 y una coca de 1 litro pago con yape"'>
       <button class="sm" id="go">Anotar</button>
     </div>
+    <div class="platos-mini" id="platosHoy"></div>
     <div class="rap-box" id="rapidos"></div>
     <div id="list"></div>
     <div class="quick" style="margin-top:12px">
@@ -162,8 +161,6 @@ const CONFIG = {
     </div>
     <div id="cierreBox" class="card" hidden style="border:2px solid var(--blk);margin-top:10px"></div>
   </div>
-  <div id="v-hist" hidden></div>
-  <div id="v-dash" hidden></div>
 </section>
 
 <script>
@@ -254,7 +251,29 @@ async function cargarConfiguracionRapidos() {
 }
 
 
+async function cuentaEstaEliminada(email) {
+  const mail = (email || '').toLowerCase().trim();
+  if (!mail || !sb) return false;
+  try {
+    const { data } = await sb.from('configuracion')
+      .select('valor')
+      .eq('clave', 'usuarios_eliminados')
+      .maybeSingle();
+    if (data && Array.isArray(data.valor)) {
+      return data.valor.map(x => String(x).toLowerCase().trim()).includes(mail);
+    }
+  } catch (e) {}
+  return false;
+}
+
 async function iniciarApp(u) {
+  const mail = (u && u.email || '').toLowerCase().trim();
+  if (await cuentaEstaEliminada(mail)) {
+    await sb.auth.signOut();
+    mostrarLogin();
+    setMsg('Tu cuenta fue eliminada por el administrador.');
+    return;
+  }
   const nombre = (u && u.user_metadata && u.user_metadata.nombre) || 'Nerida Vasquez';
   $('quien').textContent = nombre;
   $('linkAdmin').hidden = true;
@@ -298,9 +317,41 @@ async function cargarHoy() {
   HOY = data; pintarHoy();
 }
 
+function esPlatoChicharron(d) {
+  const c = catDeDetalle(d);
+  if (c === 'bebida' || c === 'cerveza') return false;
+  if (c === 'chicharron' || c === 'combinado') return true;
+  const n = ((d.productos && d.productos.nombre) || '').toLowerCase();
+  return /chicharr|combinad|taypa|porci|plato/.test(n);
+}
+
+function pintarPlatosHoy() {
+  const box = $('platosHoy');
+  if (!box) return;
+  const validas = HOY.filter(v => v.estado === 'valida');
+  let totalPlatos = 0;
+  const porPlato = {};
+  validas.forEach(v => (v.venta_detalles || []).forEach(d => {
+    if (!esPlatoChicharron(d)) return;
+    const q = Number(d.cantidad) || 0;
+    const n = (d.productos && d.productos.nombre) || 'Plato';
+    totalPlatos += q;
+    porPlato[n] = (porPlato[n] || 0) + q;
+  }));
+  const desglose = Object.entries(porPlato).sort((a, b) => b[1] - a[1]);
+  box.innerHTML = `
+    <div class="platos-mini-top">
+      <span>Platos de chicharrón vendidos hoy</span>
+      <span class="platos-mini-badge">${totalPlatos} ${totalPlatos === 1 ? 'plato' : 'platos'}</span>
+    </div>
+    ${desglose.length ? `<div class="platos-mini-tags">${desglose.map(([n, q]) => `<span class="platos-mini-tag"><b>${q}×</b> ${esc(n)}</span>`).join('')}</div>` : ''}
+  `;
+}
+
 function pintarHoy() {
   const tot = HOY.filter(v => v.estado === 'valida').reduce((s, v) => s + Number(v.total), 0);
   $('tot').textContent = money(tot);
+  pintarPlatosHoy();
   $('list').innerHTML = HOY.length ? HOY.map(v => {
     const controlMetodo = v.estado === 'valida'
       ? `<select class="mp-sel" data-vid="${v.id}" title="Cambiar método de pago">${Object.entries(METODOS).map(([k, lbl]) => `<option value="${k}"${v.metodo_pago === k ? ' selected' : ''}>${esc(lbl)}</option>`).join('')}</select>`
@@ -931,200 +982,6 @@ $('undo').onclick = async () => {
   await cargarHoy();
 };
 
-/* ---------- Historial y dashboard ---------- */
-let filtroHistPeriodo = '30', filtroHistFecha = '';
-
-async function cargarHist() {
-  const { data, error } = await sb.from('ventas')
-    .select('id,fecha,hora,total,estado,metodo_pago,venta_detalles(cantidad,precio_unitario,productos(nombre,categoria))')
-    .gte('fecha', diasAtras(365)).order('hora', { ascending: false });
-  if (error) throw error;
-  HIST = data.filter(v => v.estado === 'valida');
-}
-
-function grupo(vs) {
-  const m = {};
-  vs.forEach(v => v.venta_detalles.forEach(d => {
-    const n = d.productos.nombre, o = m[n] || (m[n] = { q: 0, s: 0 });
-    o.q += d.cantidad; o.s += d.cantidad * d.precio_unitario;
-  }));
-  return m;
-}
-
-function pintarVistaHist() {
-  const hoy = hoyStr();
-  const inicioMes = hoy.slice(0, 8) + '01';
-  const minFecha = filtroHistPeriodo === '7' ? diasAtras(6)
-    : filtroHistPeriodo === '30' ? diasAtras(29)
-    : filtroHistPeriodo === 'mes' ? inicioMes
-    : '0000-00-00';
-
-  const filtradas = HIST.filter(v => {
-    if (filtroHistFecha) return v.fecha === filtroHistFecha;
-    return v.fecha >= minFecha;
-  });
-
-  const porDia = {};
-  filtradas.forEach(v => (porDia[v.fecha] = porDia[v.fecha] || []).push(v));
-  const dias = Object.keys(porDia).sort().reverse();
-
-  const diasHtml = dias.length ? dias.map(f => {
-    const vs = porDia[f];
-    const tot = vs.reduce((s, v) => s + Number(v.total), 0);
-    const pm = porMetodo(vs);
-    const bloquesDia = agruparPorBloques(vs);
-    const dComida  = bloquesDia.find(b => b.key === 'comida');
-    const dBebida  = bloquesDia.find(b => b.key === 'bebida');
-    const dCerveza = bloquesDia.find(b => b.key === 'cerveza');
-    const horas = vs.map(v => horaStr(v.hora));
-    const rangoHora = horas.length > 1 ? `${horas[horas.length - 1]} – ${horas[0]}` : (horas[0] || '');
-    const desglosePago = Object.entries(pm)
-      .filter(([, val]) => val > 0)
-      .map(([k, val]) => `<span class="mp-pill">${esc(METODOS[k] || k)}: <b>${money(val)}</b></span>`)
-      .join('');
-
-    const listaHoras = vs.map(v => {
-      const desc = (v.venta_detalles || []).map(d => `${d.cantidad}× ${esc(d.productos.nombre)}`).join(', ');
-      return `<div class="ln" style="border-bottom:1px solid #f4f4f5;padding:4px 0;gap:6px">
-        <span style="color:var(--fg)"><b>${horaStr(v.hora)}</b> · <small style="color:var(--ac);font-weight:700">${esc(METODOS[v.metodo_pago] || v.metodo_pago)}</small> · ${desc}</span>
-        <b style="color:var(--blk);white-space:nowrap">${money(v.total)}</b>
-      </div>`;
-    }).join('');
-
-    return `<details>
-      <summary>
-        <div>
-          <span style="font-size:15px">${fdate(f)}</span>
-          <small style="display:block;font-size:12px;color:var(--mu);font-weight:500">${vs.length} ${vs.length === 1 ? 'venta' : 'ventas'}${rangoHora ? ' · ' + rangoHora : ''}</small>
-        </div>
-        <span style="font-size:16px;color:var(--ac)">${money(tot)}</span>
-      </summary>
-      <div style="padding-top:8px;margin-top:8px;border-top:1px solid var(--bd)">
-        <div class="kpi" style="margin-bottom:8px">
-          <div style="border-left-color:var(--blk)"><small>Total del día</small><b>${money(tot)}</b><small>${vs.length} ventas · Prom. ${money(tot / vs.length)}</small></div>
-          <div style="border-left-color:#be185d"><small>Chicharrones y Platos</small><b style="color:#be185d">${money(dComida ? dComida.subtotal : 0)}</b><small>${dComida ? dComida.unidades : 0} porciones/platos</small></div>
-          <div style="border-left-color:#0284c7"><small>Gaseosas y Bebidas</small><b style="color:#0284c7">${money(dBebida ? dBebida.subtotal : 0)}</b><small>${dBebida ? dBebida.unidades : 0} unidades</small></div>
-          <div style="border-left-color:#d97706"><small>Cervezas</small><b style="color:#d97706">${money(dCerveza ? dCerveza.subtotal : 0)}</b><small>${dCerveza ? dCerveza.unidades : 0} botellas</small></div>
-        </div>
-        <div class="mp-badges">${desglosePago}</div>
-        ${htmlBloquesCategoria(vs, tot)}
-        <details class="sub-det">
-          <summary><span>Ver las ${vs.length} ventas del día hora por hora</span><span>Detalle</span></summary>
-          <div style="margin-top:6px">${listaHoras}</div>
-        </details>
-        <div style="display:flex;justify-content:flex-end;margin-top:8px">
-          <button type="button" class="sm btn-copiar-dia" data-fecha="${f}" style="flex:0 0 auto;padding:6px 12px;font-size:12px">Copiar resumen del ${fdate(f)}</button>
-        </div>
-      </div>
-    </details>`;
-  }).join('') : '<p class="vacio">No hay ventas registradas en este período.</p>';
-
-  $('v-hist').innerHTML = `
-    <div class="h-filtros">
-      <button type="button" data-hp="7" class="${!filtroHistFecha && filtroHistPeriodo === '7' ? 'a' : ''}">Últimos 7 días</button>
-      <button type="button" data-hp="30" class="${!filtroHistFecha && filtroHistPeriodo === '30' ? 'a' : ''}">30 días</button>
-      <button type="button" data-hp="mes" class="${!filtroHistFecha && filtroHistPeriodo === 'mes' ? 'a' : ''}">Este mes</button>
-      <button type="button" data-hp="todo" class="${!filtroHistFecha && filtroHistPeriodo === 'todo' ? 'a' : ''}">Todo</button>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
-      <input type="date" id="histFechaInput" value="${esc(filtroHistFecha)}" style="margin:0;padding:8px 10px;font-size:14px;flex:1" title="Buscar un día específico">
-      ${filtroHistFecha ? '<button type="button" class="sm" id="limpiarFechaHist" style="flex:0 0 auto;padding:8px 12px">Ver todos</button>' : ''}
-    </div>
-    ${diasHtml}
-    <button class="sm" id="exp" style="width:100%;margin-top:10px">Descargar todo en Excel (CSV)</button>
-  `;
-}
-
-async function rHist() {
-  $('v-hist').innerHTML = '<p class="vacio">Cargando…</p>';
-  try { await cargarHist(); } catch (e) { $('v-hist').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
-  pintarVistaHist();
-}
-
-$('v-hist').addEventListener('click', e => {
-  const btnP = e.target.closest('[data-hp]');
-  if (btnP) {
-    filtroHistPeriodo = btnP.dataset.hp;
-    filtroHistFecha = '';
-    pintarVistaHist();
-    return;
-  }
-  if (e.target.id === 'limpiarFechaHist') {
-    filtroHistFecha = '';
-    pintarVistaHist();
-    return;
-  }
-  const btnCop = e.target.closest('.btn-copiar-dia');
-  if (btnCop) {
-    const f = btnCop.dataset.fecha;
-    const vs = HIST.filter(v => v.fecha === f);
-    if (vs.length) copiarTextoResumen(textoResumenDia(f, vs), btnCop);
-  }
-});
-
-$('v-hist').addEventListener('change', e => {
-  if (e.target.id === 'histFechaInput') {
-    filtroHistFecha = e.target.value || '';
-    pintarVistaHist();
-  }
-});
-
-function exportar() {
-  const filas = ['fecha,hora,metodo_pago,categoria,producto,cantidad,precio_unitario,subtotal'];
-  HIST.forEach(v => v.venta_detalles.forEach(d => filas.push([v.fecha, horaStr(v.hora), v.metodo_pago, '"' + (CATEG[d.productos.categoria] || d.productos.categoria || '') + '"', '"' + d.productos.nombre + '"', d.cantidad, d.precio_unitario, d.cantidad * d.precio_unitario].join(','))));
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([filas.join('\n')], { type: 'text/csv' }));
-  a.download = 'ventas-la-flaquita.csv'; a.click();
-}
-
-async function rDash() {
-  $('v-dash').innerHTML = '<p class="vacio">Cargando…</p>';
-  try { await cargarHist(); } catch (e) { $('v-dash').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
-  if (!HIST.length) { $('v-dash').innerHTML = '<p class="vacio">El dashboard aparece cuando tengas ventas.</p>'; return; }
-
-  const porDia = {};
-  HIST.forEach(v => porDia[v.fecha] = (porDia[v.fecha] || 0) + Number(v.total));
-  const ks = Object.keys(porDia).sort();
-  const T = Object.values(porDia).reduce((a, b) => a + b, 0);
-  const mejor = ks.reduce((a, k) => porDia[k] > porDia[a] ? k : a, ks[0]);
-  const l7 = [...Array(7)].map((_, i) => { const d = new Date(); d.setDate(d.getDate() - 6 + i); const f = d.toLocaleDateString('en-CA', LIMA); return [f, porDia[f] || 0]; });
-
-  const cat = {}, prods = {};
-  HIST.forEach(v => v.venta_detalles.forEach(d => {
-    const c = d.productos.categoria, n = d.productos.nombre;
-    cat[c] = (cat[c] || 0) + d.cantidad * d.precio_unitario;
-    prods[n] = (prods[n] || 0) + d.cantidad;
-  }));
-  const top = Object.entries(prods).sort((a, b) => b[1] - a[1]).slice(0, 6);
-  const bars = (rows, mx) => rows.map(([l, v, t]) => `<div class="br"><span>${esc(l)}</span><div><i style="width:${mx ? Math.round(v / mx * 100) : 0}%"></i></div><b>${t}</b></div>`).join('');
-  const mx7 = Math.max(1, ...l7.map(x => x[1])), mxC = Math.max(1, ...Object.values(cat)), mxP = top.length ? top[0][1] : 1;
-
-  $('v-dash').innerHTML = `
-    <div class="kpi">
-      <div><small>Total acumulado</small><b>${money(T)}</b></div>
-      <div><small>Promedio por día</small><b>${money(T / ks.length)}</b></div>
-      <div><small>Días con ventas</small><b>${ks.length}</b></div>
-      <div><small>Mejor día</small><b>${money(porDia[mejor])}</b><small>${fdate(mejor)}</small></div>
-    </div>
-    <div class="card"><h3>Últimos 7 días</h3>${bars(l7.map(([f, v]) => [fdate(f).split(',')[0] + ' ' + f.slice(8), v, money(v)]), mx7)}</div>
-    <div class="card"><h3>Ventas por tipo</h3>${bars(Object.entries(cat).map(([c, v]) => [CATEG[c] || c, v, Math.round(v / T * 100) + '%']), mxC)}</div>
-    <div class="card"><h3>Lo más vendido (unidades)</h3>${bars(top.map(([n, q]) => [n, q, q + ' u']), mxP)}</div>`;
-}
-
-function show(v) {
-  ['hoy', 'hist', 'dash'].forEach(k => { $('v-' + k).hidden = k !== v; $('t-' + k).classList.toggle('a', k === v); });
-  if (v === 'hoy') {
-    cargarConfiguracionRapidos().then(() => pintarRapidos());
-    cargarHoy();
-  }
-  if (v === 'hist') rHist();
-  if (v === 'dash') rDash();
-}
-$('t-hoy').onclick = () => show('hoy');
-$('t-hist').onclick = () => show('hist');
-$('t-dash').onclick = () => show('dash');
-document.addEventListener('click', e => { if (e.target.id === 'exp') exportar(); });
-
 /* ---------- Voz ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec, active = false, rm = false, lock, vozIniciada = false;
@@ -1166,9 +1023,19 @@ function iniciarVoz() {
   $('heard').textContent = 'En espera: di "ingresar" para anotar.';
 }
 
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && sb && !$('app').hidden && !editandoRapidos) {
-    cargarConfiguracionRapidos().then(() => pintarRapidos());
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && sb && !$('app').hidden) {
+    try {
+      const { data } = await sb.auth.getUser();
+      if (data && data.user && (await cuentaEstaEliminada(data.user.email))) {
+        await sb.auth.signOut();
+        location.reload();
+        return;
+      }
+    } catch (e) {}
+    if (!editandoRapidos) {
+      cargarConfiguracionRapidos().then(() => pintarRapidos());
+    }
   }
 });
 
@@ -1177,7 +1044,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=32').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=33').then(r => r.update()).catch(() => {});
 }
 
 init();

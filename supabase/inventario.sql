@@ -417,6 +417,51 @@ $$;
 revoke all on function listar_cuentas_personal() from public, anon;
 grant execute on function listar_cuentas_personal() to authenticated;
 
+create or replace function eliminar_cuenta_personal(
+  p_email text
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_mail text := lower(trim(coalesce(p_email, '')));
+  v_mi_mail text := lower(coalesce(auth.jwt() ->> 'email', ''));
+begin
+  if not es_admin() then
+    raise exception 'Solo el administrador puede eliminar cuentas de personal';
+  end if;
+
+  if v_mail = '' then
+    raise exception 'Correo inválido';
+  end if;
+
+  if v_mail = v_mi_mail then
+    raise exception 'No puedes eliminar tu propia cuenta actual';
+  end if;
+
+  -- Desvincular referencias en ventas y movimientos para evitar errores de llave foránea
+  update public.ventas
+  set registrado_por = null
+  where registrado_por in (select id from auth.users where lower(email) = v_mail);
+
+  update public.ventas
+  set anulado_por = null
+  where anulado_por in (select id from auth.users where lower(email) = v_mail);
+
+  update public.stock_movimientos
+  set creado_por = null
+  where creado_por in (select id from auth.users where lower(email) = v_mail);
+
+  -- Quitar de administradores y eliminar de auth.users
+  delete from public.administradores where lower(email) = v_mail;
+  delete from auth.users where lower(email) = v_mail;
+end;
+$$;
+
+revoke all on function eliminar_cuenta_personal(text) from public, anon;
+grant execute on function eliminar_cuenta_personal(text) to authenticated;
+
 -- 10) Tabla de configuración compartida (para sincronizar botones rápidos entre celular, laptop, etc.)
 create table if not exists configuracion (
   clave       text primary key,
