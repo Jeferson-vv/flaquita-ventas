@@ -1,91 +1,50 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Panel interno de administración, dashboard, historial, inventario y personal de Chicharronería La Flaquita.">
-<title>La Flaquita - Panel Administrador</title>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#be185d"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#ead6de;--fg:#09090b;--card:#ffffff;--blk:#111827;--ac:#be185d;--mu:#3f3f46;--bd:#cdb3bf;--ok:#15803d;--warn:#b45309;--err:#b91c1c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:12px 16px;max-width:820px;margin:auto}
-h1{margin:2px 0 12px;padding:0 10px;height:78px;background:#000;border-radius:12px;overflow:hidden;border:2px solid var(--blk);border-bottom:3px solid #ec4899;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;gap:6px}
-h1 .logo-circle{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#000;border:1.5px solid #fbcfe8;flex-shrink:0;z-index:2}
-h1 .banner-wrap{flex:1;min-width:0;height:100%;display:block}
-h1 .banner-img{width:100%;height:100%;object-fit:cover;object-position:center 48%;display:block;background:#000}
-@media (min-width:480px){h1{height:90px;padding:0 16px;gap:12px}h1 .logo-circle{width:66px;height:66px}h1 .banner-img{object-fit:fill}}
-input,select{padding:10px 12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:15px;font-weight:500;width:100%;box-sizing:border-box;margin:4px 0}
-input:focus,select:focus{outline:2px solid var(--ac);border-color:var(--ac)}
-input[type="checkbox"]{width:18px;height:18px;margin:0;accent-color:var(--ac);outline:none}
-.btn{width:100%;padding:12px 14px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:6px}
-.sm{padding:8px 12px;border-radius:8px;border:1.5px solid var(--blk);background:var(--card);color:var(--fg);font-size:13px;cursor:pointer;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;line-height:1.2;box-sizing:border-box}
-.sm:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
-.sm.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
-.sm.danger{background:#fff1f2;color:var(--err);border-color:#fca5a5}
-.sm.danger:hover{background:var(--err);color:#fff;border-color:var(--err)}
-.msg{color:var(--mu);font-size:14px;min-height:18px;margin:8px 0 0}
-.top{display:flex;justify-content:space-between;align-items:center;color:var(--fg);font-weight:700;font-size:14px;margin-bottom:10px;gap:8px;flex-wrap:wrap;background:var(--card);padding:10px 12px;border-radius:8px;border:1px solid var(--bd)}
-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
-@media (min-width:640px){nav{grid-template-columns:repeat(6,1fr)}}
-nav button{padding:10px 6px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer;transition:background .12s,border-color .12s}
-nav button.a{background:var(--ac);color:#fff;border-color:var(--ac)}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.card h3{margin:0 0 8px;font-size:15px;color:var(--blk)}
-.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin-bottom:12px}
-.kpi div{background:var(--card);border:1.5px solid var(--bd);border-left:4px solid var(--blk);border-radius:10px;padding:10px;transition:transform .1s,border-color .15s,background .15s;user-select:none}
-.kpi div[data-filtro]{cursor:pointer}
-.kpi div[data-filtro]:hover{border-color:var(--ac);transform:translateY(-1px)}
-.kpi div.activo{background:#fdf2f8;border-color:var(--ac);border-left:5px solid var(--ac);box-shadow:0 2px 6px rgba(190,24,93,.15)}
-.kpi b{display:block;font-size:20px;color:var(--ac)}
-.kpi small{color:var(--mu);font-size:12px;font-weight:600;display:block}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (max-width:600px){.grid2{grid-template-columns:1fr}}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--bd)}
-.row:last-child{border-bottom:0}
-.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:700}
-.b-ok{background:#dcfce7;color:var(--ok)}
-.b-warn{background:#fef3c7;color:var(--warn)}
-.b-err{background:#fee2e2;color:var(--err)}
-.b-info{background:#fce7f3;color:var(--ac)}
-.p-grid{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
-.p-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px;font-size:13px;color:var(--mu);font-weight:500}
-.p-controls label{display:flex;align-items:center;gap:5px;cursor:pointer}
-.p-controls input[type="number"]{width:86px;padding:6px 8px;font-size:14px;margin:0}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.filters > *{flex:1;min-width:140px;margin:0}
-.vacio{text-align:center;color:var(--mu);padding:16px 0;font-weight:500}
-.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--blk);color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.22);z-index:99}
-.br{display:flex;align-items:center;gap:8px;font-size:13px;margin:6px 0}
-.br span{width:130px;color:var(--fg);font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex-shrink:0}
-.br div{flex:1;background:#f4f4f5;border-radius:4px;overflow:hidden;height:14px}
-.br i{display:block;height:100%;background:var(--ac);border-radius:4px;min-width:2px}
-.br b{min-width:74px;text-align:right;color:var(--blk);font-size:12.5px}
-details{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-summary{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:700;color:var(--blk);gap:8px}
-.ln{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:var(--mu)}
-.h-filtros{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.h-filtros button{flex:1;min-width:80px;padding:8px 8px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);color:var(--fg);font-size:13px;font-weight:700;cursor:pointer}
-.h-filtros button.a{background:var(--blk);color:#fff;border-color:var(--blk)}
-.cat-box{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin-top:8px;background:#faf7f9}
-.cat-box.c-comida{border-left:4px solid #be185d;background:#fdf2f8}
-.cat-box.c-bebida{border-left:4px solid #0284c7;background:#f0f9ff}
-.cat-box.c-cerveza{border-left:4px solid #d97706;background:#fffbeb}
-.cat-box.c-otro{border-left:4px solid #4b5563;background:#f9fafb}
-.cat-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--blk);padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid rgba(0,0,0,.08)}
-.cat-head small{font-weight:600;color:var(--mu);margin-left:4px}
-.mp-badges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
-.mp-pill{font-size:12px;font-weight:600;padding:3px 8px;border-radius:99px;background:#f4f4f5;border:1px solid var(--bd);color:var(--fg)}
-.mp-pill b{color:var(--ac)}
-.prop-bar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:#e4e4e7;margin:6px 0}
-.sub-det{margin-top:8px;background:#fff;border:1px dashed var(--bd);border-radius:8px;padding:6px 10px}
-.sub-det summary{font-size:12px;color:var(--ac);font-weight:700}
-.stk-bar-wrap{width:110px;height:8px;background:#e4e4e7;border-radius:99px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:6px}
-.stk-bar-fill{height:100%;border-radius:99px}
-.chip-btn{padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--bd);background:#fdf2f8;color:var(--ac);font-weight:700;cursor:pointer}
-.chip-btn:hover{background:var(--ac);color:#fff;border-color:var(--ac)}
-.sec-title{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 8px;padding-bottom:4px;border-bottom:2px solid var(--bd)}
-.sec-title h2{margin:0;font-size:16px;color:var(--blk)}
-</style></head><body>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="App de administración móvil de Chicharronería La Flaquita.">
+  <title>La Flaquita · Admin</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#be185d">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fdf2f8',
+              100: '#fce7f3',
+              200: '#fbcfe8',
+              500: '#ec4899',
+              600: '#db2777',
+              700: '#be185d',
+              800: '#9d174d',
+              900: '#831843'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body {
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    /* Ocultar barra de scroll visual en carruseles horizontales manteniendo scroll táctil */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased selection:bg-brand-200">
 
 <script>
 const CONFIG = {
@@ -95,258 +54,518 @@ const CONFIG = {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 
-<h1>
-  <img class="logo-circle" src="logo.webp" alt="Logo La Flaquita">
-  <picture class="banner-wrap">
-    <source media="(min-width: 480px)" srcset="banner-wide.jpg">
-    <img class="banner-img" src="banner.jpg" alt="La Flaquita">
-  </picture>
-</h1>
-
-<section id="login" hidden>
-  <div class="card" id="loginForm">
-    <h3>Panel de Administración · La Flaquita</h3>
-    <p style="margin:0 0 8px;font-size:13px;color:var(--mu)">Panel exclusivo para la dueña y administradores del local.</p>
-    <label for="email" style="font-size:13px;color:var(--mu)">Correo de usuario</label>
-    <input id="email" type="email" placeholder="encargado@ejemplo.com" autocomplete="username">
-    <label for="pass" style="font-size:13px;color:var(--mu)">Clave de acceso</label>
-    <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password">
-    <button type="button" class="btn" id="entrar">Entrar al panel</button>
-    <p class="msg" id="loginMsg"></p>
+<!-- ================= PANTALLA DE LOGIN ================= -->
+<section id="login" hidden class="min-h-screen flex flex-col justify-center px-5 py-8 max-w-md mx-auto">
+  <div class="bg-black rounded-2xl p-3 mb-6 flex items-center gap-3 border-2 border-slate-900 border-b-4 border-b-brand-500 shadow-lg overflow-hidden h-20">
+    <img src="logo.webp" alt="Logo La Flaquita" class="w-14 h-14 rounded-full object-cover border border-brand-200 shrink-0">
+    <img src="banner.jpg" alt="La Flaquita" class="w-full h-full object-cover rounded-lg">
   </div>
-</section>
-
-<section id="denegado" hidden>
-  <div class="card">
-    <h3>Acceso restringido al administrador</h3>
-    <p id="denegadoMsg" style="font-size:14px;line-height:1.5;color:var(--mu)"></p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a class="sm pri" href="index.html">Ir a Ventas</a>
-      <button class="sm" id="salirDenegado">Cerrar sesión</button>
+  <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+    <h2 class="text-lg font-extrabold text-slate-900">Panel de Administración</h2>
+    <p class="text-xs text-slate-500 mt-0.5 mb-4">Acceso exclusivo para la dueña y administradores.</p>
+    <div class="space-y-3">
+      <div>
+        <label for="email" class="block text-xs font-bold text-slate-600 mb-1">Correo de usuario</label>
+        <input id="email" type="email" placeholder="encargado@ejemplo.com" autocomplete="username"
+          class="w-full h-12 px-4 rounded-xl border border-slate-300 bg-slate-50 text-base font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:bg-white">
+      </div>
+      <div>
+        <label for="pass" class="block text-xs font-bold text-slate-600 mb-1">Clave de acceso</label>
+        <input id="pass" type="password" placeholder="••••••••" autocomplete="current-password"
+          class="w-full h-12 px-4 rounded-xl border border-slate-300 bg-slate-50 text-base font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:bg-white">
+      </div>
+      <button type="button" id="entrar"
+        class="w-full h-12 rounded-xl bg-brand-700 hover:bg-brand-800 active:scale-[0.99] text-white font-bold text-base shadow-md transition">
+        Entrar al panel
+      </button>
+      <p id="loginMsg" class="text-xs text-rose-600 font-semibold min-h-[18px] text-center pt-1"></p>
     </div>
   </div>
 </section>
 
-<section id="app" hidden>
-  <div class="top">
-    <span id="quien">Nerida Vasquez · Admin</span>
-    <div style="display:flex;gap:8px;align-items:center">
-      <a class="sm pri" href="index.html">Ir a Ventas</a>
-      <button class="sm" id="refrescar">Actualizar</button>
-      <button class="sm" id="salir">Salir</button>
+<!-- ================= PANTALLA ACCESO DENEGADO ================= -->
+<section id="denegado" hidden class="min-h-screen flex flex-col justify-center px-5 py-8 max-w-md mx-auto">
+  <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 text-center space-y-4">
+    <div class="w-14 h-14 rounded-full bg-rose-100 text-rose-700 mx-auto flex items-center justify-center">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zm9-3.75a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+    </div>
+    <h3 class="text-lg font-extrabold text-slate-900">Acceso solo para Administradores</h3>
+    <p id="denegadoMsg" class="text-sm text-slate-600 leading-relaxed"></p>
+    <div class="flex flex-col gap-2.5 pt-2">
+      <a href="index.html" class="w-full h-12 rounded-xl bg-brand-700 text-white font-bold flex items-center justify-center shadow">
+        Ir a Ventas
+      </a>
+      <button id="salirDenegado" class="w-full h-12 rounded-xl border border-slate-300 bg-white text-slate-700 font-bold">
+        Cerrar sesión
+      </button>
     </div>
   </div>
+</section>
 
-  <nav>
-    <button id="t-dash" class="a">Dashboard</button>
-    <button id="t-hist">Historial</button>
-    <button id="t-stock">Stock y Entradas</button>
-    <button id="t-carta">Carta y Precios</button>
-    <button id="t-movs">Movimientos</button>
-    <button id="t-users">Personal</button>
-  </nav>
+<!-- ================= APLICACIÓN MÓVIL PRINCIPAL (ADMIN) ================= -->
+<section id="app" hidden class="min-h-screen pb-28 max-w-md mx-auto relative">
 
-  <!-- TAB 1: DASHBOARD INTEGRAL (VENTAS + STOCK) -->
-  <div id="v-dash"></div>
+  <!-- 1. BARRA SUPERIOR SIMPLIFICADA (Sticky) -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 px-4 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <button id="btnVolverGestion" type="button" hidden
+        class="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-slate-700 hover:bg-slate-100 active:scale-95">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <img src="logo.webp" alt="Logo" class="w-8 h-8 rounded-full object-cover border border-brand-200 shrink-0">
+      <h1 id="headerTitle" class="text-lg font-extrabold text-slate-900 truncate">Inicio</h1>
+    </div>
 
-  <!-- TAB 2: HISTORIAL DE VENTAS -->
-  <div id="v-hist" hidden></div>
+    <div class="flex items-center gap-2 shrink-0">
+      <!-- Icono para recargar -->
+      <button id="refrescar" type="button" title="Actualizar datos" aria-label="Actualizar datos"
+        class="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 transition">
+        <svg id="iconRefrescar" class="w-5 h-5 transition-transform duration-500" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+      <!-- Inicial del usuario -->
+      <button id="btnAvatar" type="button" title="Cuenta de administrador"
+        class="w-9 h-9 rounded-full bg-brand-700 text-white font-extrabold text-sm flex items-center justify-center shadow-sm active:scale-95">
+        <span id="userInitial">N</span>
+      </button>
+    </div>
+  </header>
 
-  <!-- TAB 3: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO -->
-  <div id="v-stock" hidden>
-    <div class="kpi" id="stockKpi"></div>
+  <!-- CONTENEDOR PRINCIPAL DE VISTAS -->
+  <main class="px-4 pt-4 space-y-4">
 
-    <div class="grid2">
-      <div class="card" style="border-top:3px solid var(--ok)">
-        <h3>Registrar entrada (compra de mercadería)</h3>
-        <label style="font-size:13px;color:var(--mu)">Producto
-          <select id="entProd"></select>
-        </label>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0 6px">
-          <span style="font-size:12px;color:var(--mu);font-weight:600">Suma rápida:</span>
-          <button type="button" class="chip-btn" data-sum-cant="6">+6 u.</button>
-          <button type="button" class="chip-btn" data-sum-cant="12">+12 (1 caja)</button>
-          <button type="button" class="chip-btn" data-sum-cant="24">+24 (2 cajas)</button>
-          <button type="button" class="chip-btn" data-sum-cant="36">+36 (3 cajas)</button>
+    <!-- ================= MÓDULO 1: INICIO (DASHBOARD) ================= -->
+    <div id="v-dash" class="space-y-4"></div>
+
+    <!-- ================= MÓDULO 2: HISTORIAL (ACORDEÓN) ================= -->
+    <div id="v-hist" hidden class="space-y-3"></div>
+
+    <!-- ================= MÓDULO 3: STOCK (LISTA VERTICAL + BOTTOM SHEET) ================= -->
+    <div id="v-stock" hidden class="space-y-3">
+      <!-- Buscador y filtros rápidos de stock -->
+      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 space-y-2.5">
+        <div class="relative">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+          </svg>
+          <input id="busqStock" type="search" placeholder="Buscar bebida o cerveza…"
+            class="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-100 border-0 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-700 focus:bg-white">
         </div>
-        <div style="display:flex;gap:8px">
-          <label style="flex:1;font-size:13px;color:var(--mu)">Cantidad que entra
-            <input id="entCant" type="number" min="1" step="1" placeholder="Ej: 24">
-          </label>
-          <label style="flex:2;font-size:13px;color:var(--mu)">Nota (opcional)
-            <input id="entNota" type="text" placeholder="Ej: 2 cajas proveedor">
-          </label>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-0.5" id="chipsFiltroStock">
+          <button type="button" data-stk-chip="todos" class="stk-chip shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white">Todos</button>
+          <button type="button" data-stk-chip="alertas" class="stk-chip shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">⚠ En alerta</button>
+          <button type="button" data-stk-chip="agotado" class="stk-chip shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">Sin stock</button>
+          <button type="button" data-stk-chip="bajo" class="stk-chip shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">Stock bajo</button>
+          <button type="button" data-stk-chip="ok" class="stk-chip shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700">Stock OK</button>
         </div>
-        <button class="btn" id="btnEntrada" style="background:var(--ok)">Sumar al stock</button>
+        <select id="filtroStock" hidden>
+          <option value="todos">Todos</option>
+          <option value="alertas">Alertas</option>
+          <option value="ok">OK</option>
+          <option value="bajo">Bajo</option>
+          <option value="agotado">Agotado</option>
+        </select>
       </div>
 
-      <div class="card" style="border-top:3px solid var(--ac)">
-        <h3>Conteo físico (ajuste de inventario)</h3>
-        <label style="font-size:13px;color:var(--mu)">Producto
-          <select id="ajProd"></select>
-        </label>
-        <div id="ajInfoActual" style="font-size:12px;color:var(--mu);margin:4px 0 6px;font-weight:600">Selecciona un producto para comparar con el sistema</div>
-        <div style="display:flex;gap:8px">
-          <label style="flex:1;font-size:13px;color:var(--mu)">Stock real contado
-            <input id="ajCant" type="number" step="1" placeholder="Ej: 15">
-          </label>
-          <label style="flex:2;font-size:13px;color:var(--mu)">Motivo / Nota
-            <input id="ajNota" type="text" placeholder="Conteo físico en tienda">
-          </label>
+      <div class="flex items-center justify-between px-1">
+        <span id="tituloListaStock" class="text-xs font-bold uppercase tracking-wider text-slate-500">Toca un producto para ajustar stock</span>
+        <span id="resumenFiltroStock" class="text-xs font-bold text-brand-700"></span>
+      </div>
+
+      <!-- Lista vertical de tarjetas de productos -->
+      <div id="listaStock" class="space-y-2.5"></div>
+    </div>
+
+    <!-- ================= MÓDULO 4: GESTIÓN (MENÚ ESTILO AJUSTES DE CELULAR) ================= -->
+    <div id="v-gestion" hidden class="space-y-4">
+      <!-- Tarjeta de perfil activo -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-700 font-extrabold text-lg flex items-center justify-center border border-brand-200 shrink-0" id="gestAvatar">
+          N
         </div>
-        <button class="btn" id="btnAjuste">Guardar conteo físico</button>
+        <div class="min-w-0 flex-1">
+          <p id="quien" class="font-extrabold text-slate-900 truncate">Nerida Vasquez</p>
+          <p id="quienEmail" class="text-xs text-slate-500 truncate">Administradora · Control Total</p>
+        </div>
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-brand-100 text-brand-800">Admin</span>
+      </div>
+
+      <!-- Lista de ajustes / módulos de gestión -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+        <!-- Opción 1: Carta y Precios -->
+        <button type="button" data-open-sub="carta"
+          class="w-full p-4 flex items-center justify-between gap-3 text-left hover:bg-slate-50 active:bg-slate-100 transition">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-rose-50 text-brand-700 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <p class="font-bold text-sm text-slate-900">Carta y Precios</p>
+              <p class="text-xs text-slate-500 truncate">Editar precios, agregar platos o activar control de stock</p>
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+        <!-- Opción 2: Movimientos de Stock -->
+        <button type="button" data-open-sub="movs"
+          class="w-full p-4 flex items-center justify-between gap-3 text-left hover:bg-slate-50 active:bg-slate-100 transition">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <p class="font-bold text-sm text-slate-900">Movimientos de Stock</p>
+              <p class="text-xs text-slate-500 truncate">Historial de entradas, ventas, anulaciones y conteos</p>
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+        <!-- Opción 3: Personal y Accesos -->
+        <button type="button" data-open-sub="users"
+          class="w-full p-4 flex items-center justify-between gap-3 text-left hover:bg-slate-50 active:bg-slate-100 transition">
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <p class="font-bold text-sm text-slate-900">Personal y Accesos</p>
+              <p class="text-xs text-slate-500 truncate">Crear cuentas, cambiar permisos o eliminar usuarios</p>
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Botón de cerrar sesión estilo ajustes -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <button type="button" id="salir"
+          class="w-full p-4 flex items-center justify-center gap-2 text-rose-600 font-bold text-sm hover:bg-rose-50 active:bg-rose-100 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+          </svg>
+          Cerrar sesión
+        </button>
       </div>
     </div>
 
-    <div class="card" id="cardListaStock">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-        <h3 style="margin:0" id="tituloListaStock">Inventario de productos con control de stock</h3>
-        <span id="resumenFiltroStock" style="font-size:12px;font-weight:700;color:var(--mu)"></span>
-      </div>
-      <div class="filters">
-        <input id="busqStock" placeholder="Buscar bebida o producto en stock…">
-        <select id="catStock">
-          <option value="">Todas las categorías</option>
-          <option value="bebida">Gaseosas, Agua y Bebidas</option>
-          <option value="cerveza">Cervezas</option>
+    <!-- ================= SUBVISTA GESTIÓN 1: CARTA Y PRECIOS ================= -->
+    <div id="v-carta" hidden class="space-y-4">
+      <details class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 group">
+        <summary class="flex items-center justify-between cursor-pointer font-extrabold text-sm text-slate-900">
+          <span>+ Agregar nuevo producto a la carta</span>
+          <span class="text-brand-700 text-xs font-bold group-open:rotate-180 transition-transform">▼</span>
+        </summary>
+        <div class="pt-3 mt-3 border-t border-slate-100 space-y-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Nombre del producto</label>
+            <input id="npNombre" type="text" placeholder="Ej: Cusqueña Dorada, Fanta 1 litro"
+              class="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Categoría</label>
+              <select id="npCat" class="w-full h-11 px-3 rounded-xl border border-slate-300 text-sm font-medium bg-white">
+                <option value="bebida">Bebidas</option>
+                <option value="cerveza">Cervezas</option>
+                <option value="chicharron">Chicharrón</option>
+                <option value="combinado">Combinados</option>
+                <option value="sarza">Sarza</option>
+                <option value="otro">Otros</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Precio (S/)</label>
+              <input id="npPrecio" type="number" inputmode="decimal" min="0" step="0.50" placeholder="10.00"
+                class="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Stock inicial</label>
+              <input id="npStockIni" type="number" inputmode="numeric" step="1" min="0" value="0"
+                class="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">Stock mínimo</label>
+              <input id="npStockMin" type="number" inputmode="numeric" step="1" min="0" value="6"
+                class="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+            </div>
+          </div>
+          <div class="flex items-center gap-5 pt-1 text-xs font-bold text-slate-700">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="npCtrlStock" checked class="w-4 h-4 accent-brand-700 rounded"> Controla stock
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="npWeb" checked class="w-4 h-4 accent-brand-700 rounded"> Visible web
+            </label>
+          </div>
+          <button type="button" id="btnCrearProd"
+            class="w-full h-12 rounded-xl bg-brand-700 text-white font-bold text-sm shadow-sm active:scale-[0.99]">
+            Crear producto
+          </button>
+          <p id="npMsg" class="text-xs text-slate-600 font-medium"></p>
+        </div>
+      </details>
+
+      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 flex gap-2">
+        <input id="busqCarta" type="search" placeholder="Buscar en la carta…"
+          class="flex-1 h-11 px-3.5 rounded-xl bg-slate-100 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-700">
+        <select id="catCarta" class="h-11 px-3 rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
+          <option value="">Todas</option>
           <option value="chicharron">Chicharrón</option>
           <option value="combinado">Combinados</option>
           <option value="sarza">Sarza</option>
+          <option value="bebida">Bebidas</option>
+          <option value="cerveza">Cervezas</option>
           <option value="otro">Otros</option>
         </select>
-        <select id="filtroStock">
-          <option value="todos">Estado: Todos con stock</option>
-          <option value="alertas">Alertas (Bajo o Sin stock)</option>
-          <option value="ok">Solo Stock OK</option>
-          <option value="bajo">Solo Stock bajo</option>
-          <option value="agotado">Solo Sin stock (≤ 0)</option>
+      </div>
+
+      <div id="listaCarta" class="space-y-2.5"></div>
+    </div>
+
+    <!-- ================= SUBVISTA GESTIÓN 2: MOVIMIENTOS ================= -->
+    <div id="v-movs" hidden class="space-y-3">
+      <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200 grid grid-cols-2 gap-2">
+        <select id="movProd" class="h-11 px-3 rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
+          <option value="">Todos los productos</option>
         </select>
-        <select id="ordenStock">
-          <option value="critico">Orden: Menor stock primero</option>
-          <option value="carta">Orden: Según la carta</option>
-          <option value="mayor">Orden: Mayor stock primero</option>
-          <option value="nombre">Orden: Nombre A–Z</option>
+        <select id="movTipo" class="h-11 px-3 rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
+          <option value="">Todos los tipos</option>
+          <option value="entrada">Entradas</option>
+          <option value="venta">Ventas</option>
+          <option value="anulacion">Anulaciones</option>
+          <option value="ajuste">Conteos / Ajustes</option>
         </select>
       </div>
-      <div id="listaStock"></div>
+      <div id="listaMovs" class="bg-white rounded-2xl shadow-sm border border-slate-200 divide-y divide-slate-100 overflow-hidden"></div>
     </div>
-  </div>
 
-  <!-- TAB 4: PRECIOS, PRODUCTOS ACTIVOS Y CONFIGURACIÓN DE STOCK -->
-  <div id="v-carta" hidden>
-    <div class="card">
-      <h3>Agregar nuevo producto a la carta</h3>
-      <div class="grid2">
-        <label style="font-size:13px;color:var(--mu)">Nombre del producto
-          <input id="npNombre" type="text" placeholder="Ej: Cusqueña Dorada, Fanta 1 litro, Tamal">
-        </label>
-        <div style="display:flex;gap:8px">
-          <label style="flex:1;font-size:13px;color:var(--mu)">Categoría
-            <select id="npCat">
-              <option value="bebida">Bebidas</option>
-              <option value="cerveza">Cervezas</option>
-              <option value="chicharron">Chicharrón</option>
-              <option value="combinado">Combinados</option>
-              <option value="sarza">Sarza</option>
-              <option value="otro">Otros</option>
+    <!-- ================= SUBVISTA GESTIÓN 3: PERSONAL Y ACCESOS ================= -->
+    <div id="v-users" hidden class="space-y-4">
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <h3 class="font-extrabold text-sm text-slate-900">Crear nueva cuenta</h3>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Si eliges <b>Trabajadora (Solo Ventas)</b>, solo podrá anotar pedidos pero no verá el botón Admin, ni el Historial ni el Dashboard.
+        </p>
+        <div class="space-y-2.5">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Nombre de la persona</label>
+            <input id="nuNombre" type="text" placeholder="Ej: María (Caja)"
+              class="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Rol / Permiso</label>
+            <select id="nuRol" class="w-full h-11 px-3 rounded-xl border border-slate-300 text-sm font-bold bg-white">
+              <option value="trabajadora">Trabajadora (Solo Ventas — Sin Admin)</option>
+              <option value="admin">Administrador / Dueña (Ventas + Admin)</option>
             </select>
-          </label>
-          <label style="flex:1;font-size:13px;color:var(--mu)">Precio (S/)
-            <input id="npPrecio" type="number" min="0" step="0.50" placeholder="Ej: 10.00">
-          </label>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Correo de acceso</label>
+            <input id="nuEmail" type="email" placeholder="trabajadora@laflaquita.com" autocomplete="off"
+              class="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">Contraseña (mín. 6 caracteres)</label>
+            <input id="nuPass" type="text" placeholder="Ej: flaquita2026" autocomplete="off"
+              class="w-full h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+          </div>
+          <button type="button" id="btnCrearUsuario"
+            class="w-full h-12 rounded-xl bg-brand-700 text-white font-bold text-sm shadow-sm active:scale-[0.99]">
+            Crear cuenta de acceso
+          </button>
+          <p id="nuMsg" class="text-xs text-slate-600 font-medium"></p>
         </div>
       </div>
-      <div class="p-controls" style="margin-top:8px">
-        <label><input type="checkbox" id="npCtrlStock" checked> Controla stock</label>
-        <label>Stock inicial
-          <input id="npStockIni" type="number" step="1" min="0" value="0">
-        </label>
-        <label>Stock mín.
-          <input id="npStockMin" type="number" step="1" min="0" value="6">
-        </label>
-        <label><input type="checkbox" id="npWeb" checked> Visible web</label>
+
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2.5">
+        <h3 class="font-extrabold text-sm text-slate-900">Hacer Admin a un correo existente</h3>
+        <div class="flex gap-2">
+          <input id="admEmailDirecto" type="email" placeholder="correo@ejemplo.com"
+            class="flex-1 h-11 px-3.5 rounded-xl border border-slate-300 text-sm font-medium">
+          <button type="button" id="btnDarAdminDirecto"
+            class="px-4 h-11 rounded-xl bg-slate-900 text-white text-xs font-bold shrink-0">
+            Hacer Admin
+          </button>
+        </div>
       </div>
-      <button type="button" class="btn" id="btnCrearProd" style="margin-top:10px">Crear producto</button>
-      <p class="msg" id="npMsg"></p>
-    </div>
 
-    <div class="filters">
-      <input id="busqCarta" placeholder="Buscar producto…">
-      <select id="catCarta">
-        <option value="">Todas las categorías</option>
-        <option value="chicharron">Chicharrón</option>
-        <option value="combinado">Combinados</option>
-        <option value="sarza">Sarza</option>
-        <option value="bebida">Bebidas</option>
-        <option value="cerveza">Cervezas</option>
-        <option value="otro">Otros</option>
-      </select>
-    </div>
-    <div id="listaCarta"></div>
-  </div>
-
-  <!-- TAB 5: ÚLTIMOS MOVIMIENTOS DE STOCK -->
-  <div id="v-movs" hidden>
-    <div class="filters">
-      <select id="movProd"><option value="">Todos los productos</option></select>
-      <select id="movTipo">
-        <option value="">Todos los tipos</option>
-        <option value="entrada">Entradas</option>
-        <option value="venta">Ventas</option>
-        <option value="anulacion">Anulaciones</option>
-        <option value="ajuste">Conteos / Ajustes</option>
-      </select>
-    </div>
-    <div class="card" id="listaMovs"></div>
-  </div>
-
-  <!-- TAB 6: GESTIÓN DE PERSONAL Y ACCESOS (DUEÑA / ADMIN Y TRABAJADORA) -->
-  <div id="v-users" hidden>
-    <div class="card">
-      <h3>Crear nueva cuenta (Dueña o Trabajadora)</h3>
-      <p style="margin:0 0 10px;font-size:13px;color:var(--mu)">Crea un usuario y contraseña para que ingrese a la app. Si eliges <b>Trabajadora (Solo Ventas)</b>, solo podrá anotar pedidos del día pero no verá el botón Admin, ni el Historial, ni el Dashboard.</p>
-      <div class="grid2">
-        <label style="font-size:13px;color:var(--mu)">Nombre de la persona
-          <input id="nuNombre" type="text" placeholder="Ej: Nerida Vasquez o María (Caja)">
-        </label>
-        <label style="font-size:13px;color:var(--mu)">Tipo de permiso (Rol)
-          <select id="nuRol">
-            <option value="trabajadora">Trabajadora (Solo Ventas — Sin Admin)</option>
-            <option value="admin">Administrador / Dueña (Ventas + Admin)</option>
-          </select>
-        </label>
-      </div>
-      <div class="grid2" style="margin-top:4px">
-        <label style="font-size:13px;color:var(--mu)">Correo de acceso
-          <input id="nuEmail" type="email" placeholder="Ej: trabajadora@laflaquita.com" autocomplete="off">
-        </label>
-        <label style="font-size:13px;color:var(--mu)">Contraseña (mínimo 6 caracteres)
-          <input id="nuPass" type="text" placeholder="Ej: flaquita2026" autocomplete="off">
-        </label>
-      </div>
-      <button type="button" class="btn" id="btnCrearUsuario" style="margin-top:10px">Crear cuenta de acceso</button>
-      <p class="msg" id="nuMsg"></p>
-    </div>
-
-    <div class="card">
-      <h3>Dar permiso de Admin a un correo existente</h3>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <input id="admEmailDirecto" type="email" placeholder="correo@ejemplo.com" style="flex:2;min-width:180px;margin:0">
-        <button type="button" class="sm pri" id="btnDarAdminDirecto" style="padding:10px 14px">Hacer Administrador</button>
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="font-extrabold text-sm text-slate-900">Cuentas registradas</h3>
+          <span class="text-[11px] font-semibold text-slate-400">Permisos y eliminación</span>
+        </div>
+        <div id="listaUsuarios" class="divide-y divide-slate-100"></div>
       </div>
     </div>
 
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap">
-        <h3 style="margin:0">Cuentas registradas y permisos</h3>
-        <small style="color:var(--mu);font-weight:600">Cambia permisos o elimina usuarios que ya no deban tener acceso</small>
-      </div>
-      <div id="listaUsuarios"></div>
+  </main>
+
+  <!-- 2. BOTÓN FLOTANTE (FAB) - IR A VENTAS -->
+  <a href="index.html" title="Ir a Ventas" aria-label="Ir a Ventas"
+    class="fixed bottom-20 right-4 z-30 h-14 px-4 rounded-full bg-brand-700 hover:bg-brand-800 active:scale-95 text-white shadow-xl shadow-brand-900/30 flex items-center gap-2 border-2 border-white transition">
+    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+    </svg>
+    <span class="text-xs font-extrabold tracking-wide pr-0.5">Ventas</span>
+  </a>
+
+  <!-- 3. NAVEGACIÓN INFERIOR (BOTTOM BAR) CON 4 MÓDULOS -->
+  <nav aria-label="Navegación principal"
+    class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200 pb-[env(safe-area-inset-bottom,0px)]">
+    <div class="max-w-md mx-auto grid grid-cols-4 h-16">
+      <!-- Módulo 1: Inicio -->
+      <button type="button" id="t-dash"
+        class="nav-btn flex flex-col items-center justify-center gap-1 text-brand-700 font-extrabold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span class="text-[11px]">Inicio</span>
+      </button>
+
+      <!-- Módulo 2: Historial -->
+      <button type="button" id="t-hist"
+        class="nav-btn flex flex-col items-center justify-center gap-1 text-slate-400 font-semibold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span class="text-[11px]">Historial</span>
+      </button>
+
+      <!-- Módulo 3: Stock -->
+      <button type="button" id="t-stock"
+        class="nav-btn flex flex-col items-center justify-center gap-1 text-slate-400 font-semibold transition relative">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        <span class="text-[11px]">Stock</span>
+        <span id="navBadgeStock" hidden class="absolute top-1.5 right-6 w-2 h-2 rounded-full bg-rose-600"></span>
+      </button>
+
+      <!-- Módulo 4: Gestión -->
+      <button type="button" id="t-gestion"
+        class="nav-btn flex flex-col items-center justify-center gap-1 text-slate-400 font-semibold transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="text-[11px]">Gestión</span>
+      </button>
     </div>
-  </div>
+  </nav>
+
 </section>
 
-<div id="toast" class="toast" hidden></div>
+<!-- ================= 4. BOTTOM SHEET MODAL PARA CONTROL DE STOCK ================= -->
+<div id="stockSheetModal" hidden class="fixed inset-0 z-50">
+  <!-- Fondo oscuro (Backdrop) -->
+  <div id="sheetBackdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-[1px] transition-opacity"></div>
+
+  <!-- Hoja inferior (Bottom Sheet que cubre al menos la mitad de la pantalla) -->
+  <div class="fixed bottom-0 inset-x-0 max-w-md mx-auto bg-white rounded-t-3xl shadow-2xl min-h-[54vh] max-h-[90vh] overflow-y-auto p-5 pb-8 flex flex-col justify-between z-10">
+    <div>
+      <!-- Indicador de arrastre superior -->
+      <div class="w-12 h-1.5 bg-slate-300 rounded-full mx-auto mb-4"></div>
+
+      <!-- Cabecera del producto seleccionado -->
+      <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
+        <div>
+          <span id="sheetProdCat" class="text-[11px] font-extrabold uppercase tracking-wider text-brand-700">Bebidas</span>
+          <h3 id="sheetProdNombre" class="text-lg font-extrabold text-slate-900 leading-snug">Coca 1 litro</h3>
+          <p id="sheetProdMeta" class="text-xs text-slate-500 mt-0.5">Stock actual en sistema: <b id="sheetStockActual" class="text-slate-900">0</b> u. · Mínimo: <span id="sheetStockMin">6</span></p>
+        </div>
+        <button type="button" id="btnCerrarSheet" aria-label="Cerrar"
+          class="w-9 h-9 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold">
+          ✕
+        </button>
+      </div>
+
+      <!-- Selector de modo: Entrada vs Conteo Físico -->
+      <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl my-4">
+        <button type="button" id="sheetTabEntrada"
+          class="h-10 rounded-lg text-xs font-extrabold bg-white text-slate-900 shadow-sm transition">
+          + Sumar Entrada
+        </button>
+        <button type="button" id="sheetTabAjuste"
+          class="h-10 rounded-lg text-xs font-extrabold text-slate-500 transition">
+          = Conteo Físico
+        </button>
+      </div>
+
+      <!-- Botones táctiles grandes (h-12) para +6, +12, +24, +36 (visibles en modo Entrada) -->
+      <div id="sheetQuickBtnsWrap" class="mb-4">
+        <label class="block text-xs font-bold text-slate-500 mb-2">Toque rápido para sumar cajas / unidades:</label>
+        <div class="grid grid-cols-4 gap-2">
+          <button type="button" data-sheet-add="6"
+            class="h-12 rounded-xl bg-brand-50 hover:bg-brand-100 active:scale-95 border border-brand-200 text-brand-800 font-extrabold text-sm">
+            +6
+          </button>
+          <button type="button" data-sheet-add="12"
+            class="h-12 rounded-xl bg-brand-50 hover:bg-brand-100 active:scale-95 border border-brand-200 text-brand-800 font-extrabold text-sm">
+            +12
+          </button>
+          <button type="button" data-sheet-add="24"
+            class="h-12 rounded-xl bg-brand-50 hover:bg-brand-100 active:scale-95 border border-brand-200 text-brand-800 font-extrabold text-sm">
+            +24
+          </button>
+          <button type="button" data-sheet-add="36"
+            class="h-12 rounded-xl bg-brand-50 hover:bg-brand-100 active:scale-95 border border-brand-200 text-brand-800 font-extrabold text-sm">
+            +36
+          </button>
+        </div>
+      </div>
+
+      <!-- Input numérico grande para teclado de celular -->
+      <div class="space-y-3">
+        <div>
+          <label id="sheetLabelCant" for="sheetInputCant" class="block text-xs font-bold text-slate-700 mb-1">
+            Cantidad que ingresa al almacén
+          </label>
+          <input id="sheetInputCant" type="number" inputmode="numeric" pattern="[0-9]*" step="1" placeholder="Ej: 24"
+            class="w-full h-12 px-4 rounded-xl border-2 border-slate-300 focus:border-brand-700 focus:outline-none text-lg font-extrabold text-slate-900">
+        </div>
+        <div>
+          <label for="sheetInputNota" class="block text-xs font-bold text-slate-500 mb-1">Nota opcional</label>
+          <input id="sheetInputNota" type="text" placeholder="Ej: Proveedor / Conteo de turno"
+            class="w-full h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:bg-white focus:outline-none focus:border-brand-700">
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón principal de confirmación (h-12) -->
+    <div class="pt-5">
+      <button type="button" id="btnGuardarSheet"
+        class="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-extrabold text-base shadow-md transition">
+        Sumar al stock
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST FLOTANTE DE NOTIFICACIONES -->
+<div id="toast" hidden
+  class="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-full text-xs font-bold shadow-lg max-w-[90vw] truncate">
+</div>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -361,29 +580,31 @@ const fechaHoraStr = iso => new Date(iso).toLocaleString('es-PE', { ...LIMA, day
 const CATEG = { chicharron: 'Chicharrón', sarza: 'Sarza', combinado: 'Combinados', bebida: 'Bebidas', cerveza: 'Cervezas', otro: 'Otros' };
 const METODOS = { efectivo: 'Efectivo', yape: 'Yape', plin: 'Plin', tarjeta: 'Tarjeta', transferencia: 'Transferencia' };
 const TIPO_BADGE = {
-  entrada:   ['Entrada', 'b-ok'],
-  venta:     ['Venta', 'b-info'],
-  anulacion: ['Anulación', 'b-warn'],
-  ajuste:    ['Conteo', 'b-warn']
+  entrada:   ['Entrada', 'bg-emerald-100 text-emerald-800'],
+  venta:     ['Venta', 'bg-pink-100 text-brand-800'],
+  anulacion: ['Anulación', 'bg-amber-100 text-amber-800'],
+  ajuste:    ['Conteo', 'bg-amber-100 text-amber-800']
 };
 
 const DEFINICION_BLOQUES = [
-  { key: 'comida',  titulo: 'Chicharrones, Combinados y Sarza', cls: 'c-comida',  color: '#be185d', cats: ['chicharron', 'combinado', 'sarza'] },
-  { key: 'bebida',  titulo: 'Gaseosas, Chicha y Bebidas',       cls: 'c-bebida',  color: '#0284c7', cats: ['bebida'] },
-  { key: 'cerveza', titulo: 'Cervezas',                         cls: 'c-cerveza', color: '#d97706', cats: ['cerveza'] },
-  { key: 'otro',    titulo: 'Otros productos',                  cls: 'c-otro',    color: '#4b5563', cats: ['otro'] }
+  { key: 'comida',  titulo: 'Chicharrones, Combinados y Sarza', border: 'border-l-brand-700 bg-brand-50/60', color: '#be185d', cats: ['chicharron', 'combinado', 'sarza'] },
+  { key: 'bebida',  titulo: 'Gaseosas, Chicha y Bebidas',       border: 'border-l-sky-600 bg-sky-50/60',     color: '#0284c7', cats: ['bebida'] },
+  { key: 'cerveza', titulo: 'Cervezas',                         border: 'border-l-amber-600 bg-amber-50/60', color: '#d97706', cats: ['cerveza'] },
+  { key: 'otro',    titulo: 'Otros productos',                  border: 'border-l-slate-600 bg-slate-50',    color: '#4b5563', cats: ['otro'] }
 ];
 
-let sb = null, PRODS = [], HIST = [], MOVS = [], USUARIOS = [], ELIMINADOS = [], usuarioActual = null, tabActual = 'dash', toastTimer = null, ingresando = false;
+let sb = null, PRODS = [], HIST = [], MOVS = [], USUARIOS = [], ELIMINADOS = [];
+let usuarioActual = null, tabActual = 'dash', toastTimer = null, ingresando = false;
 let filtroDashPeriodo = '30';
 let filtroHistPeriodo = '30', filtroHistFecha = '';
+let sheetProdId = null, sheetModo = 'entrada';
 
 function notify(msg) {
   const t = $('toast');
   t.textContent = msg;
   t.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3000);
 }
 
 function setMsg(t) { $('loginMsg').textContent = t; }
@@ -417,6 +638,7 @@ async function guardarUsuariosEliminados(lista) {
   } catch (e) {}
 }
 
+/* ---------- AUTENTICACIÓN Y VERIFICACIÓN DE ADMIN ---------- */
 async function entrar() {
   if (ingresando) return;
   const email = $('email').value.trim();
@@ -459,7 +681,7 @@ async function verificarYEntrar(u) {
   if (error) {
     $('login').hidden = true;
     $('denegado').hidden = false;
-    $('denegadoMsg').innerHTML = `No se pudo verificar permisos de administrador (<code>${esc(error.message)}</code>).<br><br>Asegúrate de haber ejecutado <b>supabase/inventario.sql</b> en el SQL Editor de Supabase.`;
+    $('denegadoMsg').innerHTML = `No se pudo verificar permisos de administrador (<code>${esc(error.message)}</code>).`;
     return;
   }
 
@@ -472,7 +694,12 @@ async function verificarYEntrar(u) {
   }
 
   const nombre = (user.user_metadata && user.user_metadata.nombre) || 'Nerida Vasquez';
-  $('quien').textContent = nombre + ' · Admin';
+  const inicial = (nombre.trim()[0] || user.email[0] || 'A').toUpperCase();
+  $('userInitial').textContent = inicial;
+  $('gestAvatar').textContent = inicial;
+  $('quien').textContent = nombre;
+  $('quienEmail').textContent = user.email || 'Administradora';
+
   $('login').hidden = true;
   $('denegado').hidden = true;
   $('app').hidden = false;
@@ -488,7 +715,14 @@ async function cargarProductos() {
     return false;
   }
   PRODS = data || [];
+  actualizarBadgeAlertasNav();
   return true;
+}
+
+function actualizarBadgeAlertasNav() {
+  const alertas = PRODS.filter(p => p.controla_stock && p.activo && p.stock <= p.stock_minimo).length;
+  const badge = $('navBadgeStock');
+  if (badge) badge.hidden = alertas === 0;
 }
 
 async function cargarHist() {
@@ -501,7 +735,7 @@ async function cargarHist() {
 
 async function cargarTodo() {
   await cargarProductos();
-  pintarSelectoresStock();
+  pintarSelectoresMovs();
   pintarStock();
   pintarCarta();
   if (tabActual === 'dash') await rDash();
@@ -555,21 +789,25 @@ function agruparPorBloques(vs) {
 
 function htmlBloquesCategoria(vs, totDia) {
   const bloques = agruparPorBloques(vs).filter(b => b.unidades > 0);
-  if (!bloques.length) return '<p class="vacio" style="margin:6px 0">Sin productos registrados.</p>';
-  const barra = totDia > 0 && bloques.length > 1
-    ? `<div class="prop-bar" title="Proporción por categoría">${bloques.map(b => `<div style="width:${Math.max(3, Math.round(b.subtotal / totDia * 100))}%;background:${b.color}"></div>`).join('')}</div>`
-    : '';
-  return barra + bloques.map(b => {
+  if (!bloques.length) return '<p class="text-xs text-slate-400 text-center py-3">Sin productos registrados.</p>';
+  return `<div class="space-y-2 mt-2">` + bloques.map(b => {
     const pct = totDia > 0 ? Math.round(b.subtotal / totDia * 100) : 0;
     return `
-      <div class="cat-box ${b.cls}">
-        <div class="cat-head">
-          <span>${esc(b.titulo)} <small>(${b.unidades} u.)</small></span>
-          <span>${money(b.subtotal)} <small>${pct}%</small></span>
+      <div class="rounded-xl border border-slate-200 border-l-4 ${b.border} p-2.5">
+        <div class="flex items-center justify-between text-xs font-extrabold text-slate-900 pb-1.5 mb-1.5 border-b border-slate-200/60">
+          <span>${esc(b.titulo)} <small class="text-slate-500 font-semibold">(${b.unidades} u.)</small></span>
+          <span>${money(b.subtotal)} <small class="text-slate-500 font-semibold">${pct}%</small></span>
         </div>
-        ${b.lista.map(([n, o]) => `<div class="ln" style="color:var(--fg)"><span><b>${o.q}</b> × ${esc(n)}</span><span>${money(o.s)}</span></div>`).join('')}
+        <div class="space-y-1">
+          ${b.lista.map(([n, o]) => `
+            <div class="flex justify-between text-xs text-slate-700">
+              <span><b class="text-slate-900">${o.q}</b> × ${esc(n)}</span>
+              <span class="font-semibold">${money(o.s)}</span>
+            </div>
+          `).join('')}
+        </div>
       </div>`;
-  }).join('');
+  }).join('') + `</div>`;
 }
 
 function textoResumenDia(fechaStr, vs) {
@@ -579,9 +817,9 @@ function textoResumenDia(fechaStr, vs) {
   const lineas = [
     `RESUMEN LA FLAQUITA - ${fdate(fechaStr).toUpperCase()} (${fechaStr})`,
     `Ventas válidas: ${vs.length} | Total: ${money(tot)}`,
-    ''
+    '',
+    'MÉTODOS DE PAGO:'
   ];
-  lineas.push('MÉTODOS DE PAGO:');
   Object.entries(pm).filter(([, val]) => val > 0).forEach(([k, val]) => {
     lineas.push(`- ${METODOS[k] || k}: ${money(val)}`);
   });
@@ -599,7 +837,7 @@ async function copiarTextoResumen(txt, btn) {
   try {
     await navigator.clipboard.writeText(txt);
     const prev = btn.textContent;
-    btn.textContent = 'Copiado al portapapeles';
+    btn.textContent = '¡Copiado!';
     notify('Resumen copiado al portapapeles');
     setTimeout(() => { btn.textContent = prev; }, 2000);
   } catch (e) {
@@ -607,11 +845,11 @@ async function copiarTextoResumen(txt, btn) {
   }
 }
 
-/* ---------- TAB 1: DASHBOARD INTEGRAL (VENTAS + INVENTARIO/STOCK) ---------- */
+/* ---------- MÓDULO 1: DASHBOARD (INICIO) ---------- */
 async function rDash() {
   if (!HIST.length) {
-    $('v-dash').innerHTML = '<p class="vacio">Cargando dashboard…</p>';
-    try { await cargarHist(); } catch (e) { $('v-dash').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
+    $('v-dash').innerHTML = '<div class="bg-white rounded-2xl p-8 text-center text-sm text-slate-400 font-semibold">Cargando resumen…</div>';
+    try { await cargarHist(); } catch (e) { $('v-dash').innerHTML = '<div class="bg-white rounded-2xl p-6 text-center text-sm text-rose-600">Error: ' + esc(e.message) + '</div>'; return; }
   } else {
     cargarHist().then(() => { if (tabActual === 'dash') pintarVistaDash(); }).catch(() => {});
   }
@@ -663,234 +901,214 @@ function pintarVistaDash() {
     d.setDate(d.getDate() - 6 + i);
     const f = d.toLocaleDateString('en-CA', LIMA);
     const totF = HIST.filter(v => v.fecha === f).reduce((s, v) => s + Number(v.total), 0);
-    const cantF = HIST.filter(v => v.fecha === f).length;
-    return [f, totF, cantF];
+    return [f, totF];
   });
   const mx7 = Math.max(1, ...l7.map(x => x[1]));
 
   const pm = porMetodo(vsPeriodo);
   const mxM = Math.max(1, ...Object.values(pm));
 
-  const listaTopPlatos = Object.entries(topPlatos).sort((a, b) => b[1].q - a[1].q).slice(0, 6);
+  const listaTopPlatos = Object.entries(topPlatos).sort((a, b) => b[1].q - a[1].q).slice(0, 5);
   const mxTP = listaTopPlatos.length ? listaTopPlatos[0][1].q : 1;
 
-  const listaTopBebidas = Object.entries(topBebidas).sort((a, b) => b[1].q - a[1].q).slice(0, 6);
+  const listaTopBebidas = Object.entries(topBebidas).sort((a, b) => b[1].q - a[1].q).slice(0, 5);
   const mxTB = listaTopBebidas.length ? listaTopBebidas[0][1].q : 1;
 
-  const bars = (rows, mx, color) => rows.length
-    ? rows.map(([l, v, t]) => `<div class="br"><span title="${esc(l)}">${esc(l)}</span><div><i style="width:${mx ? Math.max(3, Math.round(v / mx * 100)) : 0}%;${color ? 'background:' + color : ''}"></i></div><b>${t}</b></div>`).join('')
-    : '<p class="vacio" style="padding:8px 0">Sin registros en este período.</p>';
+  const renderBars = (rows, mx, barClass) => rows.length
+    ? `<div class="space-y-2.5">` + rows.map(([l, v, t]) => `
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="font-semibold text-slate-700 truncate pr-2">${esc(l)}</span>
+            <b class="text-slate-900 shrink-0">${t}</b>
+          </div>
+          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full ${barClass} rounded-full" style="width:${mx ? Math.max(4, Math.round(v / mx * 100)) : 0}%"></div>
+          </div>
+        </div>
+      `).join('') + `</div>`
+    : '<p class="text-xs text-slate-400 text-center py-6">Sin registros en este período.</p>';
 
-  // Resumen de Stock en vivo
+  // Datos de Stock para el Grid 2x2
   const ctrl = PRODS.filter(p => p.controla_stock && p.activo);
   const agotados = ctrl.filter(p => p.stock <= 0);
   const bajos = ctrl.filter(p => p.stock > 0 && p.stock <= p.stock_minimo);
   const ok = ctrl.filter(p => p.stock > p.stock_minimo);
-  const alertas = [...agotados, ...bajos].sort((a, b) => a.stock - b.stock);
   const totalUnidadesStock = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0), 0);
-  const valorStock = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0) * Number(p.precio || 0), 0);
-
-  const stockOrdenado = [...ctrl].sort((a, b) => a.stock - b.stock);
+  const alertas = [...agotados, ...bajos].sort((a, b) => a.stock - b.stock);
 
   $('v-dash').innerHTML = `
-    <div class="sec-title" style="margin-top:2px">
-      <h2>Resumen de Ventas</h2>
-      <div class="h-filtros" style="margin:0">
-        <button type="button" data-dp="hoy" class="${filtroDashPeriodo === 'hoy' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">Hoy</button>
-        <button type="button" data-dp="7" class="${filtroDashPeriodo === '7' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">7 días</button>
-        <button type="button" data-dp="30" class="${filtroDashPeriodo === '30' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">30 días</button>
-        <button type="button" data-dp="mes" class="${filtroDashPeriodo === 'mes' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">Este mes</button>
-        <button type="button" data-dp="todo" class="${filtroDashPeriodo === 'todo' ? 'a' : ''}" style="padding:5px 10px;min-width:auto">Todo</button>
-      </div>
+    <!-- Filtro de período en chips horizontales -->
+    <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+      ${[
+        ['hoy', 'Hoy'],
+        ['7', '7 días'],
+        ['30', '30 días'],
+        ['mes', 'Este mes'],
+        ['todo', 'Todo']
+      ].map(([k, lbl]) => `
+        <button type="button" data-dp="${k}"
+          class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-extrabold transition ${filtroDashPeriodo === k ? 'bg-slate-900 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'}">
+          ${lbl}
+        </button>
+      `).join('')}
     </div>
 
-    <div class="kpi">
-      <div style="border-left-color:var(--blk)">
-        <small>Vendido hoy (${fdate(hoy)})</small>
-        <b>${money(totHoy)}</b>
-        <small>${vsHoy.length} ${vsHoy.length === 1 ? 'venta' : 'ventas'} · ${platosHoy} platos</small>
-      </div>
-      <div style="border-left-color:var(--ac)">
-        <small>Total en período</small>
-        <b>${money(T)}</b>
-        <small>${vsPeriodo.length} pedidos · ${ks.length} ${ks.length === 1 ? 'día' : 'días'}</small>
-      </div>
-      <div style="border-left-color:#be185d">
-        <small>Platos de chicharrón</small>
-        <b>${platosPeriodo} platos</b>
-        <small>${money(montoPlatosPeriodo)} en platos</small>
-      </div>
-      <div style="border-left-color:#0284c7">
-        <small>Promedio por día</small>
-        <b style="color:#0284c7">${money(ks.length ? T / ks.length : 0)}</b>
-        <small>Ticket prom.: ${money(vsPeriodo.length ? T / vsPeriodo.length : 0)}</small>
-      </div>
-      <div style="border-left-color:var(--ok)">
-        <small>Mejor día del período</small>
-        <b style="color:var(--ok)">${mejor ? money(porDia[mejor]) : 'S/ 0.00'}</b>
-        <small>${mejor ? fdate(mejor) : 'Sin ventas'}</small>
-      </div>
-    </div>
-
-    <div class="sec-title">
-      <h2>Dashboard de Stock e Inventario</h2>
-      <div style="display:flex;gap:6px">
-        <button type="button" class="sm pri" id="btnIrStockDash" style="padding:6px 12px;font-size:12px">Gestionar Stock y Entradas →</button>
-      </div>
-    </div>
-
-    <div class="kpi">
-      <div data-dash-stk="todos" style="cursor:pointer;border-left-color:var(--blk)">
-        <small>Productos con stock</small>
-        <b style="color:var(--blk)">${ctrl.length}</b>
-        <small>${totalUnidadesStock} unidades en local</small>
-      </div>
-      <div data-dash-stk="ok" style="cursor:pointer;border-left-color:var(--ok)">
-        <small>Stock OK</small>
-        <b style="color:var(--ok)">${ok.length}</b>
-        <small>Abastecidos</small>
-      </div>
-      <div data-dash-stk="bajo" style="cursor:pointer;border-left-color:var(--warn)">
-        <small>Stock bajo</small>
-        <b style="color:var(--warn)">${bajos.length}</b>
-        <small>Por reponer pronto</small>
-      </div>
-      <div data-dash-stk="agotado" style="cursor:pointer;border-left-color:var(--err)">
-        <small>Sin stock (≤ 0)</small>
-        <b style="color:var(--err)">${agotados.length}</b>
-        <small>Agotados</small>
-      </div>
-      <div style="border-left-color:#0284c7">
-        <small>Valorizado en stock</small>
-        <b style="color:#0284c7">${money(valorStock)}</b>
-        <small>En bebidas y cervezas</small>
-      </div>
-    </div>
-
-    <div class="grid2">
-      <div class="card" style="border-left:4px solid ${alertas.length ? 'var(--err)' : 'var(--ok)'}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <h3 style="margin:0">${alertas.length ? `⚠ Alertas de reposición (${alertas.length})` : '✓ Estado de reposición'}</h3>
-          ${alertas.length ? `<button type="button" class="chip-btn" data-dash-stk="alertas">Ver en Stock</button>` : ''}
+    <!-- TARJETAS COMPLETAS (w-full) APILADAS -->
+    <div class="space-y-3">
+      <!-- Tarjeta Principal: Ventas de Hoy -->
+      <div class="w-full bg-slate-900 text-white rounded-3xl p-5 shadow-md border-b-4 border-brand-500">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Vendido Hoy (${fdate(hoy)})</span>
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-brand-700 text-white">${platosHoy} ${platosHoy === 1 ? 'plato' : 'platos'} hoy</span>
         </div>
-        ${alertas.length ? alertas.slice(0, 8).map(p => `
-          <div class="row" style="padding:6px 0">
-            <div>
-              <b style="font-size:13.5px">${esc(p.nombre)}</b>
-              <div style="font-size:11.5px;color:var(--mu)">Mínimo sugerido: ${p.stock_minimo} u.</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:5px">
-              ${estadoStockBadge(p)}
-              <button type="button" class="chip-btn" data-fast-in-q="${p.id}" data-q="12" title="Sumar 12 unidades">+12</button>
-              <button type="button" class="sm" data-fast-in="${p.id}" style="padding:4px 8px;font-size:12px">+ Entrada</button>
-              <button type="button" class="sm" data-fast-aj="${p.id}" style="padding:4px 8px;font-size:12px">Conteo</button>
-            </div>
-          </div>
-        `).join('') : '<p class="vacio" style="color:var(--ok);padding:12px 0">Todos los productos con control de stock tienen buen nivel de inventario.</p>'}
+        <div class="text-3xl font-black mt-1 tracking-tight">${money(totHoy)}</div>
+        <p class="text-xs text-slate-300 mt-1">${vsHoy.length} ${vsHoy.length === 1 ? 'pedido registrado' : 'pedidos registrados'} hoy</p>
       </div>
 
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <h3 style="margin:0">Nivel de stock actual (menor a mayor)</h3>
-          <small style="color:var(--mu);font-weight:600">Acción rápida</small>
+      <!-- Tarjeta Apilada 2: Resumen del Período Seleccionado -->
+      <div class="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-slate-500 block">Total en el período</span>
+          <b class="text-2xl font-extrabold text-brand-700">${money(T)}</b>
+          <span class="text-xs text-slate-500 block mt-0.5">${vsPeriodo.length} ventas · Prom. diario ${money(ks.length ? T / ks.length : 0)}</span>
         </div>
-        <div style="max-height:270px;overflow-y:auto;padding-right:4px">
-          ${stockOrdenado.map(p => {
-            const meta = Math.max(12, (p.stock_minimo || 6) * 3);
-            const pct = Math.max(0, Math.min(100, Math.round((p.stock / meta) * 100)));
-            const col = p.stock <= 0 ? 'var(--err)' : (p.stock <= p.stock_minimo ? 'var(--warn)' : 'var(--ok)');
-            return `
-              <div class="row" style="padding:5px 0;font-size:13px">
-                <div style="flex:1;min-width:120px">
-                  <b>${esc(p.nombre)}</b>
-                </div>
-                <div style="display:flex;align-items:center;gap:5px">
-                  <div class="stk-bar-wrap" style="width:64px"><div class="stk-bar-fill" style="width:${pct}%;background:${col}"></div></div>
-                  <b style="min-width:36px;text-align:right;color:${col}">${p.stock} u.</b>
-                  <button type="button" class="chip-btn" data-fast-in="${p.id}" title="Registrar entrada">+</button>
-                  <button type="button" class="chip-btn" data-fast-aj="${p.id}" title="Ajustar conteo físico" style="background:#f4f4f5;color:var(--blk)">=</button>
-                </div>
-              </div>
-            `;
-          }).join('')}
+        <div class="text-right border-l border-slate-100 pl-4">
+          <span class="text-xs font-bold text-slate-500 block">Platos vendidos</span>
+          <b class="text-lg font-extrabold text-slate-900">${platosPeriodo} u.</b>
+          <span class="text-xs text-brand-700 font-bold block">${money(montoPlatosPeriodo)}</span>
+        </div>
+      </div>
+
+      <!-- Tarjeta Apilada 3: Mejor día y Ticket promedio -->
+      <div class="w-full bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-slate-500 block">Mejor día del período</span>
+          <b class="text-base font-extrabold text-emerald-700">${mejor ? money(porDia[mejor]) : 'S/ 0.00'}</b>
+          <span class="text-xs text-slate-500 block">${mejor ? fdate(mejor) : 'Sin ventas'}</span>
+        </div>
+        <div class="text-right">
+          <span class="text-xs font-bold text-slate-500 block">Ticket promedio</span>
+          <b class="text-base font-extrabold text-slate-900">${money(vsPeriodo.length ? T / vsPeriodo.length : 0)}</b>
+          <span class="text-xs text-slate-400 block">por pedido</span>
         </div>
       </div>
     </div>
 
-    <div class="sec-title">
-      <h2>Análisis Detallado de Ventas</h2>
+    <!-- INDICADORES DE STOCK EN GRID 2x2 -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Estado de Inventario (Stock)</h2>
+        <button type="button" data-dash-stk="todos" class="text-xs font-extrabold text-brand-700">Ver todo →</button>
+      </div>
+      <div class="grid grid-cols-2 gap-2.5">
+        <button type="button" data-dash-stk="todos"
+          class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 border-l-4 border-l-slate-900 text-left active:scale-[0.98] transition">
+          <span class="text-xs font-bold text-slate-500 block">Controlados</span>
+          <b class="text-2xl font-black text-slate-900">${ctrl.length}</b>
+          <span class="text-[11px] text-slate-400 font-semibold block mt-0.5">${totalUnidadesStock} u. en almacén</span>
+        </button>
+
+        <button type="button" data-dash-stk="ok"
+          class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 border-l-4 border-l-emerald-600 text-left active:scale-[0.98] transition">
+          <span class="text-xs font-bold text-slate-500 block">Stock OK</span>
+          <b class="text-2xl font-black text-emerald-600">${ok.length}</b>
+          <span class="text-[11px] text-slate-400 font-semibold block mt-0.5">Abastecidos</span>
+        </button>
+
+        <button type="button" data-dash-stk="bajo"
+          class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 border-l-4 border-l-amber-500 text-left active:scale-[0.98] transition">
+          <span class="text-xs font-bold text-slate-500 block">Stock Bajo</span>
+          <b class="text-2xl font-black text-amber-600">${bajos.length}</b>
+          <span class="text-[11px] text-slate-400 font-semibold block mt-0.5">Por reponer</span>
+        </button>
+
+        <button type="button" data-dash-stk="agotado"
+          class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200 border-l-4 border-l-rose-600 text-left active:scale-[0.98] transition">
+          <span class="text-xs font-bold text-slate-500 block">Sin Stock (≤ 0)</span>
+          <b class="text-2xl font-black text-rose-600">${agotados.length}</b>
+          <span class="text-[11px] text-slate-400 font-semibold block mt-0.5">Agotados</span>
+        </button>
+      </div>
     </div>
 
-    <div class="grid2">
-      <div class="card">
-        <h3>Evolución últimos 7 días</h3>
-        ${bars(l7.map(([f, v, c]) => [fdate(f).split(',')[0] + ' ' + f.slice(8) + ` (${c})`, v, money(v)]), mx7)}
+    <!-- Alertas rápidas de stock (si existen, al tocar abre el Bottom Sheet directamente) -->
+    ${alertas.length ? `
+      <div class="bg-rose-50/80 border border-rose-200 rounded-2xl p-3.5 space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-extrabold text-rose-800">⚠ Productos por reponer (${alertas.length})</span>
+          <span class="text-[11px] font-bold text-rose-600">Toca para sumar</span>
+        </div>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-0.5">
+          ${alertas.map(p => `
+            <button type="button" data-open-sheet="${p.id}"
+              class="shrink-0 bg-white rounded-xl px-3 py-2 border border-rose-200 shadow-sm text-left active:scale-95 transition">
+              <b class="text-xs font-extrabold text-slate-900 block max-w-[140px] truncate">${esc(p.nombre)}</b>
+              <span class="text-[11px] font-bold ${p.stock <= 0 ? 'text-rose-600' : 'text-amber-600'}">Quedan: ${p.stock} u.</span>
+            </button>
+          `).join('')}
+        </div>
       </div>
-      <div class="card">
-        <h3>Ingresos por método de pago</h3>
-        ${bars(Object.entries(pm).map(([k, v]) => [METODOS[k] || k, v, `${money(v)} (${T > 0 ? Math.round(v / T * 100) : 0}%)`]), mxM, '#0284c7')}
-      </div>
-    </div>
+    ` : ''}
 
-    <div class="grid2">
-      <div class="card">
-        <h3>Platos más vendidos</h3>
-        ${bars(listaTopPlatos.map(([n, o]) => [n, o.q, `${o.q} u · ${money(o.s)}`]), mxTP, '#be185d')}
+    <!-- GRÁFICOS EN CONTENEDOR CON SCROLL HORIZONTAL (overflow-x-auto flex snap-x) -->
+    <div>
+      <div class="flex items-center justify-between mb-2 px-1">
+        <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Gráficos de Ventas (Desliza ↔)</h2>
+        <span class="text-[11px] text-slate-400 font-semibold">4 tarjetas</span>
       </div>
-      <div class="card">
-        <h3>Bebidas y cervezas más vendidas</h3>
-        ${bars(listaTopBebidas.map(([n, o]) => [n, o.q, `${o.q} u · ${money(o.s)}`]), mxTB, '#d97706')}
-      </div>
-    </div>
+      <div class="overflow-x-auto flex snap-x snap-mandatory gap-3 pb-2 no-scrollbar -mx-4 px-4">
+        <!-- Gráfico 1: Últimos 7 días -->
+        <div class="snap-center shrink-0 w-[85%] bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="text-sm font-extrabold text-slate-900 mb-3">Últimos 7 días</h3>
+          ${renderBars(l7.map(([f, v]) => [fdate(f), v, money(v)]), mx7, 'bg-brand-700')}
+        </div>
 
-    <div class="card">
-      <h3>Desglose por categorías en el período</h3>
-      ${htmlBloquesCategoria(vsPeriodo, T)}
+        <!-- Gráfico 2: Métodos de pago -->
+        <div class="snap-center shrink-0 w-[85%] bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="text-sm font-extrabold text-slate-900 mb-3">Por Método de Pago</h3>
+          ${renderBars(Object.entries(pm).map(([k, v]) => [METODOS[k] || k, v, `${money(v)} (${T > 0 ? Math.round(v / T * 100) : 0}%)`]), mxM, 'bg-sky-600')}
+        </div>
+
+        <!-- Gráfico 3: Top Platos -->
+        <div class="snap-center shrink-0 w-[85%] bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="text-sm font-extrabold text-slate-900 mb-3">Platos más vendidos</h3>
+          ${renderBars(listaTopPlatos.map(([n, o]) => [n, o.q, `${o.q} u · ${money(o.s)}`]), mxTP, 'bg-brand-600')}
+        </div>
+
+        <!-- Gráfico 4: Top Bebidas y Cervezas -->
+        <div class="snap-center shrink-0 w-[85%] bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="text-sm font-extrabold text-slate-900 mb-3">Bebidas más vendidas</h3>
+          ${renderBars(listaTopBebidas.map(([n, o]) => [n, o.q, `${o.q} u · ${money(o.s)}`]), mxTB, 'bg-amber-500')}
+        </div>
+      </div>
     </div>
   `;
 }
 
-$('v-dash').addEventListener('click', async e => {
+$('v-dash').addEventListener('click', e => {
   const btnDp = e.target.closest('[data-dp]');
   if (btnDp) {
     filtroDashPeriodo = btnDp.dataset.dp;
     pintarVistaDash();
     return;
   }
-  if (e.target.id === 'btnIrStockDash') {
-    showTab('stock');
+  const btnSheet = e.target.closest('[data-open-sheet]');
+  if (btnSheet) {
+    abrirStockSheet(btnSheet.dataset.openSheet, 'entrada');
     return;
   }
   const stkCard = e.target.closest('[data-dash-stk]');
   if (stkCard) {
-    $('filtroStock').value = stkCard.dataset.dashStk;
+    seleccionarFiltroStock(stkCard.dataset.dashStk);
     showTab('stock');
-    pintarStock();
-    return;
-  }
-  const btnFastQ = e.target.closest('[data-fast-in-q]');
-  if (btnFastQ) {
-    const id = btnFastQ.dataset.fastInQ;
-    const q = parseInt(btnFastQ.dataset.q || '12', 10);
-    await ejecutarEntrada(id, q, `Entrada rápida (+${q}) desde Dashboard`);
-    return;
-  }
-  const btnIn = e.target.closest('[data-fast-in]');
-  if (btnIn) {
-    await promptEntradaRapida(btnIn.dataset.fastIn);
-    return;
-  }
-  const btnAj = e.target.closest('[data-fast-aj]');
-  if (btnAj) {
-    await promptAjusteRapido(btnAj.dataset.fastAj);
   }
 });
 
-/* ---------- TAB 2: HISTORIAL DE VENTAS ---------- */
+/* ---------- MÓDULO 2: HISTORIAL (ACORDEÓN) ---------- */
 async function rHist() {
   if (!HIST.length) {
-    $('v-hist').innerHTML = '<p class="vacio">Cargando historial…</p>';
-    try { await cargarHist(); } catch (e) { $('v-hist').innerHTML = '<p class="vacio">Error: ' + esc(e.message) + '</p>'; return; }
+    $('v-hist').innerHTML = '<div class="bg-white rounded-2xl p-8 text-center text-sm text-slate-400 font-semibold">Cargando historial…</div>';
+    try { await cargarHist(); } catch (e) { $('v-hist').innerHTML = '<div class="bg-white rounded-2xl p-6 text-center text-sm text-rose-600">Error: ' + esc(e.message) + '</div>'; return; }
   } else {
     cargarHist().then(() => { if (tabActual === 'hist') pintarVistaHist(); }).catch(() => {});
   }
@@ -924,70 +1142,97 @@ function pintarVistaHist() {
     const vs = porDia[f];
     const tot = vs.reduce((s, v) => s + Number(v.total), 0);
     const pm = porMetodo(vs);
-    const bloquesDia = agruparPorBloques(vs);
-    const dComida  = bloquesDia.find(b => b.key === 'comida');
-    const dBebida  = bloquesDia.find(b => b.key === 'bebida');
-    const dCerveza = bloquesDia.find(b => b.key === 'cerveza');
     const horas = vs.map(v => horaStr(v.hora));
     const rangoHora = horas.length > 1 ? `${horas[horas.length - 1]} – ${horas[0]}` : (horas[0] || '');
+
     const desglosePago = Object.entries(pm)
       .filter(([, val]) => val > 0)
-      .map(([k, val]) => `<span class="mp-pill">${esc(METODOS[k] || k)}: <b>${money(val)}</b></span>`)
+      .map(([k, val]) => `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">${esc(METODOS[k] || k)}: <b class="text-brand-700">${money(val)}</b></span>`)
       .join('');
 
     const listaHoras = vs.map(v => {
       const desc = (v.venta_detalles || []).map(d => `${d.cantidad}× ${esc(d.productos.nombre)}`).join(', ');
-      return `<div class="ln" style="border-bottom:1px solid #f4f4f5;padding:4px 0;gap:6px">
-        <span style="color:var(--fg)"><b>${horaStr(v.hora)}</b> · <small style="color:var(--ac);font-weight:700">${esc(METODOS[v.metodo_pago] || v.metodo_pago)}</small> · ${desc}</span>
-        <b style="color:var(--blk);white-space:nowrap">${money(v.total)}</b>
-      </div>`;
+      return `
+        <div class="flex justify-between items-start gap-2 py-1.5 border-b border-slate-100 last:border-0 text-xs">
+          <span class="text-slate-700"><b>${horaStr(v.hora)}</b> · <span class="text-brand-700 font-bold">${esc(METODOS[v.metodo_pago] || v.metodo_pago)}</span> · ${desc}</span>
+          <b class="text-slate-900 shrink-0">${money(v.total)}</b>
+        </div>`;
     }).join('');
 
-    return `<details>
-      <summary>
-        <div>
-          <span style="font-size:15px">${fdate(f)}</span>
-          <small style="display:block;font-size:12px;color:var(--mu);font-weight:500">${vs.length} ${vs.length === 1 ? 'venta' : 'ventas'}${rangoHora ? ' · ' + rangoHora : ''}</small>
+    return `
+      <details class="group bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <summary class="p-4 flex items-center justify-between cursor-pointer select-none active:bg-slate-50">
+          <div>
+            <p class="font-extrabold text-sm text-slate-900 capitalize">${fdate(f)}</p>
+            <p class="text-xs text-slate-500 font-medium">${vs.length} ${vs.length === 1 ? 'venta' : 'ventas'}${rangoHora ? ' · ' + rangoHora : ''}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-base font-black text-brand-700">${money(tot)}</span>
+            <svg class="w-4 h-4 text-slate-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </summary>
+
+        <div class="px-4 pb-4 pt-2 border-t border-slate-100 space-y-3">
+          <!-- Métodos de pago -->
+          <div class="flex flex-wrap gap-1.5">${desglosePago}</div>
+
+          <!-- Detalle por categorías -->
+          ${htmlBloquesCategoria(vs, tot)}
+
+          <!-- Hora por hora desplegable -->
+          <details class="bg-slate-50 rounded-xl p-2.5 border border-dashed border-slate-200">
+            <summary class="flex justify-between items-center text-xs font-extrabold text-brand-700 cursor-pointer">
+              <span>Ver las ${vs.length} ventas hora por hora</span>
+              <span>Detalle ▼</span>
+            </summary>
+            <div class="mt-2 pt-2 border-t border-slate-200/70">${listaHoras}</div>
+          </details>
+
+          <div class="flex justify-end">
+            <button type="button" class="btn-copiar-dia px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold active:scale-95" data-fecha="${f}">
+              Copiar resumen del ${fdate(f)}
+            </button>
+          </div>
         </div>
-        <span style="font-size:16px;color:var(--ac)">${money(tot)}</span>
-      </summary>
-      <div style="padding-top:8px;margin-top:8px;border-top:1px solid var(--bd)">
-        <div class="kpi" style="margin-bottom:8px">
-          <div style="border-left-color:var(--blk)"><small>Total del día</small><b>${money(tot)}</b><small>${vs.length} ventas · Prom. ${money(tot / vs.length)}</small></div>
-          <div style="border-left-color:#be185d"><small>Chicharrones y Platos</small><b style="color:#be185d">${money(dComida ? dComida.subtotal : 0)}</b><small>${dComida ? dComida.unidades : 0} porciones/platos</small></div>
-          <div style="border-left-color:#0284c7"><small>Gaseosas y Bebidas</small><b style="color:#0284c7">${money(dBebida ? dBebida.subtotal : 0)}</b><small>${dBebida ? dBebida.unidades : 0} unidades</small></div>
-          <div style="border-left-color:#d97706"><small>Cervezas</small><b style="color:#d97706">${money(dCerveza ? dCerveza.subtotal : 0)}</b><small>${dCerveza ? dCerveza.unidades : 0} botellas</small></div>
-        </div>
-        <div class="mp-badges">${desglosePago}</div>
-        ${htmlBloquesCategoria(vs, tot)}
-        <details class="sub-det">
-          <summary><span>Ver las ${vs.length} ventas del día hora por hora</span><span>Detalle</span></summary>
-          <div style="margin-top:6px">${listaHoras}</div>
-        </details>
-        <div style="display:flex;justify-content:flex-end;margin-top:8px">
-          <button type="button" class="sm btn-copiar-dia" data-fecha="${f}" style="flex:0 0 auto;padding:6px 12px;font-size:12px">Copiar resumen del ${fdate(f)}</button>
-        </div>
-      </div>
-    </details>`;
-  }).join('') : '<p class="vacio">No hay ventas registradas en este período.</p>';
+      </details>`;
+  }).join('') : '<div class="bg-white rounded-2xl p-8 text-center text-sm text-slate-400 font-semibold">No hay ventas en este período.</div>';
 
   $('v-hist').innerHTML = `
-    <div class="h-filtros">
-      <button type="button" data-hp="7" class="${!filtroHistFecha && filtroHistPeriodo === '7' ? 'a' : ''}">Últimos 7 días</button>
-      <button type="button" data-hp="30" class="${!filtroHistFecha && filtroHistPeriodo === '30' ? 'a' : ''}">30 días</button>
-      <button type="button" data-hp="mes" class="${!filtroHistFecha && filtroHistPeriodo === 'mes' ? 'a' : ''}">Este mes</button>
-      <button type="button" data-hp="todo" class="${!filtroHistFecha && filtroHistPeriodo === 'todo' ? 'a' : ''}">Todo</button>
+    <!-- Filtros rápidos -->
+    <div class="flex gap-1.5 overflow-x-auto no-scrollbar">
+      ${[
+        ['7', 'Últimos 7 días'],
+        ['30', '30 días'],
+        ['mes', 'Este mes'],
+        ['todo', 'Todo']
+      ].map(([k, lbl]) => `
+        <button type="button" data-hp="${k}"
+          class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-extrabold transition ${!filtroHistFecha && filtroHistPeriodo === k ? 'bg-slate-900 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'}">
+          ${lbl}
+        </button>
+      `).join('')}
     </div>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
-      <input type="date" id="histFechaInput" value="${esc(filtroHistFecha)}" style="margin:0;padding:8px 10px;font-size:14px;flex:1;min-width:160px" title="Buscar un día específico">
-      ${filtroHistFecha ? '<button type="button" class="sm" id="limpiarFechaHist" style="flex:0 0 auto;padding:8px 12px">Ver todos</button>' : ''}
-      <button type="button" class="sm pri" id="exp" style="flex:0 0 auto;padding:8px 14px">Descargar Excel (CSV)</button>
+
+    <!-- Selector de fecha y exportar -->
+    <div class="flex gap-2 items-center">
+      <input type="date" id="histFechaInput" value="${esc(filtroHistFecha)}"
+        class="flex-1 h-11 px-3.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700">
+      ${filtroHistFecha ? `<button type="button" id="limpiarFechaHist" class="h-11 px-3 rounded-xl bg-slate-200 text-slate-700 text-xs font-bold">Todos</button>` : ''}
+      <button type="button" id="exp" class="h-11 px-3.5 rounded-xl bg-brand-700 text-white text-xs font-extrabold shrink-0 shadow-sm">
+        CSV / Excel
+      </button>
     </div>
-    <div class="card" style="padding:9px 12px;background:#fdf2f8;border-color:#f9a8d4;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-size:13px">
-      <span><b>${dias.length}</b> ${dias.length === 1 ? 'día' : 'días'} · <b>${filtradas.length}</b> ventas válidas · <b>${platosPeriodo}</b> platos de chicharrón</span>
-      <b style="color:var(--ac);font-size:15px">Total: ${money(totPeriodo)}</b>
+
+    <!-- Barra resumen del período -->
+    <div class="bg-brand-50 border border-brand-200 rounded-2xl px-4 py-2.5 flex items-center justify-between text-xs">
+      <span class="font-semibold text-slate-700"><b>${dias.length}</b> días · <b>${filtradas.length}</b> ventas · <b>${platosPeriodo}</b> platos</span>
+      <b class="text-sm font-black text-brand-700">${money(totPeriodo)}</b>
     </div>
-    ${diasHtml}
+
+    <!-- Lista de acordeones por día -->
+    <div class="space-y-2.5">${diasHtml}</div>
   `;
 }
 
@@ -1041,189 +1286,153 @@ function exportar() {
   a.click();
 }
 
-/* ---------- TAB 3: CONTROL DE STOCK, ENTRADAS Y CONTEO FÍSICO ---------- */
-function pintarSelectoresStock() {
-  const conStock = PRODS.filter(p => p.controla_stock);
-  const lista = conStock.length ? conStock : PRODS;
-  const prevEnt = $('entProd').value;
-  const prevAj = $('ajProd').value;
-  const prevMov = $('movProd').value;
-
-  const opts = lista.map(p => `<option value="${p.id}">${esc(p.nombre)} (Stock: ${p.stock})</option>`).join('');
-  $('entProd').innerHTML = opts;
-  $('ajProd').innerHTML = opts;
-  $('movProd').innerHTML = '<option value="">Todos los productos</option>' +
-    PRODS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
-
-  if (prevEnt && lista.some(p => String(p.id) === prevEnt)) $('entProd').value = prevEnt;
-  if (prevAj && lista.some(p => String(p.id) === prevAj)) $('ajProd').value = prevAj;
-  if (prevMov) $('movProd').value = prevMov;
-  actualizarInfoAjuste();
-}
-
-function actualizarInfoAjuste() {
-  const info = $('ajInfoActual');
-  if (!info) return;
-  const p = PRODS.find(x => String(x.id) === String($('ajProd').value));
-  if (!p) {
-    info.textContent = 'Selecciona un producto para comparar con el sistema';
-    return;
-  }
-  info.innerHTML = `En sistema figuran <b>${p.stock} unidades</b> (Stock mínimo: ${p.stock_minimo}).`;
-}
-$('ajProd').onchange = actualizarInfoAjuste;
-
-document.querySelectorAll('[data-sum-cant]').forEach(btn => {
-  btn.onclick = () => {
-    const add = parseInt(btn.dataset.sumCant || '0', 10);
-    const actual = parseInt($('entCant').value || '0', 10) || 0;
-    $('entCant').value = actual + add;
-    $('entCant').focus();
-  };
-});
-
+/* ---------- MÓDULO 3: STOCK Y BOTTOM SHEET MODAL ---------- */
 function estadoStockBadge(p) {
-  if (p.stock <= 0) return `<span class="badge b-err">Sin stock (${p.stock})</span>`;
-  if (p.stock <= p.stock_minimo) return `<span class="badge b-warn">Bajo (${p.stock} / mín ${p.stock_minimo})</span>`;
-  return `<span class="badge b-ok">${p.stock} u.</span>`;
+  if (p.stock <= 0) return `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-700">Sin stock (${p.stock})</span>`;
+  if (p.stock <= p.stock_minimo) return `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-800">Bajo (${p.stock})</span>`;
+  return `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">${p.stock} u.</span>`;
 }
+
+function seleccionarFiltroStock(modo) {
+  $('filtroStock').value = modo;
+  document.querySelectorAll('[data-stk-chip]').forEach(btn => {
+    const act = btn.dataset.stkChip === modo;
+    btn.className = `stk-chip shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition ${act ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700'}`;
+  });
+  pintarStock();
+}
+
+$('chipsFiltroStock').addEventListener('click', e => {
+  const chip = e.target.closest('[data-stk-chip]');
+  if (!chip) return;
+  seleccionarFiltroStock(chip.dataset.stkChip);
+});
 
 function pintarStock() {
   const ctrl = PRODS.filter(p => p.controla_stock);
-  const agotados = ctrl.filter(p => p.stock <= 0).length;
-  const bajos = ctrl.filter(p => p.stock > 0 && p.stock <= p.stock_minimo).length;
-  const ok = ctrl.length - agotados - bajos;
-  const totalUnidades = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0), 0);
-  const valorTotal = ctrl.reduce((s, p) => s + Math.max(0, Number(p.stock) || 0) * Number(p.precio || 0), 0);
-  const modo = $('filtroStock').value;
-
-  $('stockKpi').innerHTML = `
-    <div data-filtro="todos" class="${modo === 'todos' ? 'activo' : ''}"><small>Con control de stock</small><b>${ctrl.length}</b><small>${totalUnidades} u. totales</small></div>
-    <div data-filtro="ok" class="${modo === 'ok' ? 'activo' : ''}"><small>Stock OK</small><b style="color:var(--ok)">${ok}</b><small>En buen nivel</small></div>
-    <div data-filtro="bajo" class="${modo === 'bajo' ? 'activo' : ''}"><small>Stock bajo</small><b style="color:var(--warn)">${bajos}</b><small>En límite mínimo</small></div>
-    <div data-filtro="agotado" class="${modo === 'agotado' ? 'activo' : ''}"><small>Sin stock (≤ 0)</small><b style="color:var(--err)">${agotados}</b><small>Por reponer urgente</small></div>
-    <div data-filtro="alertas" class="${modo === 'alertas' ? 'activo' : ''}" style="border-left-color:#0284c7"><small>Valor en stock</small><b style="color:#0284c7">${money(valorTotal)}</b><small>${bajos + agotados} en alerta</small></div>
-  `;
-
-  const titulos = {
-    todos: 'Inventario de productos con control de stock',
-    ok: 'Productos con Stock OK',
-    bajo: 'Productos con Stock bajo',
-    agotado: 'Productos Sin stock (≤ 0)',
-    alertas: 'Productos en alerta (Stock bajo o Sin stock)'
-  };
-  $('tituloListaStock').textContent = titulos[modo] || titulos.todos;
-
+  const modo = $('filtroStock').value || 'todos';
   const q = ($('busqStock').value || '').toLowerCase().trim();
-  const cat = $('catStock').value;
-  const orden = $('ordenStock').value;
 
   const mostrar = ctrl.filter(p => {
-    if (cat && p.categoria !== cat) return false;
     if (q && !p.nombre.toLowerCase().includes(q)) return false;
     if (modo === 'ok') return p.stock > p.stock_minimo && p.stock > 0;
     if (modo === 'bajo') return p.stock > 0 && p.stock <= p.stock_minimo;
     if (modo === 'agotado') return p.stock <= 0;
     if (modo === 'alertas') return p.stock <= p.stock_minimo;
     return true;
-  });
+  }).sort((a, b) => a.stock - b.stock || (a.orden || 0) - (b.orden || 0));
 
-  mostrar.sort((a, b) => {
-    if (orden === 'critico') return a.stock - b.stock || a.orden - b.orden;
-    if (orden === 'mayor') return b.stock - a.stock || a.orden - b.orden;
-    if (orden === 'nombre') return a.nombre.localeCompare(b.nombre, 'es');
-    return (a.orden || 0) - (b.orden || 0);
-  });
-
-  $('resumenFiltroStock').textContent = `Mostrando ${mostrar.length} de ${ctrl.length} productos`;
+  $('resumenFiltroStock').textContent = `${mostrar.length} de ${ctrl.length}`;
 
   if (!mostrar.length) {
-    const msgVacio = {
-      todos: 'No hay productos que coincidan con la búsqueda.',
-      ok: 'No hay productos con Stock OK en este filtro.',
-      bajo: 'No hay productos con stock bajo.',
-      agotado: 'No hay productos sin stock.',
-      alertas: '¡Excelente! No hay productos con stock bajo o agotado.'
-    };
-    $('listaStock').innerHTML = `<p class="vacio">${msgVacio[modo] || msgVacio.todos}</p>`;
+    $('listaStock').innerHTML = `<div class="bg-white rounded-2xl p-8 text-center text-sm text-slate-400 font-semibold">No hay productos en este filtro.</div>`;
     return;
   }
 
   $('listaStock').innerHTML = mostrar.map(p => {
     const meta = Math.max(12, (p.stock_minimo || 6) * 3);
     const pct = Math.max(0, Math.min(100, Math.round((p.stock / meta) * 100)));
-    const col = p.stock <= 0 ? 'var(--err)' : (p.stock <= p.stock_minimo ? 'var(--warn)' : 'var(--ok)');
+    const barCol = p.stock <= 0 ? 'bg-rose-600' : (p.stock <= p.stock_minimo ? 'bg-amber-500' : 'bg-emerald-600');
     return `
-      <div class="row">
-        <div style="flex:1;min-width:180px">
-          <b>${esc(p.nombre)}</b>
-          <div style="font-size:12px;color:var(--mu);margin-top:2px">
-            <div class="stk-bar-wrap"><div class="stk-bar-fill" style="width:${pct}%;background:${col}"></div></div>
-            ${esc(CATEG[p.categoria] || p.categoria)} · ${money(p.precio)} · Mín: ${p.stock_minimo}
+      <div data-open-sheet="${p.id}"
+        class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-center justify-between gap-3 cursor-pointer active:scale-[0.99] active:bg-slate-50 transition">
+        <div class="min-w-0 flex-1">
+          <div class="flex items-center gap-2">
+            <b class="text-sm font-extrabold text-slate-900 truncate">${esc(p.nombre)}</b>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">${esc(CATEG[p.categoria] || p.categoria)} · ${money(p.precio)} · Mín. ${p.stock_minimo}</p>
+          <div class="w-32 h-1.5 bg-slate-100 rounded-full overflow-hidden mt-2">
+            <div class="h-full ${barCol} rounded-full" style="width:${pct}%"></div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <div class="flex flex-col items-end gap-1.5 shrink-0">
           ${estadoStockBadge(p)}
-          <button class="chip-btn" data-fast-in-q="${p.id}" data-q="6" title="Sumar 6 unidades">+6</button>
-          <button class="chip-btn" data-fast-in-q="${p.id}" data-q="12" title="Sumar 12 unidades">+12</button>
-          <button class="sm" data-fast-in="${p.id}">+ Entrada</button>
-          <button class="sm" data-fast-aj="${p.id}">Conteo</button>
+          <span class="text-[11px] font-bold text-brand-700">Ajustar / + Entrada ›</span>
         </div>
       </div>
     `;
   }).join('');
 }
 
-$('filtroStock').onchange = pintarStock;
 $('busqStock').oninput = pintarStock;
-$('catStock').onchange = pintarStock;
-$('ordenStock').onchange = pintarStock;
 
-$('stockKpi').onclick = e => {
-  const card = e.target.closest('[data-filtro]');
+$('listaStock').addEventListener('click', e => {
+  const card = e.target.closest('[data-open-sheet]');
   if (!card) return;
-  const f = card.dataset.filtro;
-  $('filtroStock').value = ($('filtroStock').value === f && f !== 'todos') ? 'todos' : f;
-  pintarStock();
-  $('cardListaStock').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-};
+  abrirStockSheet(card.dataset.openSheet, 'entrada');
+});
 
-async function promptEntradaRapida(idIn) {
-  const p = PRODS.find(x => String(x.id) === String(idIn));
+/* ---------- LÓGICA DEL BOTTOM SHEET DE STOCK ---------- */
+function abrirStockSheet(prodId, modoInicial) {
+  const p = PRODS.find(x => String(x.id) === String(prodId));
   if (!p) return;
-  const v = prompt(`Entrada de "${p.nombre}" (Stock actual: ${p.stock}).\n¿Cuántas unidades ingresan?`, '12');
-  if (v === null) return;
-  const cant = parseInt(v, 10);
-  if (!cant || cant <= 0) { notify('Ingresa una cantidad mayor a 0'); return; }
-  await ejecutarEntrada(p.id, cant, 'Entrada rápida');
+  sheetProdId = p.id;
+  $('sheetProdCat').textContent = CATEG[p.categoria] || p.categoria;
+  $('sheetProdNombre').textContent = p.nombre;
+  $('sheetStockActual').textContent = p.stock;
+  $('sheetStockMin').textContent = p.stock_minimo;
+  $('sheetInputNota').value = '';
+  cambiarModoSheet(modoInicial || 'entrada', p);
+  $('stockSheetModal').hidden = false;
+  setTimeout(() => { $('sheetInputCant').focus(); }, 80);
 }
 
-async function promptAjusteRapido(idAj) {
-  const p = PRODS.find(x => String(x.id) === String(idAj));
-  if (!p) return;
-  const v = prompt(`Conteo físico de "${p.nombre}" (Stock en sistema: ${p.stock}).\n¿Cuántas unidades hay físicamente?`, String(Math.max(0, p.stock)));
-  if (v === null) return;
-  const fisico = parseInt(v, 10);
-  if (Number.isNaN(fisico)) { notify('Ingresa un número válido'); return; }
-  await ejecutarAjuste(p.id, fisico, 'Conteo físico rápido');
+function cambiarModoSheet(modo, prodRef) {
+  sheetModo = modo;
+  const p = prodRef || PRODS.find(x => String(x.id) === String(sheetProdId));
+  const esEntrada = modo === 'entrada';
+
+  $('sheetTabEntrada').className = `h-10 rounded-lg text-xs font-extrabold transition ${esEntrada ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`;
+  $('sheetTabAjuste').className = `h-10 rounded-lg text-xs font-extrabold transition ${!esEntrada ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`;
+
+  $('sheetQuickBtnsWrap').hidden = !esEntrada;
+  $('sheetLabelCant').textContent = esEntrada
+    ? 'Cantidad que ingresa al almacén (unidades)'
+    : 'Stock real contado físicamente en tienda';
+  $('sheetInputCant').placeholder = esEntrada ? 'Ej: 24' : String(p ? Math.max(0, p.stock) : 0);
+  $('sheetInputCant').value = esEntrada ? '' : String(p ? Math.max(0, p.stock) : 0);
+
+  const btn = $('btnGuardarSheet');
+  btn.textContent = esEntrada ? 'Sumar al stock' : 'Guardar conteo físico';
+  btn.className = `w-full h-12 rounded-xl text-white font-extrabold text-base shadow-md transition ${esEntrada ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-brand-700 hover:bg-brand-800'}`;
 }
 
-$('listaStock').onclick = async e => {
-  const btnQ = e.target.closest('[data-fast-in-q]');
-  if (btnQ) {
-    const id = btnQ.dataset.fastInQ;
-    const q = parseInt(btnQ.dataset.q || '6', 10);
-    await ejecutarEntrada(id, q, `Entrada rápida (+${q})`);
-    return;
-  }
-  const btnIn = e.target.closest('[data-fast-in]');
-  if (btnIn) {
-    await promptEntradaRapida(btnIn.dataset.fastIn);
-    return;
-  }
-  const btnAj = e.target.closest('[data-fast-aj]');
-  if (btnAj) {
-    await promptAjusteRapido(btnAj.dataset.fastAj);
+function cerrarStockSheet() {
+  $('stockSheetModal').hidden = true;
+  sheetProdId = null;
+}
+
+$('btnCerrarSheet').onclick = cerrarStockSheet;
+$('sheetBackdrop').onclick = cerrarStockSheet;
+$('sheetTabEntrada').onclick = () => cambiarModoSheet('entrada');
+$('sheetTabAjuste').onclick = () => cambiarModoSheet('ajuste');
+
+document.querySelectorAll('[data-sheet-add]').forEach(btn => {
+  btn.onclick = () => {
+    const add = parseInt(btn.dataset.sheetAdd || '0', 10);
+    const actual = parseInt($('sheetInputCant').value || '0', 10) || 0;
+    $('sheetInputCant').value = actual + add;
+  };
+});
+
+$('btnGuardarSheet').onclick = async () => {
+  if (!sheetProdId) return;
+  const cant = parseInt($('sheetInputCant').value, 10);
+  const nota = ($('sheetInputNota').value || '').trim();
+
+  $('btnGuardarSheet').disabled = true;
+  try {
+    if (sheetModo === 'entrada') {
+      if (!cant || cant <= 0) { notify('Ingresa una cantidad mayor a 0'); return; }
+      const ok = await ejecutarEntrada(sheetProdId, cant, nota || 'Entrada desde panel móvil');
+      if (ok) cerrarStockSheet();
+    } else {
+      if (Number.isNaN(cant)) { notify('Ingresa cuántas unidades contaste'); return; }
+      const ok = await ejecutarAjuste(sheetProdId, cant, nota || 'Conteo físico en tienda');
+      if (ok) cerrarStockSheet();
+    }
+  } finally {
+    $('btnGuardarSheet').disabled = false;
   }
 };
 
@@ -1251,29 +1460,7 @@ async function ejecutarAjuste(prodId, fisico, nota) {
   return true;
 }
 
-$('btnEntrada').onclick = async () => {
-  const prodId = $('entProd').value;
-  const cant = parseInt($('entCant').value, 10);
-  const nota = $('entNota').value.trim();
-  if (!prodId || !cant || cant <= 0) { notify('Ingresa una cantidad válida mayor a 0'); return; }
-  if (await ejecutarEntrada(prodId, cant, nota)) {
-    $('entCant').value = '';
-    $('entNota').value = '';
-  }
-};
-
-$('btnAjuste').onclick = async () => {
-  const prodId = $('ajProd').value;
-  const fisico = parseInt($('ajCant').value, 10);
-  const nota = $('ajNota').value.trim();
-  if (!prodId || Number.isNaN(fisico)) { notify('Indica cuántas unidades contaste físicamente'); return; }
-  if (await ejecutarAjuste(prodId, fisico, nota)) {
-    $('ajCant').value = '';
-    $('ajNota').value = '';
-  }
-};
-
-/* ---------- TAB 4: CARTA Y PRECIOS ---------- */
+/* ---------- SUBVISTA GESTIÓN 1: CARTA Y PRECIOS ---------- */
 function pintarCarta() {
   const q = ($('busqCarta').value || '').toLowerCase().trim();
   const cat = $('catCarta').value;
@@ -1284,29 +1471,42 @@ function pintarCarta() {
   });
 
   if (!filtrados.length) {
-    $('listaCarta').innerHTML = '<p class="vacio">No hay productos que coincidan con el filtro.</p>';
+    $('listaCarta').innerHTML = '<div class="bg-white rounded-2xl p-6 text-center text-sm text-slate-400">No hay productos que coincidan.</div>';
     return;
   }
 
   $('listaCarta').innerHTML = filtrados.map(p => `
-    <div class="card" data-prod-card="${p.id}" style="${p.activo ? '' : 'opacity:.6'}">
-      <div class="p-grid">
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3 ${p.activo ? '' : 'opacity-60'}" data-prod-card="${p.id}">
+      <div class="flex items-start justify-between gap-2">
         <div>
-          <b>${esc(p.nombre)}</b>
-          <div style="font-size:12px;color:var(--mu)">${esc(CATEG[p.categoria] || p.categoria)} · Stock actual: <b>${p.stock}</b></div>
+          <b class="text-sm font-extrabold text-slate-900">${esc(p.nombre)}</b>
+          <p class="text-xs text-slate-500">${esc(CATEG[p.categoria] || p.categoria)} · Stock actual: <b>${p.stock}</b></p>
         </div>
-        <button class="sm pri" data-save="${p.id}">Guardar</button>
+        <button type="button" data-save="${p.id}"
+          class="px-4 h-9 rounded-xl bg-brand-700 text-white text-xs font-extrabold shrink-0 active:scale-95">
+          Guardar
+        </button>
       </div>
-      <div class="p-controls">
-        <label>Precio S/
-          <input type="number" step="0.50" min="0" data-f="precio" value="${Number(p.precio).toFixed(2)}">
+      <div class="grid grid-cols-2 gap-2.5">
+        <label class="text-xs font-bold text-slate-600">Precio S/
+          <input type="number" inputmode="decimal" step="0.50" min="0" data-f="precio" value="${Number(p.precio).toFixed(2)}"
+            class="w-full h-10 px-3 mt-1 rounded-xl border border-slate-300 text-sm font-bold text-slate-900">
         </label>
-        <label>Stock mín.
-          <input type="number" step="1" min="0" data-f="stock_minimo" value="${p.stock_minimo}">
+        <label class="text-xs font-bold text-slate-600">Stock mín.
+          <input type="number" inputmode="numeric" step="1" min="0" data-f="stock_minimo" value="${p.stock_minimo}"
+            class="w-full h-10 px-3 mt-1 rounded-xl border border-slate-300 text-sm font-bold text-slate-900">
         </label>
-        <label><input type="checkbox" data-f="activo" ${p.activo ? 'checked' : ''}> Activo (en venta)</label>
-        <label><input type="checkbox" data-f="visible_web" ${p.visible_web ? 'checked' : ''}> Visible web</label>
-        <label><input type="checkbox" data-f="controla_stock" ${p.controla_stock ? 'checked' : ''}> Controla stock</label>
+      </div>
+      <div class="flex flex-wrap gap-4 pt-1 text-xs font-semibold text-slate-700">
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" data-f="activo" ${p.activo ? 'checked' : ''} class="w-4 h-4 accent-brand-700"> Activo
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" data-f="visible_web" ${p.visible_web ? 'checked' : ''} class="w-4 h-4 accent-brand-700"> Web
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" data-f="controla_stock" ${p.controla_stock ? 'checked' : ''} class="w-4 h-4 accent-brand-700"> Controla stock
+        </label>
       </div>
     </div>
   `).join('');
@@ -1330,10 +1530,9 @@ $('btnCrearProd').onclick = async () => {
   const visible_web = $('npWeb').checked;
 
   $('npMsg').textContent = '';
-  if (!nombre) { $('npMsg').textContent = 'Escribe el nombre del nuevo producto.'; notify('Escribe el nombre del nuevo producto'); $('npNombre').focus(); return; }
-  if (Number.isNaN(precio) || precio < 0) { $('npMsg').textContent = 'Indica un precio válido (0 o mayor).'; notify('Indica un precio válido (0 o mayor)'); $('npPrecio').focus(); return; }
+  if (!nombre) { notify('Escribe el nombre del producto'); $('npNombre').focus(); return; }
+  if (Number.isNaN(precio) || precio < 0) { notify('Indica un precio válido'); $('npPrecio').focus(); return; }
   if (PRODS.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) {
-    $('npMsg').textContent = 'Ya existe un producto con ese nombre en la carta.';
     notify('Ya existe un producto con ese nombre');
     return;
   }
@@ -1341,7 +1540,6 @@ $('btnCrearProd').onclick = async () => {
   const maxOrden = PRODS.reduce((m, p) => Math.max(m, Number(p.orden) || 0), 0);
   $('btnCrearProd').disabled = true;
   $('btnCrearProd').textContent = 'Creando…';
-  $('npMsg').textContent = 'Guardando en la base de datos…';
 
   const { data: creado, error } = await sb.from('productos')
     .insert({
@@ -1362,10 +1560,6 @@ $('btnCrearProd').onclick = async () => {
   $('btnCrearProd').textContent = 'Crear producto';
 
   if (error) {
-    const esRls = String(error.message || '').toLowerCase().includes('row-level security');
-    $('npMsg').innerHTML = esRls
-      ? 'Falta activar el permiso de crear productos en Supabase (ejecuta el comando SQL de <code>admin crea productos</code> en SQL Editor).'
-      : 'No se pudo crear: ' + esc(error.message);
     notify('No se pudo crear: ' + error.message);
     return;
   }
@@ -1381,8 +1575,7 @@ $('btnCrearProd').onclick = async () => {
   $('npNombre').value = '';
   $('npPrecio').value = '';
   $('npStockIni').value = '0';
-  $('npMsg').innerHTML = `Producto <b>${esc(nombre)}</b> (${money(precio)}) agregado a la carta.`;
-  notify(`Producto "${nombre}" creado correctamente`);
+  notify(`Producto "${nombre}" creado`);
   await cargarTodo();
 };
 
@@ -1398,24 +1591,31 @@ $('listaCarta').onclick = async e => {
   const visible_web = card.querySelector('[data-f="visible_web"]').checked;
   const controla_stock = card.querySelector('[data-f="controla_stock"]').checked;
 
-  if (Number.isNaN(precio) || precio < 0) { notify('El precio no puede ser negativo'); return; }
+  if (Number.isNaN(precio) || precio < 0) { notify('Precio inválido'); return; }
 
   e.target.disabled = true;
-  e.target.textContent = 'Guardando…';
+  e.target.textContent = '…';
   const { error } = await sb.from('productos')
     .update({ precio, stock_minimo, activo, visible_web, controla_stock })
     .eq('id', Number(id));
   e.target.disabled = false;
   e.target.textContent = 'Guardar';
 
-  if (error) { notify('No se pudo guardar: ' + error.message); return; }
+  if (error) { notify('Error: ' + error.message); return; }
   notify('Producto actualizado');
   await cargarTodo();
 };
 
-/* ---------- TAB 5: ÚLTIMOS MOVIMIENTOS ---------- */
+/* ---------- SUBVISTA GESTIÓN 2: MOVIMIENTOS DE STOCK ---------- */
+function pintarSelectoresMovs() {
+  const prevMov = $('movProd').value;
+  $('movProd').innerHTML = '<option value="">Todos los productos</option>' +
+    PRODS.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  if (prevMov) $('movProd').value = prevMov;
+}
+
 async function cargarMovimientos() {
-  $('listaMovs').innerHTML = '<p class="vacio">Cargando movimientos…</p>';
+  $('listaMovs').innerHTML = '<p class="p-6 text-center text-xs text-slate-400">Cargando movimientos…</p>';
   let q = sb.from('stock_movimientos')
     .select('id,producto_id,tipo,cantidad,stock_antes,stock_despues,venta_id,nota,creado_en,productos(nombre)')
     .order('creado_en', { ascending: false })
@@ -1428,28 +1628,31 @@ async function cargarMovimientos() {
 
   const { data, error } = await q;
   if (error) {
-    $('listaMovs').innerHTML = `<p class="vacio">Error cargando movimientos: ${esc(error.message)}</p>`;
+    $('listaMovs').innerHTML = `<p class="p-6 text-center text-xs text-rose-600">Error: ${esc(error.message)}</p>`;
     return;
   }
   MOVS = data || [];
   if (!MOVS.length) {
-    $('listaMovs').innerHTML = '<p class="vacio">Aún no hay movimientos de stock registrados.</p>';
+    $('listaMovs').innerHTML = '<p class="p-6 text-center text-xs text-slate-400">Sin movimientos registrados.</p>';
     return;
   }
 
   $('listaMovs').innerHTML = MOVS.map(m => {
-    const [label, cls] = TIPO_BADGE[m.tipo] || [m.tipo, 'b-info'];
+    const [label, cls] = TIPO_BADGE[m.tipo] || [m.tipo, 'bg-slate-100 text-slate-700'];
     const signo = m.cantidad > 0 ? '+' + m.cantidad : String(m.cantidad);
+    const colNum = m.cantidad > 0 ? 'text-emerald-600' : (m.cantidad < 0 ? 'text-rose-600' : 'text-slate-700');
     return `
-      <div class="row">
-        <div>
-          <b>${esc(m.productos ? m.productos.nombre : '#' + m.producto_id)}</b>
-          <span class="badge ${cls}" style="margin-left:6px">${label}</span>
-          <div style="font-size:12px;color:var(--mu)">${fechaHoraStr(m.creado_en)}${m.nota ? ' · ' + esc(m.nota) : ''}</div>
+      <div class="p-3.5 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <b class="text-xs font-extrabold text-slate-900 truncate">${esc(m.productos ? m.productos.nombre : '#' + m.producto_id)}</b>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${cls}">${label}</span>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-0.5">${fechaHoraStr(m.creado_en)}${m.nota ? ' · ' + esc(m.nota) : ''}</p>
         </div>
-        <div style="text-align:right">
-          <b style="font-size:15px;color:${m.cantidad > 0 ? 'var(--ok)' : (m.cantidad < 0 ? 'var(--err)' : 'var(--fg)')}">${signo}</b>
-          <div style="font-size:12px;color:var(--mu)">${m.stock_antes} → <b>${m.stock_despues}</b></div>
+        <div class="text-right shrink-0">
+          <b class="text-sm font-black ${colNum}">${signo}</b>
+          <p class="text-[11px] text-slate-400">${m.stock_antes} → <b class="text-slate-700">${m.stock_despues}</b></p>
         </div>
       </div>
     `;
@@ -1459,7 +1662,7 @@ async function cargarMovimientos() {
 $('movProd').onchange = cargarMovimientos;
 $('movTipo').onchange = cargarMovimientos;
 
-/* ---------- TAB 6: GESTIÓN DE PERSONAL Y ACCESOS ---------- */
+/* ---------- SUBVISTA GESTIÓN 3: PERSONAL Y ACCESOS ---------- */
 function guardarPersonalLocal(email, nombre, es_admin) {
   try {
     const mail = email.toLowerCase().trim();
@@ -1478,7 +1681,7 @@ function eliminarPersonalLocal(email) {
 }
 
 async function cargarUsuarios() {
-  $('listaUsuarios').innerHTML = '<p class="vacio">Cargando cuentas…</p>';
+  $('listaUsuarios').innerHTML = '<p class="py-6 text-center text-xs text-slate-400">Cargando cuentas…</p>';
   const eliminados = await leerUsuariosEliminados();
   let lista = [];
   const { data: rpcData, error: rpcErr } = await sb.rpc('listar_cuentas_personal');
@@ -1520,7 +1723,7 @@ async function cargarUsuarios() {
 
 function pintarUsuarios() {
   if (!USUARIOS.length) {
-    $('listaUsuarios').innerHTML = '<p class="vacio">No hay cuentas listadas todavía.</p>';
+    $('listaUsuarios').innerHTML = '<p class="py-6 text-center text-xs text-slate-400">No hay cuentas listadas.</p>';
     return;
   }
   const miEmail = (usuarioActual && usuarioActual.email || '').toLowerCase().trim();
@@ -1528,26 +1731,26 @@ function pintarUsuarios() {
     const mail = (u.email || '').toLowerCase().trim();
     const esMiCuenta = mail === miEmail;
     const badge = u.es_admin
-      ? '<span class="badge b-info">Administrador / Dueña (Ventas + Admin)</span>'
-      : '<span class="badge b-ok">Trabajadora (Solo Ventas)</span>';
+      ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-brand-100 text-brand-800">Admin / Dueña</span>'
+      : '<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">Trabajadora (Solo Ventas)</span>';
     const controles = esMiCuenta
-      ? '<span class="badge" style="background:#f4f4f5;color:var(--mu)">Tu sesión actual</span>'
+      ? '<span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 text-slate-500">Tu sesión</span>'
       : `
-        ${u.es_admin
-          ? `<button type="button" class="sm" data-rol-email="${esc(mail)}" data-rol-admin="0">Cambiar a Solo Ventas</button>`
-          : `<button type="button" class="sm pri" data-rol-email="${esc(mail)}" data-rol-admin="1">Hacer Administrador</button>`}
-        <button type="button" class="sm danger" data-del-email="${esc(mail)}">Eliminar</button>
+        <div class="flex gap-1.5">
+          ${u.es_admin
+            ? `<button type="button" class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-700" data-rol-email="${esc(mail)}" data-rol-admin="0">Solo Ventas</button>`
+            : `<button type="button" class="px-2.5 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold" data-rol-email="${esc(mail)}" data-rol-admin="1">Hacer Admin</button>`}
+          <button type="button" class="px-2.5 py-1.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-extrabold" data-del-email="${esc(mail)}">Eliminar</button>
+        </div>
       `;
     return `
-      <div class="row">
-        <div>
-          <b>${esc(u.nombre || mail)}</b>
-          ${u.nombre ? `<div style="font-size:13px;color:var(--fg)">${esc(mail)}</div>` : ''}
-          <div style="margin-top:4px">${badge}</div>
+      <div class="py-3 flex items-center justify-between gap-2 flex-wrap">
+        <div class="min-w-0">
+          <p class="text-sm font-extrabold text-slate-900 truncate">${esc(u.nombre || mail)}</p>
+          ${u.nombre ? `<p class="text-xs text-slate-500 truncate">${esc(mail)}</p>` : ''}
+          <div class="mt-1">${badge}</div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          ${controles}
-        </div>
+        ${controles}
       </div>
     `;
   }).join('');
@@ -1557,11 +1760,10 @@ async function cambiarPermisoCuenta(email, nombre, hacerAdmin) {
   const mail = email.toLowerCase().trim();
   const miEmail = (usuarioActual && usuarioActual.email || '').toLowerCase().trim();
   if (!hacerAdmin && mail === miEmail) {
-    notify('No puedes quitarte el permiso de administrador a tu propia cuenta actual');
+    notify('No puedes quitarte el permiso de administrador a tu propia cuenta');
     return false;
   }
 
-  // Si estaba en la lista de eliminados y se vuelve a activar/crear, quitarlo de eliminados
   const eliminados = await leerUsuariosEliminados();
   if (eliminados.includes(mail)) {
     await guardarUsuariosEliminados(eliminados.filter(x => x !== mail));
@@ -1577,13 +1779,13 @@ async function cambiarPermisoCuenta(email, nombre, hacerAdmin) {
     if (hacerAdmin) {
       const { error: insErr } = await sb.from('administradores').insert({ email: mail });
       if (insErr && !String(insErr.message).includes('duplicate')) {
-        notify('No se pudo dar permiso Admin: ' + insErr.message);
+        notify('Error: ' + insErr.message);
         return false;
       }
     } else {
       const { error: delErr } = await sb.from('administradores').delete().eq('email', mail);
       if (delErr) {
-        notify('No se pudo quitar permiso Admin: ' + delErr.message);
+        notify('Error: ' + delErr.message);
         return false;
       }
     }
@@ -1597,52 +1799,40 @@ async function cambiarPermisoCuenta(email, nombre, hacerAdmin) {
 async function eliminarCuentaUsuario(email) {
   const mail = (email || '').toLowerCase().trim();
   const miEmail = (usuarioActual && usuarioActual.email || '').toLowerCase().trim();
-  if (!mail) return false;
-  if (mail === miEmail) {
+  if (!mail || mail === miEmail) {
     notify('No puedes eliminar tu propia cuenta en sesión');
     return false;
   }
 
   const u = USUARIOS.find(x => (x.email || '').toLowerCase().trim() === mail);
   const etiqueta = u && u.nombre ? `${u.nombre} (${mail})` : mail;
-  if (!confirm(`¿Seguro que deseas eliminar la cuenta de "${etiqueta}"?\n\nEsta persona ya no podrá entrar al sistema ni ver las ventas ni movimientos.`)) {
+  if (!confirm(`¿Eliminar la cuenta de "${etiqueta}"?\n\nEsta persona ya no podrá entrar ni ver ventas ni movimientos.`)) {
     return false;
   }
 
-  // 1) Bloquear de inmediato en configuración compartida
   const eliminados = await leerUsuariosEliminados();
   if (!eliminados.includes(mail)) {
     eliminados.push(mail);
     await guardarUsuariosEliminados(eliminados);
   }
 
-  // 2) Quitar de tabla administradores por seguridad directa
-  try {
-    await sb.from('administradores').delete().eq('email', mail);
-  } catch (e) {}
+  try { await sb.from('administradores').delete().eq('email', mail); } catch (e) {}
+  try { await sb.rpc('eliminar_cuenta_personal', { p_email: mail }); } catch (e) {}
 
-  // 3) Ejecutar RPC en base de datos para borrar de auth.users y desvincular llaves foráneas
-  try {
-    await sb.rpc('eliminar_cuenta_personal', { p_email: mail });
-  } catch (e) {}
-
-  // 4) Quitar de caché local y refrescar lista
   eliminarPersonalLocal(mail);
   await cargarUsuarios();
-  notify(`Usuario ${mail} eliminado del sistema`);
+  notify(`Usuario ${mail} eliminado`);
   return true;
 }
 
 $('listaUsuarios').onclick = async e => {
   const btnDel = e.target.closest('[data-del-email]');
   if (btnDel) {
-    const mail = btnDel.dataset.delEmail;
     btnDel.disabled = true;
-    await eliminarCuentaUsuario(mail);
+    await eliminarCuentaUsuario(btnDel.dataset.delEmail);
     btnDel.disabled = false;
     return;
   }
-
   const btn = e.target.closest('[data-rol-email]');
   if (!btn) return;
   const mail = btn.dataset.rolEmail;
@@ -1651,14 +1841,12 @@ $('listaUsuarios').onclick = async e => {
   btn.disabled = true;
   const ok = await cambiarPermisoCuenta(mail, u && u.nombre, hacerAdmin);
   btn.disabled = false;
-  if (ok) {
-    notify(hacerAdmin ? `${mail} ahora es Administrador` : `${mail} ahora es Solo Ventas (Trabajadora)`);
-  }
+  if (ok) notify(hacerAdmin ? `${mail} ahora es Admin` : `${mail} ahora es Solo Ventas`);
 };
 
 $('btnDarAdminDirecto').onclick = async () => {
   const mail = ($('admEmailDirecto').value || '').toLowerCase().trim();
-  if (!mail || !mail.includes('@')) { notify('Escribe un correo válido'); $('admEmailDirecto').focus(); return; }
+  if (!mail || !mail.includes('@')) { notify('Escribe un correo válido'); return; }
   $('btnDarAdminDirecto').disabled = true;
   const ok = await cambiarPermisoCuenta(mail, '', true);
   $('btnDarAdminDirecto').disabled = false;
@@ -1675,12 +1863,11 @@ $('btnCrearUsuario').onclick = async () => {
   const password = $('nuPass').value || '';
   const hacerAdmin = rol === 'admin';
 
-  if (!email || !email.includes('@')) { notify('Escribe un correo válido (ej: trabajadora@laflaquita.com)'); $('nuEmail').focus(); return; }
-  if (password.length < 6) { notify('La contraseña debe tener al menos 6 caracteres'); $('nuPass').focus(); return; }
+  if (!email || !email.includes('@')) { notify('Escribe un correo válido'); return; }
+  if (password.length < 6) { notify('Mínimo 6 caracteres en la clave'); return; }
 
   $('btnCrearUsuario').disabled = true;
-  $('btnCrearUsuario').textContent = 'Creando cuenta…';
-  $('nuMsg').textContent = 'Registrando usuario…';
+  $('btnCrearUsuario').textContent = 'Creando…';
 
   try {
     const tempSb = supabase.createClient(CONFIG.url, CONFIG.key, {
@@ -1692,33 +1879,57 @@ $('btnCrearUsuario').onclick = async () => {
       options: { data: { nombre: nombre || (hacerAdmin ? 'Administrador' : 'Trabajadora') } }
     });
     if (error && !String(error.message).toLowerCase().includes('already registered')) {
-      $('nuMsg').textContent = 'Error al crear cuenta: ' + error.message;
       notify('Error: ' + error.message);
       return;
     }
-
     await cambiarPermisoCuenta(email, nombre || (hacerAdmin ? 'Administrador' : 'Trabajadora'), hacerAdmin);
-
-    const etiquetaRol = hacerAdmin ? 'Administrador / Dueña (Ventas + Admin)' : 'Trabajadora (Solo Ventas)';
-    $('nuMsg').innerHTML = `Cuenta lista: <b>${esc(email)}</b> · Clave: <b>${esc(password)}</b> · Rol: <b>${etiquetaRol}</b>`;
+    $('nuMsg').innerHTML = `Cuenta lista: <b>${esc(email)}</b> · Clave: <b>${esc(password)}</b>`;
     $('nuNombre').value = '';
     $('nuEmail').value = '';
     $('nuPass').value = '';
-    notify(`Cuenta creada (${etiquetaRol})`);
+    notify('Cuenta creada correctamente');
   } catch (e) {
-    $('nuMsg').textContent = 'Error: ' + (e.message || e);
+    notify('Error: ' + (e.message || e));
   } finally {
     $('btnCrearUsuario').disabled = false;
     $('btnCrearUsuario').textContent = 'Crear cuenta de acceso';
   }
 };
 
+/* ---------- NAVEGACIÓN MÓVIL (BOTTOM BAR + SUBVISTAS DE GESTIÓN) ---------- */
+const TITULOS_SECCION = {
+  dash: 'Inicio',
+  hist: 'Historial de Ventas',
+  stock: 'Inventario y Stock',
+  gestion: 'Gestión',
+  carta: 'Carta y Precios',
+  movs: 'Movimientos de Stock',
+  users: 'Personal y Accesos'
+};
+
 function showTab(t) {
   tabActual = t;
-  ['dash', 'hist', 'stock', 'carta', 'movs', 'users'].forEach(k => {
-    $('v-' + k).hidden = k !== t;
-    $('t-' + k).classList.toggle('a', k === t);
+  const esSubGestion = (t === 'carta' || t === 'movs' || t === 'users');
+  const navActivo = esSubGestion ? 'gestion' : t;
+
+  ['dash', 'hist', 'stock', 'gestion', 'carta', 'movs', 'users'].forEach(k => {
+    const el = $('v-' + k);
+    if (el) el.hidden = k !== t;
   });
+
+  $('headerTitle').textContent = TITULOS_SECCION[t] || 'Admin';
+  $('btnVolverGestion').hidden = !esSubGestion;
+
+  const mapNav = { dash: 't-dash', hist: 't-hist', stock: 't-stock', gestion: 't-gestion' };
+  Object.entries(mapNav).forEach(([k, btnId]) => {
+    const btn = $(btnId);
+    if (!btn) return;
+    const activo = k === navActivo;
+    btn.className = `nav-btn flex flex-col items-center justify-center gap-1 transition relative ${activo ? 'text-brand-700 font-extrabold' : 'text-slate-400 font-semibold'}`;
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
   if (t === 'dash') rDash();
   if (t === 'hist') rHist();
   if (t === 'stock') pintarStock();
@@ -1730,33 +1941,29 @@ function showTab(t) {
 $('t-dash').onclick = () => showTab('dash');
 $('t-hist').onclick = () => showTab('hist');
 $('t-stock').onclick = () => showTab('stock');
-$('t-carta').onclick = () => showTab('carta');
-$('t-movs').onclick = () => showTab('movs');
-$('t-users').onclick = () => showTab('users');
+$('t-gestion').onclick = () => showTab('gestion');
+$('btnVolverGestion').onclick = () => showTab('gestion');
+
+$('v-gestion').addEventListener('click', e => {
+  const btn = e.target.closest('[data-open-sub]');
+  if (btn) showTab(btn.dataset.openSub);
+});
+
+$('btnAvatar').onclick = () => showTab('gestion');
+
 $('refrescar').onclick = async () => {
-  notify('Actualizando datos…');
+  const ico = $('iconRefrescar');
+  if (ico) ico.classList.add('rotate-180');
+  notify('Actualizando…');
   await cargarHist().catch(() => {});
   await cargarTodo();
-  notify('Datos actualizados');
+  setTimeout(() => { if (ico) ico.classList.remove('rotate-180'); }, 500);
+  notify('Datos al día');
 };
 
 const cerrarSesion = async () => { if (sb) await sb.auth.signOut(); location.reload(); };
 $('salir').onclick = cerrarSesion;
 $('salirDenegado').onclick = cerrarSesion;
-
-async function init() {
-  $('entrar').onclick = entrar;
-  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); entrar(); } });
-  $('email').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('pass').focus(); } });
-  sb = supabase.createClient(CONFIG.url, CONFIG.key);
-  try {
-    const { data } = await sb.auth.getSession();
-    if (data && data.session) await verificarYEntrar(data.session.user);
-    else $('login').hidden = false;
-  } catch (e) {
-    $('login').hidden = false;
-  }
-}
 
 document.addEventListener('visibilitychange', async () => {
   if (document.visibilityState === 'visible' && sb && !$('app').hidden && usuarioActual) {
@@ -1774,9 +1981,24 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (!recargando) { recargando = true; location.reload(); }
   });
-  navigator.serviceWorker.register('sw.js?v=33').then(r => r.update()).catch(() => {});
+  navigator.serviceWorker.register('sw.js?v=34').then(r => r.update()).catch(() => {});
+}
+
+async function init() {
+  $('entrar').onclick = entrar;
+  $('pass').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); entrar(); } });
+  $('email').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('pass').focus(); } });
+  sb = supabase.createClient(CONFIG.url, CONFIG.key);
+  try {
+    const { data } = await sb.auth.getSession();
+    if (data && data.session) await verificarYEntrar(data.session.user);
+    else $('login').hidden = false;
+  } catch (e) {
+    $('login').hidden = false;
+  }
 }
 
 init();
 </script>
-</body></html>
+</body>
+</html>
